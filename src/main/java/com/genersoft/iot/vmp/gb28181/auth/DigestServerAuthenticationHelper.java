@@ -202,13 +202,12 @@ public class DigestServerAuthenticationHelper  {
 
         byte[] mdbytes = messageDigest.digest(A1.getBytes());
         String HA1 = toHexString(mdbytes);
-        log.debug("A1: {}", A1);
+        // SECURITY: 严禁记录 A1（含明文密码）/ HA1（密码等价物）/ KD（含 HA1）
+        // 仅记录 challenge 公开元数据，便于鉴权失败时排障
         log.debug("A2: {}", A2);
         mdbytes = messageDigest.digest(A2.getBytes());
         String HA2 = toHexString(mdbytes);
-        log.debug("HA1: {}", HA1);
         log.debug("HA2: {}", HA2);
-        // String cnonce = authHeader.getCNonce();
         log.debug("nonce: {}", nonce);
         log.debug("nc: {}", ncStr);
         log.debug("cnonce: {}", cnonce);
@@ -225,13 +224,13 @@ public class DigestServerAuthenticationHelper  {
             KD += ":" + qop;
         }
         KD += ":" + HA2;
-        log.debug("KD: {}", KD);
         mdbytes = messageDigest.digest(KD.getBytes());
         String mdString = toHexString(mdbytes);
-        log.debug("mdString: {}", mdString);
         String response = authHeader.getResponse();
-        log.debug("response: {}", response);
-        return mdString.equals(response);
+        // SECURITY: response/mdString 是密码相关哈希，严禁明文记录；仅记录是否匹配
+        boolean matched = mdString.equals(response);
+        log.debug("digest match: {}", matched);
+        return matched;
 
     }
 
