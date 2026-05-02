@@ -124,7 +124,9 @@ public class SignAuthenticationFilter extends OncePerRequestFilter {
             // 生成签名
             String buildSign = SmUtil.sm3(beforeSign.toString());
             if (!buildSign.equals(sign)) {
-                log.info("[SY-接口验签] 失败，加密前内容： {}, 请求地址: {} ", beforeSign, requestURI);
+                // SECURITY: 严禁记录 beforeSign（含 secret 凭据）；仅记录公开元数据
+                log.info("[SY-接口验签] 失败，appKey: {}, 请求地址: {}, 客户端 sign 长度: {} ",
+                        appKey, requestURI, sign.length());
                 response.setStatus(Response.OK);
                 PrintWriter out = response.getWriter();
                 out.println(getErrorResult(2, "签名错误"));

@@ -87,8 +87,9 @@ public class ApiController {
     @ResponseBody
     private JSONObject login(String username,String password ){
         if (log.isDebugEnabled()) {
-            log.debug(String.format("模拟接口> 登录 API调用，username：%s ，password：%s ",
-                    username, password));
+            // SECURITY: 严禁记录 password 明文/哈希；仅记录 username 和 password 是否提供以便排障
+            log.debug("模拟接口> 登录 API调用，username：{} ，passwordProvided：{}",
+                    username, password != null && !password.isEmpty());
         }
 
         JSONObject result = new JSONObject();
