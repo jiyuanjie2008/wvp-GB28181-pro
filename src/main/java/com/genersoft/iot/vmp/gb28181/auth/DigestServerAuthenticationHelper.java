@@ -138,9 +138,21 @@ public class DigestServerAuthenticationHelper  {
         byte[] mdbytes = messageDigest.digest(A2.getBytes());
         String HA2 = toHexString(mdbytes);
 
+        String qop = authHeader.getQop();
         String cnonce = authHeader.getCNonce();
+        int nc = authHeader.getNonceCount();
+        String ncStr = String.format("%08x", nc).toUpperCase();
+
         String KD = HA1 + ":" + nonce;
-        if (cnonce != null) {
+        if (qop != null && qop.equalsIgnoreCase("auth")) {
+            if (nc != -1) {
+                KD += ":" + ncStr;
+            }
+            if (cnonce != null) {
+                KD += ":" + cnonce;
+            }
+            KD += ":" + qop;
+        } else if (cnonce != null) {
             KD += ":" + cnonce;
         }
         KD += ":" + HA2;
