@@ -68,6 +68,9 @@ public class RegisterRequestProcessor extends SIPRequestProcessorParent implemen
     @Autowired
     private IRedisCatchStorage redisCatchStorage;
 
+    @Autowired
+    private com.genersoft.iot.vmp.gb28181.event.EventPublisher eventPublisher;
+
 
     @Override
     public void afterPropertiesSet() throws Exception {
@@ -241,6 +244,7 @@ public class RegisterRequestProcessor extends SIPRequestProcessorParent implemen
                 SipTransactionInfo sipTransactionInfo = new SipTransactionInfo((SIPResponse) response);
                 device.setSipTransactionInfo(sipTransactionInfo);
                 deviceService.online(device);
+                eventPublisher.deviceOnlineEventPublish(device);
             } else {
                 log.info("[注销成功] deviceId: {}->{}", deviceId, requestAddress);
                 deviceService.offline(device);

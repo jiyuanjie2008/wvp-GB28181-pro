@@ -13,6 +13,7 @@ import org.springframework.boot.web.servlet.support.SpringBootServletInitializer
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.annotation.EnableAsync;
 
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.ServletException;    
@@ -26,6 +27,7 @@ import java.util.Collections;
 @ServletComponentScan("com.genersoft.iot.vmp.conf")
 @SpringBootApplication
 @EnableScheduling
+@EnableAsync
 @EnableCaching
 @Slf4j
 public class VManageBootstrap extends SpringBootServletInitializer {
