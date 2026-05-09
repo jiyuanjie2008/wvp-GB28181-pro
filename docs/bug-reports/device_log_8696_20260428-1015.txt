@@ -1,0 +1,2115 @@
+--------- beginning of main
+04-28 10:15:32.508  1726  2812 E Gb28181Local: GPs GPS  GPS  GPS 0.00.0
+04-28 10:15:33.509  1726  2812 E Gb28181Local: GPs GPS  GPS  GPS 0.00.0
+04-28 10:15:34.508  1726  2812 E Gb28181Local: GPs GPS  GPS  GPS 0.00.0
+04-28 10:15:35.508  1726  2812 E Gb28181Local: GPs GPS  GPS  GPS 0.00.0
+04-28 10:15:36.509  1726  2812 E Gb28181Local: GPs GPS  GPS  GPS 0.00.0
+04-28 10:15:37.509  1726  2812 E Gb28181Local: GPs GPS  GPS  GPS 0.00.0
+04-28 10:15:38.509  1726  2812 E Gb28181Local: GPs GPS  GPS  GPS 0.00.0
+04-28 10:15:39.508  1726  2812 E Gb28181Local: GPs GPS  GPS  GPS 0.00.0
+04-28 10:15:40.508  1726  2812 E Gb28181Local: GPs GPS  GPS  GPS 0.00.0
+04-28 10:15:41.509  1726  2812 E Gb28181Local: GPs GPS  GPS  GPS 0.00.0
+04-28 10:15:42.508  1726  2812 E Gb28181Local: GPs GPS  GPS  GPS 0.00.0
+04-28 10:15:43.508  1726  2812 E Gb28181Local: GPs GPS  GPS  GPS 0.00.0
+04-28 10:15:44.509  1726  2812 E Gb28181Local: GPs GPS  GPS  GPS 0.00.0
+04-28 10:15:45.509  1726  2812 E Gb28181Local: GPs GPS  GPS  GPS 0.00.0
+04-28 10:15:46.508  1726  2812 E Gb28181Local: GPs GPS  GPS  GPS 0.00.0
+04-28 10:15:47.509  1726  2812 E Gb28181Local: GPs GPS  GPS  GPS 0.00.0
+04-28 10:15:48.509  1726  2812 E Gb28181Local: GPs GPS  GPS  GPS 0.00.0
+04-28 10:15:48.521  1726  3261 I System.out: GB28181--->>>-----C++回调java:状态回调 回调函数--- sysState:2 connState:2heartbeatExceptionCount:0 liveState:0 talkState:0 videotapeState:0videotapedownloadState:0---------------------
+04-28 10:15:48.521  1726  3261 E Gb28181Local: onStateUpdate sysState:2,connState:2,heartbeatExceptionCount:0,liveState:0,talkState:0,videotapeState:0,videotapeDownloadState:0
+04-28 10:15:48.523  1726  3261 I System.out: GB28181--->>>-----C++回调java:状态回调 回调函数--- sysState:2 connState:2heartbeatExceptionCount:0 liveState:0 talkState:0 videotapeState:0videotapedownloadState:0---------------------
+04-28 10:15:48.523  1726  3261 E Gb28181Local: onStateUpdate sysState:2,connState:2,heartbeatExceptionCount:0,liveState:0,talkState:0,videotapeState:0,videotapeDownloadState:0
+04-28 10:15:48.615  1726  3261 I System.out: GB28181--->>>-----C++回调java:状态回调 回调函数--- sysState:2 connState:2heartbeatExceptionCount:0 liveState:0 talkState:0 videotapeState:0videotapedownloadState:0---------------------
+04-28 10:15:48.616  1726  3261 E Gb28181Local: onStateUpdate sysState:2,connState:2,heartbeatExceptionCount:0,liveState:0,talkState:0,videotapeState:0,videotapeDownloadState:0
+04-28 10:15:48.625  1726  4440 I System.out: GB28181--->>>-----C++回调java:状态回调 回调函数--- sysState:2 connState:2heartbeatExceptionCount:0 liveState:2 talkState:0 videotapeState:0videotapedownloadState:0---------------------
+04-28 10:15:48.626  1726  4440 E Gb28181Local: onStateUpdate sysState:2,connState:2,heartbeatExceptionCount:0,liveState:2,talkState:0,videotapeState:0,videotapeDownloadState:0
+04-28 10:15:48.658  1726  1726 E DCWLog-dcwAvcEncoder: mediaCodec----------------configure完成，isFrant false
+04-28 10:15:48.880  1726  4451 I System.out: port:0
+04-28 10:15:48.886  1726  4452 I System.out: port:0
+04-28 10:15:48.943  1726  4453 I System.out: port:0
+04-28 10:15:48.949  1726  4454 I System.out: port:0
+04-28 10:15:49.006  1726  4455 I System.out: port:0
+04-28 10:15:49.078  1726  4456 I System.out: port:0
+04-28 10:15:49.230  1726  4457 I System.out: port:0
+04-28 10:15:49.306  1726  4458 I System.out: port:0
+04-28 10:15:49.357  1726  4459 I System.out: port:0
+04-28 10:15:49.430  1726  4460 I System.out: port:0
+04-28 10:15:49.500  1726  4461 I System.out: port:0
+04-28 10:15:49.508  1726  2812 E Gb28181Local: GPs GPS  GPS  GPS 0.00.0
+04-28 10:15:49.565  1726  4462 I System.out: port:0
+04-28 10:15:49.634  1726  4463 I System.out: port:0
+04-28 10:15:49.709  1726  4464 I System.out: port:0
+04-28 10:15:49.767  1726  4465 I System.out: port:0
+04-28 10:15:49.851  1726  4466 I System.out: port:0
+04-28 10:15:49.906  1726  4467 I System.out: port:0
+04-28 10:15:49.974  1726  4468 I System.out: port:0
+04-28 10:15:50.039  1726  4469 I System.out: port:0
+04-28 10:15:50.120  1726  4470 I System.out: port:0
+04-28 10:15:50.186  1726  4471 I System.out: port:0
+04-28 10:15:50.261  1726  4472 I System.out: port:0
+04-28 10:15:50.319  1726  4473 I System.out: port:0
+04-28 10:15:50.389  1726  4474 I System.out: port:0
+04-28 10:15:50.469  1726  4475 I System.out: port:0
+04-28 10:15:50.509  1726  2812 E Gb28181Local: GPs GPS  GPS  GPS 0.00.0
+04-28 10:15:50.524  1726  4476 I System.out: port:0
+04-28 10:15:50.604  1726  4477 I System.out: port:0
+04-28 10:15:50.677  1726  4478 I System.out: port:0
+04-28 10:15:50.748  1726  4479 I System.out: port:0
+04-28 10:15:50.804  1726  4480 I System.out: port:0
+04-28 10:15:50.889  1726  4481 I System.out: port:0
+04-28 10:15:50.947  1726  4482 I System.out: port:0
+04-28 10:15:51.017  1726  4484 I System.out: port:0
+04-28 10:15:51.096  1726  4485 I System.out: port:0
+04-28 10:15:51.167  1726  4486 I System.out: port:0
+04-28 10:15:51.240  1726  4487 I System.out: port:0
+04-28 10:15:51.301  1726  4488 I System.out: port:0
+04-28 10:15:51.369  1726  4489 I System.out: port:0
+04-28 10:15:51.440  1726  4490 I System.out: port:0
+04-28 10:15:51.509  1726  2812 E Gb28181Local: GPs GPS  GPS  GPS 0.00.0
+04-28 10:15:51.520  1726  4491 I System.out: port:0
+04-28 10:15:51.584  1726  4492 I System.out: port:0
+04-28 10:15:51.651  1726  4493 I System.out: port:0
+04-28 10:15:51.739  1726  4494 I System.out: port:0
+--------- beginning of system
+04-28 10:15:51.787  1726  4495 I System.out: port:0
+04-28 10:15:51.854  1726  4496 I System.out: port:0
+04-28 10:15:51.942  1726  4497 I System.out: port:0
+04-28 10:15:52.008  1726  4498 I System.out: port:0
+04-28 10:15:52.068  1726  4499 I System.out: port:0
+04-28 10:15:52.134  1726  4500 I System.out: port:0
+04-28 10:15:52.220  1726  4501 I System.out: port:0
+04-28 10:15:52.292  1726  4502 I System.out: port:0
+04-28 10:15:52.357  1726  4503 I System.out: port:0
+04-28 10:15:52.412  1726  4504 I System.out: port:0
+04-28 10:15:52.490  1726  4505 I System.out: port:0
+04-28 10:15:52.508  1726  2812 E Gb28181Local: GPs GPS  GPS  GPS 0.00.0
+04-28 10:15:52.570  1726  4506 I System.out: port:0
+04-28 10:15:52.638  1726  4507 I System.out: port:0
+04-28 10:15:52.709  1726  4508 I System.out: port:0
+04-28 10:15:52.764  1726  4509 I System.out: port:0
+04-28 10:15:52.846  1726  4510 I System.out: port:0
+04-28 10:15:52.909  1726  4511 I System.out: port:0
+04-28 10:15:52.990  1726  4512 I System.out: port:0
+04-28 10:15:53.044  1726  4513 I System.out: port:0
+04-28 10:15:53.126  1726  4514 I System.out: port:0
+04-28 10:15:53.181  1726  4515 I System.out: port:0
+04-28 10:15:53.269  1726  4516 I System.out: port:0
+04-28 10:15:53.329  1726  4520 I System.out: port:0
+04-28 10:15:53.411  1726  4521 I System.out: port:0
+04-28 10:15:53.467  1726  4522 I System.out: port:0
+04-28 10:15:53.509  1726  2812 E Gb28181Local: GPs GPS  GPS  GPS 0.00.0
+04-28 10:15:53.554  1726  4523 I System.out: port:0
+04-28 10:15:53.610  1726  4524 I System.out: port:0
+04-28 10:15:53.679  1726  4525 I System.out: port:0
+04-28 10:15:53.750  1726  4526 I System.out: port:0
+04-28 10:15:53.815  1726  4527 I System.out: port:0
+04-28 10:15:53.890  1726  4528 I System.out: port:0
+04-28 10:15:53.958  1726  4529 I System.out: port:0
+04-28 10:15:54.025  1726  4530 I System.out: port:0
+04-28 10:15:54.107  1726  4531 I System.out: port:0
+04-28 10:15:54.173  1726  4532 I System.out: port:0
+04-28 10:15:54.244  1726  4533 I System.out: port:0
+04-28 10:15:54.312  1726  4534 I System.out: port:0
+04-28 10:15:54.381  1726  4535 I System.out: port:0
+04-28 10:15:54.448  1726  4536 I System.out: port:0
+04-28 10:15:54.509  1726  2812 E Gb28181Local: GPs GPS  GPS  GPS 0.00.0
+04-28 10:15:54.528  1726  4537 I System.out: port:0
+04-28 10:15:54.595  1726  4538 I System.out: port:0
+04-28 10:15:54.678  1726  4539 I System.out: port:0
+04-28 10:15:54.725  1726  4540 I System.out: port:0
+04-28 10:15:54.798  1726  4541 I System.out: port:0
+04-28 10:15:54.867  1726  4542 I System.out: port:0
+04-28 10:15:54.931  1726  4543 I System.out: port:0
+04-28 10:15:55.010  1726  4544 I System.out: port:0
+04-28 10:15:55.080  1726  4545 I System.out: port:0
+04-28 10:15:55.150  1726  4546 I System.out: port:0
+04-28 10:15:55.237  1726  4547 I System.out: port:0
+04-28 10:15:55.297  1726  4548 I System.out: port:0
+04-28 10:15:55.355  1726  4549 I System.out: port:0
+04-28 10:15:55.434  1726  4550 I System.out: port:0
+04-28 10:15:55.502  1726  4551 I System.out: port:0
+04-28 10:15:55.508  1726  2812 E Gb28181Local: GPs GPS  GPS  GPS 0.00.0
+04-28 10:15:55.568  1726  4552 I System.out: port:0
+04-28 10:15:55.636  1726  4553 I System.out: port:0
+04-28 10:15:55.714  1726  4554 I System.out: port:0
+04-28 10:15:55.776  1726  4555 I System.out: port:0
+04-28 10:15:55.850  1726  4556 I System.out: port:0
+04-28 10:15:55.917  1726  4557 I System.out: port:0
+04-28 10:15:55.982  1726  4558 I System.out: port:0
+04-28 10:15:56.054  1726  4559 I System.out: port:0
+04-28 10:15:56.121  1726  4560 I System.out: port:0
+04-28 10:15:56.208  1726  4561 I System.out: port:0
+04-28 10:15:56.274  1726  4562 I System.out: port:0
+04-28 10:15:56.348  1726  4563 I System.out: port:0
+04-28 10:15:56.405  1726  4564 I System.out: port:0
+04-28 10:15:56.486  1726  4565 I System.out: port:0
+04-28 10:15:56.509  1726  2812 E Gb28181Local: GPs GPS  GPS  GPS 0.00.0
+04-28 10:15:56.554  1726  4566 I System.out: port:0
+04-28 10:15:56.628  1726  4567 I System.out: port:0
+04-28 10:15:56.684  1726  4568 I System.out: port:0
+04-28 10:15:56.751  1726  4569 I System.out: port:0
+04-28 10:15:56.831  1726  4570 I System.out: port:0
+04-28 10:15:56.885  1726  4571 I System.out: port:0
+04-28 10:15:56.963  1726  4572 I System.out: port:0
+04-28 10:15:57.039  1726  4573 I System.out: port:0
+04-28 10:15:57.108  1726  4574 I System.out: port:0
+04-28 10:15:57.178  1726  4575 I System.out: port:0
+04-28 10:15:57.251  1726  4576 I System.out: port:0
+04-28 10:15:57.316  1726  4577 I System.out: port:0
+04-28 10:15:57.383  1726  4578 I System.out: port:0
+04-28 10:15:57.463  1726  4579 I System.out: port:0
+04-28 10:15:57.508  1726  2812 E Gb28181Local: GPs GPS  GPS  GPS 0.00.0
+04-28 10:15:57.529  1726  4580 I System.out: port:0
+04-28 10:15:57.600  1726  4581 I System.out: port:0
+04-28 10:15:57.654  1726  4451 I System.out: port:0
+04-28 10:15:57.748  1726  4452 I System.out: port:0
+04-28 10:15:57.817  1726  4453 I System.out: port:0
+04-28 10:15:57.882  1726  4454 I System.out: port:0
+04-28 10:15:57.948  1726  4455 I System.out: port:0
+04-28 10:15:58.020  1726  4456 I System.out: port:0
+04-28 10:15:58.087  1726  4457 I System.out: port:0
+04-28 10:15:58.155  1726  4458 I System.out: port:0
+04-28 10:15:58.237  1726  4459 I System.out: port:0
+04-28 10:15:58.299  1726  4460 I System.out: port:0
+04-28 10:15:58.367  1726  4461 I System.out: port:0
+04-28 10:15:58.436  1726  4462 I System.out: port:0
+04-28 10:15:58.505  1726  4463 I System.out: port:0
+04-28 10:15:58.508  1726  2812 E Gb28181Local: GPs GPS  GPS  GPS 0.00.0
+04-28 10:15:58.571  1726  4464 I System.out: port:0
+04-28 10:15:58.653  1726  4465 I System.out: port:0
+04-28 10:15:58.722  1726  4466 I System.out: port:0
+04-28 10:15:58.778  1726  4467 I System.out: port:0
+04-28 10:15:58.872  1726  4468 I System.out: port:0
+04-28 10:15:58.930  1726  4469 I System.out: port:0
+04-28 10:15:58.997  1726  4470 I System.out: port:0
+04-28 10:15:59.067  1726  4471 I System.out: port:0
+04-28 10:15:59.135  1726  4472 I System.out: port:0
+04-28 10:15:59.206  1726  4473 I System.out: port:0
+04-28 10:15:59.276  1726  4474 I System.out: port:0
+04-28 10:15:59.303  1726  3261 I System.out: GB28181--->>>-----C++回调java:状态回调 回调函数--- sysState:2 connState:2heartbeatExceptionCount:0 liveState:2 talkState:0 videotapeState:0videotapedownloadState:0---------------------
+04-28 10:15:59.304  1726  3261 E Gb28181Local: onStateUpdate sysState:2,connState:2,heartbeatExceptionCount:0,liveState:2,talkState:0,videotapeState:0,videotapeDownloadState:0
+04-28 10:15:59.345  1726  4475 I System.out: port:0
+04-28 10:15:59.412  1726  4476 I System.out: port:0
+04-28 10:15:59.486  1726  4477 I System.out: port:0
+04-28 10:15:59.508  1726  2812 E Gb28181Local: GPs GPS  GPS  GPS 0.00.0
+04-28 10:15:59.555  1726  4478 I System.out: port:0
+04-28 10:15:59.628  1726  4479 I System.out: port:0
+04-28 10:15:59.708  1726  4480 I System.out: port:0
+04-28 10:15:59.770  1726  4481 I System.out: port:0
+04-28 10:15:59.842  1726  4482 I System.out: port:0
+04-28 10:15:59.914  1726  4484 I System.out: port:0
+04-28 10:15:59.980  1726  4485 I System.out: port:0
+04-28 10:16:00.055  1726  4486 I System.out: port:0
+04-28 10:16:00.128  1726  4487 I System.out: port:0
+04-28 10:16:00.185  1726  4488 I System.out: port:0
+04-28 10:16:00.257  1726  4489 I System.out: port:0
+04-28 10:16:00.337  1726  4490 I System.out: port:0
+04-28 10:16:00.393  1726  4491 I System.out: port:0
+04-28 10:16:00.462  1726  4492 I System.out: port:0
+04-28 10:16:00.509  1726  2812 E Gb28181Local: GPs GPS  GPS  GPS 0.00.0
+04-28 10:16:00.534  1726  4493 I System.out: port:0
+04-28 10:16:00.602  1726  4494 I System.out: port:0
+04-28 10:16:00.680  1726  4495 I System.out: port:0
+04-28 10:16:00.759  1726  4496 I System.out: port:0
+04-28 10:16:00.816  1726  4497 I System.out: port:0
+04-28 10:16:00.884  1726  4498 I System.out: port:0
+04-28 10:16:00.965  1726  4499 I System.out: port:0
+04-28 10:16:01.022  1726  4500 I System.out: port:0
+04-28 10:16:01.091  1726  4501 I System.out: port:0
+04-28 10:16:01.165  1726  4502 I System.out: port:0
+04-28 10:16:01.235  1726  4503 I System.out: port:0
+04-28 10:16:01.305  1726  4504 I System.out: port:0
+04-28 10:16:01.375  1726  4505 I System.out: port:0
+04-28 10:16:01.452  1726  4506 I System.out: port:0
+04-28 10:16:01.508  1726  2812 E Gb28181Local: GPs GPS  GPS  GPS 0.00.0
+04-28 10:16:01.513  1726  4507 I System.out: port:0
+04-28 10:16:01.583  1726  4508 I System.out: port:0
+04-28 10:16:01.651  1726  4509 I System.out: port:0
+04-28 10:16:01.724  1726  4510 I System.out: port:0
+04-28 10:16:01.795  1726  4511 I System.out: port:0
+04-28 10:16:01.868  1726  4512 I System.out: port:0
+04-28 10:16:01.934  1726  4513 I System.out: port:0
+04-28 10:16:02.003  1726  4514 I System.out: port:0
+04-28 10:16:02.069  1726  4515 I System.out: port:0
+04-28 10:16:02.145  1726  4516 I System.out: port:0
+04-28 10:16:02.215  1726  4520 I System.out: port:0
+04-28 10:16:02.291  1726  4521 I System.out: port:0
+04-28 10:16:02.363  1726  4522 I System.out: port:0
+04-28 10:16:02.429  1726  4523 I System.out: port:0
+04-28 10:16:02.498  1726  4524 I System.out: port:0
+04-28 10:16:02.508  1726  2812 E Gb28181Local: GPs GPS  GPS  GPS 0.00.0
+04-28 10:16:02.565  1726  4525 I System.out: port:0
+04-28 10:16:02.633  1726  4526 I System.out: port:0
+04-28 10:16:02.705  1726  4527 I System.out: port:0
+04-28 10:16:02.773  1726  4528 I System.out: port:0
+04-28 10:16:02.846  1726  4529 I System.out: port:0
+04-28 10:16:02.913  1726  4530 I System.out: port:0
+04-28 10:16:02.984  1726  4531 I System.out: port:0
+04-28 10:16:03.052  1726  4532 I System.out: port:0
+04-28 10:16:03.123  1726  4533 I System.out: port:0
+04-28 10:16:03.200  1726  4534 I System.out: port:0
+04-28 10:16:03.257  1726  4535 I System.out: port:0
+04-28 10:16:03.323  1726  4536 I System.out: port:0
+04-28 10:16:03.407  1726  4537 I System.out: port:0
+04-28 10:16:03.466  1726  4538 I System.out: port:0
+04-28 10:16:03.508  1726  2812 E Gb28181Local: GPs GPS  GPS  GPS 0.00.0
+04-28 10:16:03.547  1726  4539 I System.out: port:0
+04-28 10:16:03.616  1726  4540 I System.out: port:0
+04-28 10:16:03.686  1726  4541 I System.out: port:0
+04-28 10:16:03.755  1726  4542 I System.out: port:0
+04-28 10:16:03.823  1726  4543 I System.out: port:0
+04-28 10:16:03.891  1726  4544 I System.out: port:0
+04-28 10:16:03.970  1726  4545 I System.out: port:0
+04-28 10:16:04.046  1726  4546 I System.out: port:0
+04-28 10:16:04.094  1726  4547 I System.out: port:0
+04-28 10:16:04.173  1726  4548 I System.out: port:0
+04-28 10:16:04.243  1726  4549 I System.out: port:0
+04-28 10:16:04.308  1726  4550 I System.out: port:0
+04-28 10:16:04.375  1726  4551 I System.out: port:0
+04-28 10:16:04.457  1726  4552 I System.out: port:0
+04-28 10:16:04.508  1726  2812 E Gb28181Local: GPs GPS  GPS  GPS 0.00.0
+04-28 10:16:04.524  1726  4553 I System.out: port:0
+04-28 10:16:04.592  1726  4554 I System.out: port:0
+04-28 10:16:04.666  1726  4555 I System.out: port:0
+04-28 10:16:04.731  1726  4556 I System.out: port:0
+04-28 10:16:04.807  1726  4557 I System.out: port:0
+04-28 10:16:04.873  1726  4558 I System.out: port:0
+04-28 10:16:04.944  1726  4559 I System.out: port:0
+04-28 10:16:05.011  1726  4560 I System.out: port:0
+04-28 10:16:05.086  1726  4561 I System.out: port:0
+04-28 10:16:05.155  1726  4562 I System.out: port:0
+04-28 10:16:05.217  1726  4563 I System.out: port:0
+04-28 10:16:05.307  1726  4564 I System.out: port:0
+04-28 10:16:05.357  1726  4565 I System.out: port:0
+04-28 10:16:05.434  1726  4566 I System.out: port:0
+04-28 10:16:05.505  1726  4567 I System.out: port:0
+04-28 10:16:05.508  1726  2812 E Gb28181Local: GPs GPS  GPS  GPS 0.00.0
+04-28 10:16:05.573  1726  4568 I System.out: port:0
+04-28 10:16:05.640  1726  4569 I System.out: port:0
+04-28 10:16:05.710  1726  4570 I System.out: port:0
+04-28 10:16:05.776  1726  4571 I System.out: port:0
+04-28 10:16:05.855  1726  4572 I System.out: port:0
+04-28 10:16:05.923  1726  4573 I System.out: port:0
+04-28 10:16:05.990  1726  4574 I System.out: port:0
+04-28 10:16:06.065  1726  4575 I System.out: port:0
+04-28 10:16:06.141  1726  4576 I System.out: port:0
+04-28 10:16:06.202  1726  4577 I System.out: port:0
+04-28 10:16:06.274  1726  4578 I System.out: port:0
+04-28 10:16:06.337  1726  4579 I System.out: port:0
+04-28 10:16:06.414  1726  4580 I System.out: port:0
+04-28 10:16:06.480  1726  4581 I System.out: port:0
+04-28 10:16:06.509  1726  2812 E Gb28181Local: GPs GPS  GPS  GPS 0.00.0
+04-28 10:16:06.551  1726  4451 I System.out: port:0
+04-28 10:16:06.619  1726  4452 I System.out: port:0
+04-28 10:16:06.687  1726  4453 I System.out: port:0
+04-28 10:16:06.770  1726  4454 I System.out: port:0
+04-28 10:16:06.827  1726  4455 I System.out: port:0
+04-28 10:16:06.897  1726  4456 I System.out: port:0
+04-28 10:16:06.990  1726  4457 I System.out: port:0
+04-28 10:16:07.035  1726  4458 I System.out: port:0
+04-28 10:16:07.114  1726  4459 I System.out: port:0
+04-28 10:16:07.184  1726  4460 I System.out: port:0
+04-28 10:16:07.251  1726  4461 I System.out: port:0
+04-28 10:16:07.328  1726  4462 I System.out: port:0
+04-28 10:16:07.396  1726  4463 I System.out: port:0
+04-28 10:16:07.462  1726  4464 I System.out: port:0
+04-28 10:16:07.509  1726  2812 E Gb28181Local: GPs GPS  GPS  GPS 0.00.0
+04-28 10:16:07.527  1726  4465 I System.out: port:0
+04-28 10:16:07.608  1726  4466 I System.out: port:0
+04-28 10:16:07.663  1726  4467 I System.out: port:0
+04-28 10:16:07.744  1726  4468 I System.out: port:0
+04-28 10:16:07.811  1726  4469 I System.out: port:0
+04-28 10:16:07.880  1726  4470 I System.out: port:0
+04-28 10:16:07.951  1726  4471 I System.out: port:0
+04-28 10:16:08.016  1726  4472 I System.out: port:0
+04-28 10:16:08.095  1726  4473 I System.out: port:0
+04-28 10:16:08.161  1726  4474 I System.out: port:0
+04-28 10:16:08.229  1726  4475 I System.out: port:0
+04-28 10:16:08.306  1726  4476 I System.out: port:0
+04-28 10:16:08.371  1726  4477 I System.out: port:0
+04-28 10:16:08.440  1726  4478 I System.out: port:0
+04-28 10:16:08.509  1726  2812 E Gb28181Local: GPs GPS  GPS  GPS 0.00.0
+04-28 10:16:08.525  1726  4479 I System.out: port:0
+04-28 10:16:08.588  1726  4480 I System.out: port:0
+04-28 10:16:08.652  1726  4481 I System.out: port:0
+04-28 10:16:08.732  1726  4482 I System.out: port:0
+04-28 10:16:08.790  1726  4484 I System.out: port:0
+04-28 10:16:08.868  1726  4485 I System.out: port:0
+04-28 10:16:08.944  1726  4486 I System.out: port:0
+04-28 10:16:09.014  1726  4487 I System.out: port:0
+04-28 10:16:09.081  1726  4488 I System.out: port:0
+04-28 10:16:09.164  1726  4489 I System.out: port:0
+04-28 10:16:09.220  1726  4490 I System.out: port:0
+04-28 10:16:09.298  1726  4491 I System.out: port:0
+04-28 10:16:09.366  1726  4492 I System.out: port:0
+04-28 10:16:09.430  1726  4493 I System.out: port:0
+04-28 10:16:09.504  1726  4494 I System.out: port:0
+04-28 10:16:09.508  1726  2812 E Gb28181Local: GPs GPS  GPS  GPS 0.00.0
+04-28 10:16:09.581  1726  4495 I System.out: port:0
+04-28 10:16:09.642  1726  4496 I System.out: port:0
+04-28 10:16:09.709  1726  4497 I System.out: port:0
+04-28 10:16:09.786  1726  4498 I System.out: port:0
+04-28 10:16:09.846  1726  4499 I System.out: port:0
+04-28 10:16:09.916  1726  4500 I System.out: port:0
+04-28 10:16:09.998  1726  4501 I System.out: port:0
+04-28 10:16:10.059  1726  4502 I System.out: port:0
+04-28 10:16:10.126  1726  4503 I System.out: port:0
+04-28 10:16:10.198  1726  4504 I System.out: port:0
+04-28 10:16:10.259  1726  4505 I System.out: port:0
+04-28 10:16:10.342  1726  4506 I System.out: port:0
+04-28 10:16:10.407  1726  4507 I System.out: port:0
+04-28 10:16:10.479  1726  4508 I System.out: port:0
+04-28 10:16:10.509  1726  2812 E Gb28181Local: GPs GPS  GPS  GPS 0.00.0
+04-28 10:16:10.550  1726  4509 I System.out: port:0
+04-28 10:16:10.622  1726  4510 I System.out: port:0
+04-28 10:16:10.681  1726  4511 I System.out: port:0
+04-28 10:16:10.759  1726  4512 I System.out: port:0
+04-28 10:16:10.830  1726  4513 I System.out: port:0
+04-28 10:16:10.899  1726  4514 I System.out: port:0
+04-28 10:16:10.970  1726  4515 I System.out: port:0
+04-28 10:16:11.035  1726  4516 I System.out: port:0
+04-28 10:16:11.101  1726  4520 I System.out: port:0
+04-28 10:16:11.169  1726  4521 I System.out: port:0
+04-28 10:16:11.260  1726  4522 I System.out: port:0
+04-28 10:16:11.316  1726  4523 I System.out: port:0
+04-28 10:16:11.382  1726  4524 I System.out: port:0
+04-28 10:16:11.448  1726  4525 I System.out: port:0
+04-28 10:16:11.509  1726  2812 E Gb28181Local: GPs GPS  GPS  GPS 0.00.0
+04-28 10:16:11.514  1726  4526 I System.out: port:0
+04-28 10:16:11.606  1726  4527 I System.out: port:0
+04-28 10:16:11.664  1726  4528 I System.out: port:0
+04-28 10:16:11.731  1726  4529 I System.out: port:0
+04-28 10:16:11.806  1726  4530 I System.out: port:0
+04-28 10:16:11.873  1726  4531 I System.out: port:0
+04-28 10:16:11.938  1726  4532 I System.out: port:0
+04-28 10:16:11.944  1726  3261 I System.out: GB28181--->>>-----C++回调java:状态回调 回调函数--- sysState:2 connState:2heartbeatExceptionCount:0 liveState:2 talkState:0 videotapeState:0videotapedownloadState:0---------------------
+04-28 10:16:11.945  1726  3261 E Gb28181Local: onStateUpdate sysState:2,connState:2,heartbeatExceptionCount:0,liveState:2,talkState:0,videotapeState:0,videotapeDownloadState:0
+04-28 10:16:11.957  1726  4440 I System.out: GB28181--->>>-----C++回调java:状态回调 回调函数--- sysState:2 connState:2heartbeatExceptionCount:0 liveState:0 talkState:0 videotapeState:0videotapedownloadState:0---------------------
+04-28 10:16:11.957  1726  4440 E Gb28181Local: onStateUpdate sysState:2,connState:2,heartbeatExceptionCount:0,liveState:0,talkState:0,videotapeState:0,videotapeDownloadState:0
+04-28 10:16:12.050  1726  3261 I System.out: GB28181--->>>-----C++回调java:状态回调 回调函数--- sysState:2 connState:2heartbeatExceptionCount:0 liveState:0 talkState:0 videotapeState:0videotapedownloadState:0---------------------
+04-28 10:16:12.051  1726  3261 E Gb28181Local: onStateUpdate sysState:2,connState:2,heartbeatExceptionCount:0,liveState:0,talkState:0,videotapeState:0,videotapeDownloadState:0
+04-28 10:16:12.053  1726  3261 I System.out: GB28181--->>>-----C++回调java:状态回调 回调函数--- sysState:2 connState:2heartbeatExceptionCount:0 liveState:0 talkState:0 videotapeState:0videotapedownloadState:0---------------------
+04-28 10:16:12.053  1726  3261 E Gb28181Local: onStateUpdate sysState:2,connState:2,heartbeatExceptionCount:0,liveState:0,talkState:0,videotapeState:0,videotapeDownloadState:0
+04-28 10:16:12.509  1726  2812 E Gb28181Local: GPs GPS  GPS  GPS 0.00.0
+04-28 10:16:13.509  1726  2812 E Gb28181Local: GPs GPS  GPS  GPS 0.00.0
+04-28 10:16:14.509  1726  2812 E Gb28181Local: GPs GPS  GPS  GPS 0.00.0
+04-28 10:16:15.508  1726  2812 E Gb28181Local: GPs GPS  GPS  GPS 0.00.0
+04-28 10:16:16.508  1726  2812 E Gb28181Local: GPs GPS  GPS  GPS 0.00.0
+04-28 10:16:17.509  1726  2812 E Gb28181Local: GPs GPS  GPS  GPS 0.00.0
+04-28 10:16:18.509  1726  2812 E Gb28181Local: GPs GPS  GPS  GPS 0.00.0
+04-28 10:16:19.509  1726  2812 E Gb28181Local: GPs GPS  GPS  GPS 0.00.0
+04-28 10:16:20.509  1726  2812 E Gb28181Local: GPs GPS  GPS  GPS 0.00.0
+04-28 10:16:20.571  1726  3261 I System.out: GB28181--->>>-----C++回调java:状态回调 回调函数--- sysState:2 connState:2heartbeatExceptionCount:0 liveState:0 talkState:0 videotapeState:0videotapedownloadState:0---------------------
+04-28 10:16:20.571  1726  3261 E Gb28181Local: onStateUpdate sysState:2,connState:2,heartbeatExceptionCount:0,liveState:0,talkState:0,videotapeState:0,videotapeDownloadState:0
+04-28 10:16:20.580  1726  3261 I System.out: GB28181--->>>-----C++回调java:状态回调 回调函数--- sysState:2 connState:2heartbeatExceptionCount:0 liveState:0 talkState:0 videotapeState:0videotapedownloadState:0---------------------
+04-28 10:16:20.581  1726  3261 E Gb28181Local: onStateUpdate sysState:2,connState:2,heartbeatExceptionCount:0,liveState:0,talkState:0,videotapeState:0,videotapeDownloadState:0
+04-28 10:16:20.916  1726  3261 I System.out: GB28181--->>>-----C++回调java:状态回调 回调函数--- sysState:2 connState:2heartbeatExceptionCount:0 liveState:0 talkState:0 videotapeState:0videotapedownloadState:0---------------------
+04-28 10:16:20.916  1726  3261 E Gb28181Local: onStateUpdate sysState:2,connState:2,heartbeatExceptionCount:0,liveState:0,talkState:0,videotapeState:0,videotapeDownloadState:0
+04-28 10:16:20.927  1726  4592 I System.out: GB28181--->>>-----C++回调java:状态回调 回调函数--- sysState:2 connState:2heartbeatExceptionCount:0 liveState:2 talkState:0 videotapeState:0videotapedownloadState:0---------------------
+04-28 10:16:20.928  1726  4592 E Gb28181Local: onStateUpdate sysState:2,connState:2,heartbeatExceptionCount:0,liveState:2,talkState:0,videotapeState:0,videotapeDownloadState:0
+04-28 10:16:20.953  1726  1726 E DCWLog-dcwAvcEncoder: mediaCodec----------------configure完成，isFrant false
+04-28 10:16:21.155  1726  4534 I System.out: port:0
+04-28 10:16:21.170  1726  4535 I System.out: port:0
+04-28 10:16:21.205  1726  4536 I System.out: port:0
+04-28 10:16:21.222  1726  4537 I System.out: port:0
+04-28 10:16:21.280  1726  4538 I System.out: port:0
+04-28 10:16:21.353  1726  4539 I System.out: port:0
+04-28 10:16:21.424  1726  4540 I System.out: port:0
+04-28 10:16:21.485  1726  4541 I System.out: port:0
+04-28 10:16:21.508  1726  2812 E Gb28181Local: GPs GPS  GPS  GPS 0.00.0
+04-28 10:16:21.566  1726  4542 I System.out: port:0
+04-28 10:16:21.630  1726  4543 I System.out: port:0
+04-28 10:16:21.708  1726  4544 I System.out: port:0
+04-28 10:16:21.769  1726  4545 I System.out: port:0
+04-28 10:16:21.840  1726  4546 I System.out: port:0
+04-28 10:16:21.908  1726  4547 I System.out: port:0
+04-28 10:16:21.978  1726  4548 I System.out: port:0
+04-28 10:16:22.042  1726  4549 I System.out: port:0
+04-28 10:16:22.124  1726  4550 I System.out: port:0
+04-28 10:16:22.196  1726  4551 I System.out: port:0
+04-28 10:16:22.253  1726  4552 I System.out: port:0
+04-28 10:16:22.324  1726  4553 I System.out: port:0
+04-28 10:16:22.396  1726  4554 I System.out: port:0
+04-28 10:16:22.463  1726  4555 I System.out: port:0
+04-28 10:16:22.509  1726  2812 E Gb28181Local: GPs GPS  GPS  GPS 0.00.0
+04-28 10:16:22.532  1726  4556 I System.out: port:0
+04-28 10:16:22.606  1726  4557 I System.out: port:0
+04-28 10:16:22.672  1726  4558 I System.out: port:0
+04-28 10:16:22.747  1726  4559 I System.out: port:0
+04-28 10:16:22.815  1726  4560 I System.out: port:0
+04-28 10:16:22.883  1726  4561 I System.out: port:0
+04-28 10:16:22.949  1726  4562 I System.out: port:0
+04-28 10:16:23.025  1726  4563 I System.out: port:0
+04-28 10:16:23.093  1726  4564 I System.out: port:0
+04-28 10:16:23.165  1726  4565 I System.out: port:0
+04-28 10:16:23.252  1726  4566 I System.out: port:0
+04-28 10:16:23.303  1726  4567 I System.out: port:0
+04-28 10:16:23.368  1726  4568 I System.out: port:0
+04-28 10:16:23.450  1726  4569 I System.out: port:0
+04-28 10:16:23.509  1726  2812 E Gb28181Local: GPs GPS  GPS  GPS 0.00.0
+04-28 10:16:23.517  1726  4570 I System.out: port:0
+04-28 10:16:23.585  1726  4571 I System.out: port:0
+04-28 10:16:23.656  1726  4572 I System.out: port:0
+04-28 10:16:23.731  1726  4573 I System.out: port:0
+04-28 10:16:23.796  1726  4574 I System.out: port:0
+04-28 10:16:23.868  1726  4575 I System.out: port:0
+04-28 10:16:23.941  1726  4576 I System.out: port:0
+04-28 10:16:24.009  1726  4577 I System.out: port:0
+04-28 10:16:24.074  1726  4578 I System.out: port:0
+04-28 10:16:24.141  1726  4579 I System.out: port:0
+04-28 10:16:24.210  1726  4580 I System.out: port:0
+04-28 10:16:24.288  1726  4581 I System.out: port:0
+04-28 10:16:24.356  1726  4451 I System.out: port:0
+04-28 10:16:24.423  1726  4452 I System.out: port:0
+04-28 10:16:24.505  1726  4453 I System.out: port:0
+04-28 10:16:24.508  1726  2812 E Gb28181Local: GPs GPS  GPS  GPS 0.00.0
+04-28 10:16:24.563  1726  4454 I System.out: port:0
+04-28 10:16:24.645  1726  4455 I System.out: port:0
+04-28 10:16:24.720  1726  4456 I System.out: port:0
+04-28 10:16:24.766  1726  4457 I System.out: port:0
+04-28 10:16:24.848  1726  4458 I System.out: port:0
+04-28 10:16:24.914  1726  4459 I System.out: port:0
+04-28 10:16:24.982  1726  4460 I System.out: port:0
+04-28 10:16:25.046  1726  4461 I System.out: port:0
+04-28 10:16:25.132  1726  4462 I System.out: port:0
+04-28 10:16:25.187  1726  4463 I System.out: port:0
+04-28 10:16:25.265  1726  4464 I System.out: port:0
+04-28 10:16:25.333  1726  4465 I System.out: port:0
+04-28 10:16:25.410  1726  4466 I System.out: port:0
+04-28 10:16:25.469  1726  4467 I System.out: port:0
+04-28 10:16:25.509  1726  2812 E Gb28181Local: GPs GPS  GPS  GPS 0.00.0
+04-28 10:16:25.549  1726  4468 I System.out: port:0
+04-28 10:16:25.614  1726  4469 I System.out: port:0
+04-28 10:16:25.685  1726  4470 I System.out: port:0
+04-28 10:16:25.757  1726  4471 I System.out: port:0
+04-28 10:16:25.822  1726  4472 I System.out: port:0
+04-28 10:16:25.889  1726  4473 I System.out: port:0
+04-28 10:16:25.970  1726  4474 I System.out: port:0
+04-28 10:16:26.042  1726  4475 I System.out: port:0
+04-28 10:16:26.105  1726  4476 I System.out: port:0
+04-28 10:16:26.174  1726  4477 I System.out: port:0
+04-28 10:16:26.247  1726  4478 I System.out: port:0
+04-28 10:16:26.315  1726  4479 I System.out: port:0
+04-28 10:16:26.387  1726  4480 I System.out: port:0
+04-28 10:16:26.450  1726  4481 I System.out: port:0
+04-28 10:16:26.508  1726  2812 E Gb28181Local: GPs GPS  GPS  GPS 0.00.0
+04-28 10:16:26.528  1726  4482 I System.out: port:0
+04-28 10:16:26.598  1726  4484 I System.out: port:0
+04-28 10:16:26.663  1726  4485 I System.out: port:0
+04-28 10:16:26.730  1726  4486 I System.out: port:0
+04-28 10:16:26.812  1726  4487 I System.out: port:0
+04-28 10:16:26.881  1726  4488 I System.out: port:0
+04-28 10:16:26.936  1726  4489 I System.out: port:0
+04-28 10:16:27.021  1726  4490 I System.out: port:0
+04-28 10:16:27.086  1726  4491 I System.out: port:0
+04-28 10:16:27.153  1726  4492 I System.out: port:0
+04-28 10:16:27.231  1726  4493 I System.out: port:0
+04-28 10:16:27.288  1726  4494 I System.out: port:0
+04-28 10:16:27.367  1726  4495 I System.out: port:0
+04-28 10:16:27.441  1726  4496 I System.out: port:0
+04-28 10:16:27.499  1726  4497 I System.out: port:0
+04-28 10:16:27.508  1726  2812 E Gb28181Local: GPs GPS  GPS  GPS 0.00.0
+04-28 10:16:27.579  1726  4498 I System.out: port:0
+04-28 10:16:27.646  1726  4499 I System.out: port:0
+04-28 10:16:27.706  1726  4500 I System.out: port:0
+04-28 10:16:27.784  1726  4501 I System.out: port:0
+04-28 10:16:27.868  1726  4502 I System.out: port:0
+04-28 10:16:27.926  1726  4503 I System.out: port:0
+04-28 10:16:27.994  1726  4504 I System.out: port:0
+04-28 10:16:28.066  1726  4505 I System.out: port:0
+04-28 10:16:28.133  1726  4506 I System.out: port:0
+04-28 10:16:28.203  1726  4507 I System.out: port:0
+04-28 10:16:28.287  1726  4508 I System.out: port:0
+04-28 10:16:28.343  1726  4509 I System.out: port:0
+04-28 10:16:28.412  1726  4510 I System.out: port:0
+04-28 10:16:28.487  1726  4511 I System.out: port:0
+04-28 10:16:28.508  1726  2812 E Gb28181Local: GPs GPS  GPS  GPS 0.00.0
+04-28 10:16:28.554  1726  4512 I System.out: port:0
+04-28 10:16:28.626  1726  4513 I System.out: port:0
+04-28 10:16:28.709  1726  4514 I System.out: port:0
+04-28 10:16:28.760  1726  4515 I System.out: port:0
+04-28 10:16:28.837  1726  4516 I System.out: port:0
+04-28 10:16:28.917  1726  4520 I System.out: port:0
+04-28 10:16:28.974  1726  4521 I System.out: port:0
+04-28 10:16:29.044  1726  4522 I System.out: port:0
+04-28 10:16:29.121  1726  4523 I System.out: port:0
+04-28 10:16:29.179  1726  4524 I System.out: port:0
+04-28 10:16:29.247  1726  4525 I System.out: port:0
+04-28 10:16:29.326  1726  4526 I System.out: port:0
+04-28 10:16:29.397  1726  4527 I System.out: port:0
+04-28 10:16:29.466  1726  4528 I System.out: port:0
+04-28 10:16:29.509  1726  2812 E Gb28181Local: GPs GPS  GPS  GPS 0.00.0
+04-28 10:16:29.537  1726  4529 I System.out: port:0
+04-28 10:16:29.606  1726  4530 I System.out: port:0
+04-28 10:16:29.684  1726  4531 I System.out: port:0
+04-28 10:16:29.752  1726  4532 I System.out: port:0
+04-28 10:16:29.810  1726  4450 I System.out: port:0
+04-28 10:16:29.896  1726  4534 I System.out: port:0
+04-28 10:16:29.967  1726  4535 I System.out: port:0
+04-28 10:16:30.026  1726  4536 I System.out: port:0
+04-28 10:16:30.093  1726  4537 I System.out: port:0
+04-28 10:16:30.170  1726  4538 I System.out: port:0
+04-28 10:16:30.241  1726  4539 I System.out: port:0
+04-28 10:16:30.309  1726  4540 I System.out: port:0
+04-28 10:16:30.376  1726  4541 I System.out: port:0
+04-28 10:16:30.453  1726  4542 I System.out: port:0
+04-28 10:16:30.509  1726  2812 E Gb28181Local: GPs GPS  GPS  GPS 0.00.0
+04-28 10:16:30.522  1726  4543 I System.out: port:0
+04-28 10:16:30.586  1726  4544 I System.out: port:0
+04-28 10:16:30.652  1726  4545 I System.out: port:0
+04-28 10:16:30.735  1726  4546 I System.out: port:0
+04-28 10:16:30.806  1726  4547 I System.out: port:0
+04-28 10:16:30.875  1726  4548 I System.out: port:0
+04-28 10:16:30.942  1726  4549 I System.out: port:0
+04-28 10:16:31.015  1726  4550 I System.out: port:0
+04-28 10:16:31.087  1726  4551 I System.out: port:0
+04-28 10:16:31.155  1726  4552 I System.out: port:0
+04-28 10:16:31.227  1726  4553 I System.out: port:0
+04-28 10:16:31.296  1726  4554 I System.out: port:0
+04-28 10:16:31.365  1726  4555 I System.out: port:0
+04-28 10:16:31.439  1726  4556 I System.out: port:0
+04-28 10:16:31.506  1726  4557 I System.out: port:0
+04-28 10:16:31.508  1726  2812 E Gb28181Local: GPs GPS  GPS  GPS 0.00.0
+04-28 10:16:31.572  1726  4558 I System.out: port:0
+04-28 10:16:31.654  1726  4559 I System.out: port:0
+04-28 10:16:31.721  1726  4560 I System.out: port:0
+04-28 10:16:31.796  1726  4561 I System.out: port:0
+04-28 10:16:31.869  1726  4562 I System.out: port:0
+04-28 10:16:31.930  1726  4563 I System.out: port:0
+04-28 10:16:32.008  1726  4564 I System.out: port:0
+04-28 10:16:32.078  1726  4565 I System.out: port:0
+04-28 10:16:32.136  1726  4566 I System.out: port:0
+04-28 10:16:32.214  1726  4567 I System.out: port:0
+04-28 10:16:32.296  1726  4568 I System.out: port:0
+04-28 10:16:32.353  1726  4569 I System.out: port:0
+04-28 10:16:32.423  1726  4570 I System.out: port:0
+04-28 10:16:32.493  1726  4571 I System.out: port:0
+04-28 10:16:32.509  1726  2812 E Gb28181Local: GPs GPS  GPS  GPS 0.00.0
+04-28 10:16:32.561  1726  4572 I System.out: port:0
+04-28 10:16:32.638  1726  4573 I System.out: port:0
+04-28 10:16:32.713  1726  4574 I System.out: port:0
+04-28 10:16:32.774  1726  4575 I System.out: port:0
+04-28 10:16:32.840  1726  4576 I System.out: port:0
+04-28 10:16:32.930  1726  4577 I System.out: port:0
+04-28 10:16:32.981  1726  4578 I System.out: port:0
+04-28 10:16:33.048  1726  4579 I System.out: port:0
+04-28 10:16:33.125  1726  4580 I System.out: port:0
+04-28 10:16:33.190  1726  4581 I System.out: port:0
+04-28 10:16:33.262  1726  4451 I System.out: port:0
+04-28 10:16:33.330  1726  4452 I System.out: port:0
+04-28 10:16:33.409  1726  4453 I System.out: port:0
+04-28 10:16:33.469  1726  4454 I System.out: port:0
+04-28 10:16:33.509  1726  2812 E Gb28181Local: GPs GPS  GPS  GPS 0.00.0
+04-28 10:16:33.547  1726  4455 I System.out: port:0
+04-28 10:16:33.616  1726  4456 I System.out: port:0
+04-28 10:16:33.687  1726  4457 I System.out: port:0
+04-28 10:16:33.755  1726  4458 I System.out: port:0
+04-28 10:16:33.824  1726  4459 I System.out: port:0
+04-28 10:16:33.891  1726  4460 I System.out: port:0
+04-28 10:16:33.957  1726  4461 I System.out: port:0
+04-28 10:16:34.025  1726  4462 I System.out: port:0
+04-28 10:16:34.107  1726  4463 I System.out: port:0
+04-28 10:16:34.172  1726  4464 I System.out: port:0
+04-28 10:16:34.244  1726  4465 I System.out: port:0
+04-28 10:16:34.310  1726  4466 I System.out: port:0
+04-28 10:16:34.378  1726  4467 I System.out: port:0
+04-28 10:16:34.450  1726  4468 I System.out: port:0
+04-28 10:16:34.509  1726  2812 E Gb28181Local: GPs GPS  GPS  GPS 0.00.0
+04-28 10:16:34.522  1726  4469 I System.out: port:0
+04-28 10:16:34.590  1726  4470 I System.out: port:0
+04-28 10:16:34.663  1726  4471 I System.out: port:0
+04-28 10:16:34.734  1726  4472 I System.out: port:0
+04-28 10:16:34.805  1726  4473 I System.out: port:0
+04-28 10:16:34.872  1726  4474 I System.out: port:0
+04-28 10:16:34.943  1726  4475 I System.out: port:0
+04-28 10:16:35.012  1726  4476 I System.out: port:0
+04-28 10:16:35.081  1726  4477 I System.out: port:0
+04-28 10:16:35.152  1726  4478 I System.out: port:0
+04-28 10:16:35.221  1726  4479 I System.out: port:0
+04-28 10:16:35.290  1726  4480 I System.out: port:0
+04-28 10:16:35.364  1726  4481 I System.out: port:0
+04-28 10:16:35.433  1726  4482 I System.out: port:0
+04-28 10:16:35.500  1726  4484 I System.out: port:0
+04-28 10:16:35.508  1726  2812 E Gb28181Local: GPs GPS  GPS  GPS 0.00.0
+04-28 10:16:35.570  1726  4485 I System.out: port:0
+04-28 10:16:35.638  1726  4486 I System.out: port:0
+04-28 10:16:35.709  1726  4487 I System.out: port:0
+04-28 10:16:35.794  1726  4488 I System.out: port:0
+04-28 10:16:35.846  1726  4489 I System.out: port:0
+04-28 10:16:35.925  1726  4490 I System.out: port:0
+04-28 10:16:35.997  1726  4491 I System.out: port:0
+04-28 10:16:36.056  1726  4492 I System.out: port:0
+04-28 10:16:36.126  1726  4493 I System.out: port:0
+04-28 10:16:36.209  1726  4494 I System.out: port:0
+04-28 10:16:36.263  1726  4495 I System.out: port:0
+04-28 10:16:36.334  1726  4496 I System.out: port:0
+04-28 10:16:36.424  1726  4497 I System.out: port:0
+04-28 10:16:36.476  1726  4498 I System.out: port:0
+04-28 10:16:36.509  1726  2812 E Gb28181Local: GPs GPS  GPS  GPS 0.00.0
+04-28 10:16:36.554  1726  4499 I System.out: port:0
+04-28 10:16:36.625  1726  4500 I System.out: port:0
+04-28 10:16:36.693  1726  4501 I System.out: port:0
+04-28 10:16:36.763  1726  4502 I System.out: port:0
+04-28 10:16:36.833  1726  4503 I System.out: port:0
+04-28 10:16:36.902  1726  4504 I System.out: port:0
+04-28 10:16:36.971  1726  4505 I System.out: port:0
+04-28 10:16:37.043  1726  4506 I System.out: port:0
+04-28 10:16:37.112  1726  4507 I System.out: port:0
+04-28 10:16:37.182  1726  4508 I System.out: port:0
+04-28 10:16:37.255  1726  4509 I System.out: port:0
+04-28 10:16:37.325  1726  4510 I System.out: port:0
+04-28 10:16:37.394  1726  4511 I System.out: port:0
+04-28 10:16:37.466  1726  4512 I System.out: port:0
+04-28 10:16:37.512  1726  2812 E Gb28181Local: GPs GPS  GPS  GPS 0.00.0
+04-28 10:16:37.536  1726  4513 I System.out: port:0
+04-28 10:16:37.594  1726  4514 I System.out: port:0
+04-28 10:16:37.670  1726  4515 I System.out: port:0
+04-28 10:16:37.744  1726  4516 I System.out: port:0
+04-28 10:16:37.802  1726  4520 I System.out: port:0
+04-28 10:16:37.883  1726  4521 I System.out: port:0
+04-28 10:16:37.949  1726  4522 I System.out: port:0
+04-28 10:16:38.019  1726  4523 I System.out: port:0
+04-28 10:16:38.099  1726  4524 I System.out: port:0
+04-28 10:16:38.168  1726  4525 I System.out: port:0
+04-28 10:16:38.230  1726  4526 I System.out: port:0
+04-28 10:16:38.317  1726  4527 I System.out: port:0
+04-28 10:16:38.375  1726  4528 I System.out: port:0
+04-28 10:16:38.441  1726  4529 I System.out: port:0
+04-28 10:16:38.509  1726  2812 E Gb28181Local: GPs GPS  GPS  GPS 0.00.0
+04-28 10:16:38.509  1726  4530 I System.out: port:0
+04-28 10:16:38.578  1726  4531 I System.out: port:0
+04-28 10:16:38.647  1726  4532 I System.out: port:0
+04-28 10:16:38.722  1726  4450 I System.out: port:0
+04-28 10:16:38.788  1726  4534 I System.out: port:0
+04-28 10:16:38.858  1726  4535 I System.out: port:0
+04-28 10:16:38.932  1726  4536 I System.out: port:0
+04-28 10:16:39.000  1726  4537 I System.out: port:0
+04-28 10:16:39.067  1726  4538 I System.out: port:0
+04-28 10:16:39.140  1726  4539 I System.out: port:0
+04-28 10:16:39.208  1726  4540 I System.out: port:0
+04-28 10:16:39.293  1726  4541 I System.out: port:0
+04-28 10:16:39.351  1726  4542 I System.out: port:0
+04-28 10:16:39.418  1726  4543 I System.out: port:0
+04-28 10:16:39.497  1726  4544 I System.out: port:0
+04-28 10:16:39.510  1726  2812 E Gb28181Local: GPs GPS  GPS  GPS 0.00.0
+04-28 10:16:39.560  1726  4545 I System.out: port:0
+04-28 10:16:39.618  1726  4546 I System.out: port:0
+04-28 10:16:39.703  1726  4547 I System.out: port:0
+04-28 10:16:39.762  1726  4548 I System.out: port:0
+04-28 10:16:39.832  1726  4549 I System.out: port:0
+04-28 10:16:39.913  1726  4550 I System.out: port:0
+04-28 10:16:39.980  1726  4551 I System.out: port:0
+04-28 10:16:40.049  1726  4552 I System.out: port:0
+04-28 10:16:40.125  1726  4553 I System.out: port:0
+04-28 10:16:40.182  1726  4554 I System.out: port:0
+04-28 10:16:40.264  1726  4555 I System.out: port:0
+04-28 10:16:40.328  1726  4556 I System.out: port:0
+04-28 10:16:40.398  1726  4557 I System.out: port:0
+04-28 10:16:40.463  1726  4558 I System.out: port:0
+04-28 10:16:40.509  1726  2812 E Gb28181Local: GPs GPS  GPS  GPS 0.00.0
+04-28 10:16:40.550  1726  4559 I System.out: port:0
+04-28 10:16:40.609  1726  4560 I System.out: port:0
+04-28 10:16:40.678  1726  4561 I System.out: port:0
+04-28 10:16:40.748  1726  4562 I System.out: port:0
+04-28 10:16:40.815  1726  4563 I System.out: port:0
+04-28 10:16:40.891  1726  4564 I System.out: port:0
+04-28 10:16:40.960  1726  4565 I System.out: port:0
+04-28 10:16:41.031  1726  4566 I System.out: port:0
+04-28 10:16:41.108  1726  4567 I System.out: port:0
+04-28 10:16:41.167  1726  4568 I System.out: port:0
+04-28 10:16:41.246  1726  4569 I System.out: port:0
+04-28 10:16:41.315  1726  4570 I System.out: port:0
+04-28 10:16:41.388  1726  4571 I System.out: port:0
+04-28 10:16:41.451  1726  4572 I System.out: port:0
+04-28 10:16:41.510  1726  2812 E Gb28181Local: GPs GPS  GPS  GPS 0.00.0
+04-28 10:16:41.524  1726  4573 I System.out: port:0
+04-28 10:16:41.597  1726  4574 I System.out: port:0
+04-28 10:16:41.668  1726  4575 I System.out: port:0
+04-28 10:16:41.762  1726  4576 I System.out: port:0
+04-28 10:16:41.796  1726  4577 I System.out: port:0
+04-28 10:16:41.874  1726  4578 I System.out: port:0
+04-28 10:16:41.959  1726  4579 I System.out: port:0
+04-28 10:16:42.007  1726  4580 I System.out: port:0
+04-28 10:16:42.085  1726  4581 I System.out: port:0
+04-28 10:16:42.159  1726  4451 I System.out: port:0
+04-28 10:16:42.217  1726  4452 I System.out: port:0
+04-28 10:16:42.296  1726  4453 I System.out: port:0
+04-28 10:16:42.369  1726  4454 I System.out: port:0
+04-28 10:16:42.432  1726  4455 I System.out: port:0
+04-28 10:16:42.509  1726  4456 I System.out: port:0
+04-28 10:16:42.510  1726  2812 E Gb28181Local: GPs GPS  GPS  GPS 0.00.0
+04-28 10:16:42.577  1726  4457 I System.out: port:0
+04-28 10:16:42.655  1726  4458 I System.out: port:0
+04-28 10:16:42.734  1726  4459 I System.out: port:0
+04-28 10:16:42.796  1726  4460 I System.out: port:0
+04-28 10:16:42.869  1726  4461 I System.out: port:0
+04-28 10:16:42.933  1726  4462 I System.out: port:0
+04-28 10:16:43.004  1726  4463 I System.out: port:0
+04-28 10:16:43.071  1726  4464 I System.out: port:0
+04-28 10:16:43.142  1726  4465 I System.out: port:0
+04-28 10:16:43.209  1726  4466 I System.out: port:0
+04-28 10:16:43.282  1726  4467 I System.out: port:0
+04-28 10:16:43.351  1726  4468 I System.out: port:0
+04-28 10:16:43.417  1726  4469 I System.out: port:0
+04-28 10:16:43.502  1726  4470 I System.out: port:0
+04-28 10:16:43.508  1726  2812 E Gb28181Local: GPs GPS  GPS  GPS 0.00.0
+04-28 10:16:43.568  1726  4471 I System.out: port:0
+04-28 10:16:43.625  1726  4472 I System.out: port:0
+04-28 10:16:43.703  1726  4473 I System.out: port:0
+04-28 10:16:43.771  1726  4474 I System.out: port:0
+04-28 10:16:43.846  1726  4475 I System.out: port:0
+04-28 10:16:43.904  1726  4476 I System.out: port:0
+04-28 10:16:43.986  1726  4477 I System.out: port:0
+04-28 10:16:44.056  1726  4478 I System.out: port:0
+04-28 10:16:44.124  1726  4479 I System.out: port:0
+04-28 10:16:44.206  1726  4480 I System.out: port:0
+04-28 10:16:44.270  1726  4481 I System.out: port:0
+04-28 10:16:44.329  1726  4482 I System.out: port:0
+04-28 10:16:44.409  1726  4484 I System.out: port:0
+04-28 10:16:44.467  1726  4485 I System.out: port:0
+04-28 10:16:44.509  1726  2812 E Gb28181Local: GPs GPS  GPS  GPS 0.00.0
+04-28 10:16:44.540  1726  4486 I System.out: port:0
+04-28 10:16:44.621  1726  4487 I System.out: port:0
+04-28 10:16:44.679  1726  4488 I System.out: port:0
+04-28 10:16:44.746  1726  4489 I System.out: port:0
+04-28 10:16:44.823  1726  4490 I System.out: port:0
+04-28 10:16:44.887  1726  4491 I System.out: port:0
+04-28 10:16:44.959  1726  4492 I System.out: port:0
+04-28 10:16:45.038  1726  4493 I System.out: port:0
+04-28 10:16:45.100  1726  4494 I System.out: port:0
+04-28 10:16:45.169  1726  4495 I System.out: port:0
+04-28 10:16:45.241  1726  4496 I System.out: port:0
+04-28 10:16:45.308  1726  4497 I System.out: port:0
+04-28 10:16:45.384  1726  4498 I System.out: port:0
+04-28 10:16:45.451  1726  4499 I System.out: port:0
+04-28 10:16:45.508  1726  2812 E Gb28181Local: GPs GPS  GPS  GPS 0.00.0
+04-28 10:16:45.521  1726  4500 I System.out: port:0
+04-28 10:16:45.583  1726  4501 I System.out: port:0
+04-28 10:16:45.662  1726  4502 I System.out: port:0
+04-28 10:16:45.733  1726  4503 I System.out: port:0
+04-28 10:16:45.801  1726  4504 I System.out: port:0
+04-28 10:16:45.875  1726  4505 I System.out: port:0
+04-28 10:16:45.932  1726  4506 I System.out: port:0
+04-28 10:16:46.015  1726  4507 I System.out: port:0
+04-28 10:16:46.088  1726  4508 I System.out: port:0
+04-28 10:16:46.144  1726  4509 I System.out: port:0
+04-28 10:16:46.213  1726  4510 I System.out: port:0
+04-28 10:16:46.291  1726  4511 I System.out: port:0
+04-28 10:16:46.361  1726  4512 I System.out: port:0
+04-28 10:16:46.428  1726  4513 I System.out: port:0
+04-28 10:16:46.501  1726  4514 I System.out: port:0
+04-28 10:16:46.508  1726  2812 E Gb28181Local: GPs GPS  GPS  GPS 0.00.0
+04-28 10:16:46.571  1726  4515 I System.out: port:0
+04-28 10:16:46.643  1726  4516 I System.out: port:0
+04-28 10:16:46.708  1726  4520 I System.out: port:0
+04-28 10:16:46.778  1726  4521 I System.out: port:0
+04-28 10:16:46.857  1726  4522 I System.out: port:0
+04-28 10:16:46.930  1726  4523 I System.out: port:0
+04-28 10:16:46.998  1726  4524 I System.out: port:0
+04-28 10:16:47.070  1726  4525 I System.out: port:0
+04-28 10:16:47.148  1726  4526 I System.out: port:0
+04-28 10:16:47.201  1726  4527 I System.out: port:0
+04-28 10:16:47.279  1726  4528 I System.out: port:0
+04-28 10:16:47.351  1726  4529 I System.out: port:0
+04-28 10:16:47.410  1726  4530 I System.out: port:0
+04-28 10:16:47.485  1726  4531 I System.out: port:0
+04-28 10:16:47.509  1726  2812 E Gb28181Local: GPs GPS  GPS  GPS 0.00.0
+04-28 10:16:47.565  1726  4532 I System.out: port:0
+04-28 10:16:47.622  1726  4450 I System.out: port:0
+04-28 10:16:47.700  1726  4534 I System.out: port:0
+04-28 10:16:47.768  1726  4535 I System.out: port:0
+04-28 10:16:47.835  1726  4536 I System.out: port:0
+04-28 10:16:47.902  1726  4537 I System.out: port:0
+04-28 10:16:47.981  1726  4538 I System.out: port:0
+04-28 10:16:48.048  1726  4539 I System.out: port:0
+04-28 10:16:48.117  1726  4540 I System.out: port:0
+04-28 10:16:48.195  1726  4541 I System.out: port:0
+04-28 10:16:48.254  1726  4542 I System.out: port:0
+04-28 10:16:48.325  1726  4543 I System.out: port:0
+04-28 10:16:48.401  1726  4544 I System.out: port:0
+04-28 10:16:48.470  1726  4545 I System.out: port:0
+04-28 10:16:48.509  1726  2812 E Gb28181Local: GPs GPS  GPS  GPS 0.00.0
+04-28 10:16:48.541  1726  4546 I System.out: port:0
+04-28 10:16:48.624  1726  4547 I System.out: port:0
+04-28 10:16:48.675  1726  4548 I System.out: port:0
+04-28 10:16:48.743  1726  4549 I System.out: port:0
+04-28 10:16:48.832  1726  4550 I System.out: port:0
+04-28 10:16:48.874  1726  4551 I System.out: port:0
+04-28 10:16:48.950  1726  4552 I System.out: port:0
+04-28 10:16:49.031  1726  4553 I System.out: port:0
+04-28 10:16:49.106  1726  4554 I System.out: port:0
+04-28 10:16:49.165  1726  4555 I System.out: port:0
+04-28 10:16:49.247  1726  4556 I System.out: port:0
+04-28 10:16:49.305  1726  4557 I System.out: port:0
+04-28 10:16:49.370  1726  4558 I System.out: port:0
+04-28 10:16:49.453  1726  4559 I System.out: port:0
+04-28 10:16:49.509  1726  2812 E Gb28181Local: GPs GPS  GPS  GPS 0.00.0
+04-28 10:16:49.519  1726  4560 I System.out: port:0
+04-28 10:16:49.592  1726  4561 I System.out: port:0
+04-28 10:16:49.659  1726  4562 I System.out: port:0
+04-28 10:16:49.727  1726  4563 I System.out: port:0
+04-28 10:16:49.795  1726  4564 I System.out: port:0
+04-28 10:16:49.865  1726  4565 I System.out: port:0
+04-28 10:16:49.944  1726  4566 I System.out: port:0
+04-28 10:16:50.005  1726  4567 I System.out: port:0
+04-28 10:16:50.075  1726  4568 I System.out: port:0
+04-28 10:16:50.153  1726  4569 I System.out: port:0
+04-28 10:16:50.218  1726  4570 I System.out: port:0
+04-28 10:16:50.304  1726  4571 I System.out: port:0
+04-28 10:16:50.364  1726  4572 I System.out: port:0
+04-28 10:16:50.423  1726  4573 I System.out: port:0
+04-28 10:16:50.494  1726  4574 I System.out: port:0
+04-28 10:16:50.508  1726  2812 E Gb28181Local: GPs GPS  GPS  GPS 0.00.0
+04-28 10:16:50.560  1726  4575 I System.out: port:0
+04-28 10:16:50.644  1726  4576 I System.out: port:0
+04-28 10:16:50.709  1726  4577 I System.out: port:0
+04-28 10:16:50.777  1726  4578 I System.out: port:0
+04-28 10:16:50.846  1726  4579 I System.out: port:0
+04-28 10:16:50.915  1726  4580 I System.out: port:0
+04-28 10:16:50.985  1726  4581 I System.out: port:0
+04-28 10:16:51.058  1726  4451 I System.out: port:0
+04-28 10:16:51.129  1726  4452 I System.out: port:0
+04-28 10:16:51.189  1726  4453 I System.out: port:0
+04-28 10:16:51.265  1726  4454 I System.out: port:0
+04-28 10:16:51.339  1726  4455 I System.out: port:0
+04-28 10:16:51.406  1726  4456 I System.out: port:0
+04-28 10:16:51.474  1726  4457 I System.out: port:0
+04-28 10:16:51.510  1726  2812 E Gb28181Local: GPs GPS  GPS  GPS 0.00.0
+04-28 10:16:51.559  1726  4458 I System.out: port:0
+04-28 10:16:51.611  1726  4459 I System.out: port:0
+04-28 10:16:51.689  1726  4460 I System.out: port:0
+04-28 10:16:51.773  1726  4461 I System.out: port:0
+04-28 10:16:51.828  1726  4462 I System.out: port:0
+04-28 10:16:51.902  1726  4463 I System.out: port:0
+04-28 10:16:51.968  1726  4464 I System.out: port:0
+04-28 10:16:52.040  1726  4465 I System.out: port:0
+04-28 10:16:52.108  1726  4466 I System.out: port:0
+04-28 10:16:52.186  1726  4467 I System.out: port:0
+04-28 10:16:52.256  1726  4468 I System.out: port:0
+04-28 10:16:52.310  1726  4469 I System.out: port:0
+04-28 10:16:52.390  1726  4470 I System.out: port:0
+04-28 10:16:52.448  1726  4471 I System.out: port:0
+04-28 10:16:52.508  1726  2812 E Gb28181Local: GPs GPS  GPS  GPS 0.00.0
+04-28 10:16:52.526  1726  4472 I System.out: port:0
+04-28 10:16:52.605  1726  4473 I System.out: port:0
+04-28 10:16:52.684  1726  4474 I System.out: port:0
+04-28 10:16:52.749  1726  4475 I System.out: port:0
+04-28 10:16:52.821  1726  4476 I System.out: port:0
+04-28 10:16:52.881  1726  4477 I System.out: port:0
+04-28 10:16:52.948  1726  4478 I System.out: port:0
+04-28 10:16:53.018  1726  4479 I System.out: port:0
+04-28 10:16:53.087  1726  4480 I System.out: port:0
+04-28 10:16:53.163  1726  4481 I System.out: port:0
+04-28 10:16:53.234  1726  4482 I System.out: port:0
+04-28 10:16:53.301  1726  4484 I System.out: port:0
+04-28 10:16:53.367  1726  4485 I System.out: port:0
+04-28 10:16:53.440  1726  4486 I System.out: port:0
+04-28 10:16:53.509  1726  2812 E Gb28181Local: GPs GPS  GPS  GPS 0.00.0
+04-28 10:16:53.514  1726  4487 I System.out: port:0
+04-28 10:16:53.586  1726  4488 I System.out: port:0
+04-28 10:16:53.654  1726  4489 I System.out: port:0
+04-28 10:16:53.722  1726  4490 I System.out: port:0
+04-28 10:16:53.796  1726  4491 I System.out: port:0
+04-28 10:16:53.864  1726  4492 I System.out: port:0
+04-28 10:16:53.940  1726  4493 I System.out: port:0
+04-28 10:16:54.009  1726  4494 I System.out: port:0
+04-28 10:16:54.066  1726  4495 I System.out: port:0
+04-28 10:16:54.138  1726  4496 I System.out: port:0
+04-28 10:16:54.210  1726  4497 I System.out: port:0
+04-28 10:16:54.280  1726  4498 I System.out: port:0
+04-28 10:16:54.346  1726  4499 I System.out: port:0
+04-28 10:16:54.431  1726  4500 I System.out: port:0
+04-28 10:16:54.486  1726  4501 I System.out: port:0
+04-28 10:16:54.508  1726  2812 E Gb28181Local: GPs GPS  GPS  GPS 0.00.0
+04-28 10:16:54.568  1726  4502 I System.out: port:0
+04-28 10:16:54.634  1726  4503 I System.out: port:0
+04-28 10:16:54.709  1726  4504 I System.out: port:0
+04-28 10:16:54.775  1726  4505 I System.out: port:0
+04-28 10:16:54.843  1726  4506 I System.out: port:0
+04-28 10:16:54.909  1726  4507 I System.out: port:0
+04-28 10:16:54.977  1726  4508 I System.out: port:0
+04-28 10:16:55.050  1726  4509 I System.out: port:0
+04-28 10:16:55.116  1726  4510 I System.out: port:0
+04-28 10:16:55.183  1726  4511 I System.out: port:0
+04-28 10:16:55.262  1726  4512 I System.out: port:0
+04-28 10:16:55.326  1726  4513 I System.out: port:0
+04-28 10:16:55.395  1726  4514 I System.out: port:0
+04-28 10:16:55.467  1726  4515 I System.out: port:0
+04-28 10:16:55.509  1726  2812 E Gb28181Local: GPs GPS  GPS  GPS 0.00.0
+04-28 10:16:55.534  1726  4516 I System.out: port:0
+04-28 10:16:55.602  1726  4520 I System.out: port:0
+04-28 10:16:55.682  1726  4521 I System.out: port:0
+04-28 10:16:55.768  1726  4522 I System.out: port:0
+04-28 10:16:55.826  1726  4523 I System.out: port:0
+04-28 10:16:55.892  1726  4524 I System.out: port:0
+04-28 10:16:55.958  1726  4525 I System.out: port:0
+04-28 10:16:56.035  1726  4526 I System.out: port:0
+04-28 10:16:56.105  1726  4527 I System.out: port:0
+04-28 10:16:56.173  1726  4528 I System.out: port:0
+04-28 10:16:56.240  1726  4529 I System.out: port:0
+04-28 10:16:56.313  1726  4530 I System.out: port:0
+04-28 10:16:56.379  1726  4531 I System.out: port:0
+04-28 10:16:56.455  1726  4532 I System.out: port:0
+04-28 10:16:56.510  1726  2812 E Gb28181Local: GPs GPS  GPS  GPS 0.00.0
+04-28 10:16:56.539  1726  4450 I System.out: port:0
+04-28 10:16:56.589  1726  4534 I System.out: port:0
+04-28 10:16:56.665  1726  4535 I System.out: port:0
+04-28 10:16:56.736  1726  4536 I System.out: port:0
+04-28 10:16:56.807  1726  4537 I System.out: port:0
+04-28 10:16:56.876  1726  4538 I System.out: port:0
+04-28 10:16:56.946  1726  4539 I System.out: port:0
+04-28 10:16:57.013  1726  4540 I System.out: port:0
+04-28 10:16:57.085  1726  4541 I System.out: port:0
+04-28 10:16:57.166  1726  4542 I System.out: port:0
+04-28 10:16:57.227  1726  4543 I System.out: port:0
+04-28 10:16:57.299  1726  4544 I System.out: port:0
+04-28 10:16:57.366  1726  4545 I System.out: port:0
+04-28 10:16:57.433  1726  4546 I System.out: port:0
+04-28 10:16:57.502  1726  4547 I System.out: port:0
+04-28 10:16:57.508  1726  2812 E Gb28181Local: GPs GPS  GPS  GPS 0.00.0
+04-28 10:16:57.577  1726  4548 I System.out: port:0
+04-28 10:16:57.651  1726  4549 I System.out: port:0
+04-28 10:16:57.723  1726  4550 I System.out: port:0
+04-28 10:16:57.781  1726  4551 I System.out: port:0
+04-28 10:16:57.848  1726  4552 I System.out: port:0
+04-28 10:16:57.927  1726  4553 I System.out: port:0
+04-28 10:16:58.005  1726  4554 I System.out: port:0
+04-28 10:16:58.065  1726  4555 I System.out: port:0
+04-28 10:16:58.132  1726  4556 I System.out: port:0
+04-28 10:16:58.203  1726  4557 I System.out: port:0
+04-28 10:16:58.291  1726  4558 I System.out: port:0
+04-28 10:16:58.353  1726  4559 I System.out: port:0
+04-28 10:16:58.433  1726  4560 I System.out: port:0
+04-28 10:16:58.491  1726  4561 I System.out: port:0
+04-28 10:16:58.509  1726  2812 E Gb28181Local: GPs GPS  GPS  GPS 0.00.0
+04-28 10:16:58.563  1726  4562 I System.out: port:0
+04-28 10:16:58.636  1726  4563 I System.out: port:0
+04-28 10:16:58.701  1726  4564 I System.out: port:0
+04-28 10:16:58.762  1726  4565 I System.out: port:0
+04-28 10:16:58.845  1726  4566 I System.out: port:0
+04-28 10:16:58.912  1726  4567 I System.out: port:0
+04-28 10:16:58.981  1726  4568 I System.out: port:0
+04-28 10:16:59.051  1726  4569 I System.out: port:0
+04-28 10:16:59.123  1726  4570 I System.out: port:0
+04-28 10:16:59.183  1726  4571 I System.out: port:0
+04-28 10:16:59.272  1726  4572 I System.out: port:0
+04-28 10:16:59.325  1726  4573 I System.out: port:0
+04-28 10:16:59.393  1726  4574 I System.out: port:0
+04-28 10:16:59.466  1726  4575 I System.out: port:0
+04-28 10:16:59.508  1726  2812 E Gb28181Local: GPs GPS  GPS  GPS 0.00.0
+04-28 10:16:59.532  1726  4576 I System.out: port:0
+04-28 10:16:59.589  1726  3261 I System.out: GB28181--->>>-----C++回调java:状态回调 回调函数--- sysState:2 connState:2heartbeatExceptionCount:0 liveState:2 talkState:0 videotapeState:0videotapedownloadState:0---------------------
+04-28 10:16:59.589  1726  3261 E Gb28181Local: onStateUpdate sysState:2,connState:2,heartbeatExceptionCount:0,liveState:2,talkState:0,videotapeState:0,videotapeDownloadState:0
+04-28 10:16:59.602  1726  4577 I System.out: port:0
+04-28 10:16:59.608  1726  4592 I System.out: GB28181--->>>-----C++回调java:状态回调 回调函数--- sysState:2 connState:2heartbeatExceptionCount:0 liveState:0 talkState:0 videotapeState:0videotapedownloadState:0---------------------
+04-28 10:16:59.608  1726  4592 E Gb28181Local: onStateUpdate sysState:2,connState:2,heartbeatExceptionCount:0,liveState:0,talkState:0,videotapeState:0,videotapeDownloadState:0
+04-28 10:16:59.692  1726  3261 I System.out: GB28181--->>>-----C++回调java:状态回调 回调函数--- sysState:2 connState:2heartbeatExceptionCount:0 liveState:0 talkState:0 videotapeState:0videotapedownloadState:0---------------------
+04-28 10:16:59.692  1726  3261 E Gb28181Local: onStateUpdate sysState:2,connState:2,heartbeatExceptionCount:0,liveState:0,talkState:0,videotapeState:0,videotapeDownloadState:0
+04-28 10:16:59.694  1726  3261 I System.out: GB28181--->>>-----C++回调java:状态回调 回调函数--- sysState:2 connState:2heartbeatExceptionCount:0 liveState:0 talkState:0 videotapeState:0videotapedownloadState:0---------------------
+04-28 10:16:59.694  1726  3261 E Gb28181Local: onStateUpdate sysState:2,connState:2,heartbeatExceptionCount:0,liveState:0,talkState:0,videotapeState:0,videotapeDownloadState:0
+04-28 10:17:00.508  1726  2812 E Gb28181Local: GPs GPS  GPS  GPS 0.00.0
+04-28 10:17:00.975  1726  3261 I System.out: GB28181--->>>-----C++回调java:状态回调 回调函数--- sysState:2 connState:2heartbeatExceptionCount:0 liveState:0 talkState:0 videotapeState:0videotapedownloadState:0---------------------
+04-28 10:17:00.975  1726  3261 E Gb28181Local: onStateUpdate sysState:2,connState:2,heartbeatExceptionCount:0,liveState:0,talkState:0,videotapeState:0,videotapeDownloadState:0
+04-28 10:17:01.509  1726  2812 E Gb28181Local: GPs GPS  GPS  GPS 0.00.0
+04-28 10:17:02.508  1726  2812 E Gb28181Local: GPs GPS  GPS  GPS 0.00.0
+04-28 10:17:03.509  1726  2812 E Gb28181Local: GPs GPS  GPS  GPS 0.00.0
+04-28 10:17:04.396  1726  3261 I System.out: GB28181--->>>-----C++回调java:状态回调 回调函数--- sysState:2 connState:2heartbeatExceptionCount:0 liveState:0 talkState:0 videotapeState:0videotapedownloadState:0---------------------
+04-28 10:17:04.396  1726  3261 E Gb28181Local: onStateUpdate sysState:2,connState:2,heartbeatExceptionCount:0,liveState:0,talkState:0,videotapeState:0,videotapeDownloadState:0
+04-28 10:17:04.403  1726  3261 I System.out: GB28181--->>>-----C++回调java:状态回调 回调函数--- sysState:2 connState:2heartbeatExceptionCount:0 liveState:0 talkState:0 videotapeState:0videotapedownloadState:0---------------------
+04-28 10:17:04.403  1726  3261 E Gb28181Local: onStateUpdate sysState:2,connState:2,heartbeatExceptionCount:0,liveState:0,talkState:0,videotapeState:0,videotapeDownloadState:0
+04-28 10:17:04.487  1726  3261 I System.out: GB28181--->>>-----C++回调java:状态回调 回调函数--- sysState:2 connState:2heartbeatExceptionCount:0 liveState:0 talkState:0 videotapeState:0videotapedownloadState:0---------------------
+04-28 10:17:04.487  1726  3261 E Gb28181Local: onStateUpdate sysState:2,connState:2,heartbeatExceptionCount:0,liveState:0,talkState:0,videotapeState:0,videotapeDownloadState:0
+04-28 10:17:04.498  1726  4619 I System.out: GB28181--->>>-----C++回调java:状态回调 回调函数--- sysState:2 connState:2heartbeatExceptionCount:0 liveState:2 talkState:0 videotapeState:0videotapedownloadState:0---------------------
+04-28 10:17:04.498  1726  4619 E Gb28181Local: onStateUpdate sysState:2,connState:2,heartbeatExceptionCount:0,liveState:2,talkState:0,videotapeState:0,videotapeDownloadState:0
+04-28 10:17:04.508  1726  2812 E Gb28181Local: GPs GPS  GPS  GPS 0.00.0
+04-28 10:17:04.525  1726  1726 E DCWLog-dcwAvcEncoder: mediaCodec----------------configure完成，isFrant false
+04-28 10:17:04.724  1726  4579 I System.out: port:0
+04-28 10:17:04.743  1726  4580 I System.out: port:0
+04-28 10:17:04.780  1726  4581 I System.out: port:0
+04-28 10:17:04.785  1726  4451 I System.out: port:0
+04-28 10:17:04.855  1726  4452 I System.out: port:0
+04-28 10:17:04.929  1726  4453 I System.out: port:0
+04-28 10:17:05.065  1726  4454 I System.out: port:0
+04-28 10:17:05.144  1726  4455 I System.out: port:0
+04-28 10:17:05.206  1726  4456 I System.out: port:0
+04-28 10:17:05.268  1726  4457 I System.out: port:0
+04-28 10:17:05.342  1726  4458 I System.out: port:0
+04-28 10:17:05.403  1726  4459 I System.out: port:0
+04-28 10:17:05.471  1726  4460 I System.out: port:0
+04-28 10:17:05.508  1726  2812 E Gb28181Local: GPs GPS  GPS  GPS 0.00.0
+04-28 10:17:05.542  1726  4461 I System.out: port:0
+04-28 10:17:05.594  1726  4462 I System.out: port:0
+04-28 10:17:05.681  1726  4463 I System.out: port:0
+04-28 10:17:05.748  1726  4464 I System.out: port:0
+04-28 10:17:05.817  1726  4465 I System.out: port:0
+04-28 10:17:05.897  1726  4466 I System.out: port:0
+04-28 10:17:05.958  1726  4467 I System.out: port:0
+04-28 10:17:06.032  1726  4468 I System.out: port:0
+04-28 10:17:06.110  1726  4469 I System.out: port:0
+04-28 10:17:06.157  1726  4470 I System.out: port:0
+04-28 10:17:06.226  1726  4471 I System.out: port:0
+04-28 10:17:06.302  1726  4472 I System.out: port:0
+04-28 10:17:06.373  1726  4473 I System.out: port:0
+04-28 10:17:06.445  1726  4474 I System.out: port:0
+04-28 10:17:06.509  1726  2812 E Gb28181Local: GPs GPS  GPS  GPS 0.00.0
+04-28 10:17:06.511  1726  4475 I System.out: port:0
+04-28 10:17:06.579  1726  4476 I System.out: port:0
+04-28 10:17:06.650  1726  4477 I System.out: port:0
+04-28 10:17:06.730  1726  4478 I System.out: port:0
+04-28 10:17:06.788  1726  4479 I System.out: port:0
+04-28 10:17:06.867  1726  4480 I System.out: port:0
+04-28 10:17:06.941  1726  4481 I System.out: port:0
+04-28 10:17:07.000  1726  4482 I System.out: port:0
+04-28 10:17:07.078  1726  4484 I System.out: port:0
+04-28 10:17:07.148  1726  4485 I System.out: port:0
+04-28 10:17:07.202  1726  4486 I System.out: port:0
+04-28 10:17:07.283  1726  4487 I System.out: port:0
+04-28 10:17:07.352  1726  4488 I System.out: port:0
+04-28 10:17:07.426  1726  4489 I System.out: port:0
+04-28 10:17:07.484  1726  4490 I System.out: port:0
+04-28 10:17:07.508  1726  2812 E Gb28181Local: GPs GPS  GPS  GPS 0.00.0
+04-28 10:17:07.558  1726  4491 I System.out: port:0
+04-28 10:17:07.630  1726  4492 I System.out: port:0
+04-28 10:17:07.698  1726  4493 I System.out: port:0
+04-28 10:17:07.767  1726  4494 I System.out: port:0
+04-28 10:17:07.835  1726  4495 I System.out: port:0
+04-28 10:17:07.912  1726  4496 I System.out: port:0
+04-28 10:17:07.983  1726  4497 I System.out: port:0
+04-28 10:17:08.053  1726  4498 I System.out: port:0
+04-28 10:17:08.127  1726  4499 I System.out: port:0
+04-28 10:17:08.198  1726  4500 I System.out: port:0
+04-28 10:17:08.272  1726  4501 I System.out: port:0
+04-28 10:17:08.335  1726  4502 I System.out: port:0
+04-28 10:17:08.407  1726  4503 I System.out: port:0
+04-28 10:17:08.476  1726  4504 I System.out: port:0
+04-28 10:17:08.509  1726  2812 E Gb28181Local: GPs GPS  GPS  GPS 0.00.0
+04-28 10:17:08.549  1726  4505 I System.out: port:0
+04-28 10:17:08.618  1726  4506 I System.out: port:0
+04-28 10:17:08.684  1726  4507 I System.out: port:0
+04-28 10:17:08.744  1726  4508 I System.out: port:0
+04-28 10:17:08.820  1726  4509 I System.out: port:0
+04-28 10:17:08.889  1726  4510 I System.out: port:0
+04-28 10:17:08.957  1726  4511 I System.out: port:0
+04-28 10:17:09.032  1726  4512 I System.out: port:0
+04-28 10:17:09.101  1726  4513 I System.out: port:0
+04-28 10:17:09.170  1726  4514 I System.out: port:0
+04-28 10:17:09.240  1726  4515 I System.out: port:0
+04-28 10:17:09.309  1726  4516 I System.out: port:0
+04-28 10:17:09.378  1726  4520 I System.out: port:0
+04-28 10:17:09.466  1726  4521 I System.out: port:0
+04-28 10:17:09.508  1726  2812 E Gb28181Local: GPs GPS  GPS  GPS 0.00.0
+04-28 10:17:09.528  1726  4522 I System.out: port:0
+04-28 10:17:09.583  1726  4523 I System.out: port:0
+04-28 10:17:09.672  1726  4524 I System.out: port:0
+04-28 10:17:09.729  1726  4525 I System.out: port:0
+04-28 10:17:09.813  1726  4526 I System.out: port:0
+04-28 10:17:09.881  1726  4527 I System.out: port:0
+04-28 10:17:09.936  1726  4528 I System.out: port:0
+04-28 10:17:10.014  1726  4529 I System.out: port:0
+04-28 10:17:10.094  1726  4530 I System.out: port:0
+04-28 10:17:10.149  1726  4531 I System.out: port:0
+04-28 10:17:10.215  1726  4532 I System.out: port:0
+04-28 10:17:10.305  1726  4450 I System.out: port:0
+04-28 10:17:10.353  1726  4534 I System.out: port:0
+04-28 10:17:10.431  1726  4535 I System.out: port:0
+04-28 10:17:10.501  1726  4536 I System.out: port:0
+04-28 10:17:10.508  1726  2812 E Gb28181Local: GPs GPS  GPS  GPS 0.00.0
+04-28 10:17:10.561  1726  4537 I System.out: port:0
+04-28 10:17:10.640  1726  4538 I System.out: port:0
+04-28 10:17:10.732  1726  4539 I System.out: port:0
+04-28 10:17:10.778  1726  4540 I System.out: port:0
+04-28 10:17:10.861  1726  4541 I System.out: port:0
+04-28 10:17:10.920  1726  4542 I System.out: port:0
+04-28 10:17:10.987  1726  4543 I System.out: port:0
+04-28 10:17:11.066  1726  4544 I System.out: port:0
+04-28 10:17:11.138  1726  4545 I System.out: port:0
+04-28 10:17:11.206  1726  4546 I System.out: port:0
+04-28 10:17:11.279  1726  4547 I System.out: port:0
+04-28 10:17:11.340  1726  4548 I System.out: port:0
+04-28 10:17:11.421  1726  4549 I System.out: port:0
+04-28 10:17:11.490  1726  4550 I System.out: port:0
+04-28 10:17:11.508  1726  2812 E Gb28181Local: GPs GPS  GPS  GPS 0.00.0
+04-28 10:17:11.550  1726  4551 I System.out: port:0
+04-28 10:17:11.623  1726  4552 I System.out: port:0
+04-28 10:17:11.684  1726  4553 I System.out: port:0
+04-28 10:17:11.762  1726  4554 I System.out: port:0
+04-28 10:17:11.828  1726  4555 I System.out: port:0
+04-28 10:17:11.910  1726  4556 I System.out: port:0
+04-28 10:17:11.968  1726  4557 I System.out: port:0
+04-28 10:17:12.035  1726  4558 I System.out: port:0
+04-28 10:17:12.104  1726  4559 I System.out: port:0
+04-28 10:17:12.197  1726  4560 I System.out: port:0
+04-28 10:17:12.253  1726  4561 I System.out: port:0
+04-28 10:17:12.323  1726  4562 I System.out: port:0
+04-28 10:17:12.406  1726  4563 I System.out: port:0
+04-28 10:17:12.464  1726  4564 I System.out: port:0
+04-28 10:17:12.508  1726  2812 E Gb28181Local: GPs GPS  GPS  GPS 0.00.0
+04-28 10:17:12.524  1726  4565 I System.out: port:0
+04-28 10:17:12.621  1726  4566 I System.out: port:0
+04-28 10:17:12.670  1726  4567 I System.out: port:0
+04-28 10:17:12.742  1726  4568 I System.out: port:0
+04-28 10:17:12.814  1726  4569 I System.out: port:0
+04-28 10:17:12.877  1726  4570 I System.out: port:0
+04-28 10:17:12.950  1726  4571 I System.out: port:0
+04-28 10:17:13.035  1726  4572 I System.out: port:0
+04-28 10:17:13.092  1726  4573 I System.out: port:0
+04-28 10:17:13.160  1726  4574 I System.out: port:0
+04-28 10:17:13.231  1726  4575 I System.out: port:0
+04-28 10:17:13.302  1726  4576 I System.out: port:0
+04-28 10:17:13.370  1726  4577 I System.out: port:0
+04-28 10:17:13.443  1726  4533 I System.out: port:0
+04-28 10:17:13.508  1726  2812 E Gb28181Local: GPs GPS  GPS  GPS 0.00.0
+04-28 10:17:13.510  1726  4579 I System.out: port:0
+04-28 10:17:13.581  1726  4580 I System.out: port:0
+04-28 10:17:13.658  1726  4581 I System.out: port:0
+04-28 10:17:13.734  1726  4451 I System.out: port:0
+04-28 10:17:13.792  1726  4452 I System.out: port:0
+04-28 10:17:13.860  1726  4453 I System.out: port:0
+04-28 10:17:13.940  1726  4454 I System.out: port:0
+04-28 10:17:14.010  1726  4455 I System.out: port:0
+04-28 10:17:14.082  1726  4456 I System.out: port:0
+04-28 10:17:14.141  1726  4457 I System.out: port:0
+04-28 10:17:14.224  1726  4458 I System.out: port:0
+04-28 10:17:14.279  1726  4459 I System.out: port:0
+04-28 10:17:14.365  1726  4460 I System.out: port:0
+04-28 10:17:14.431  1726  4461 I System.out: port:0
+04-28 10:17:14.490  1726  4462 I System.out: port:0
+04-28 10:17:14.508  1726  2812 E Gb28181Local: GPs GPS  GPS  GPS 0.00.0
+04-28 10:17:14.557  1726  4463 I System.out: port:0
+04-28 10:17:14.649  1726  4464 I System.out: port:0
+04-28 10:17:14.698  1726  4465 I System.out: port:0
+04-28 10:17:14.765  1726  4466 I System.out: port:0
+04-28 10:17:14.846  1726  4467 I System.out: port:0
+04-28 10:17:14.910  1726  4468 I System.out: port:0
+04-28 10:17:14.983  1726  4469 I System.out: port:0
+04-28 10:17:15.053  1726  4470 I System.out: port:0
+04-28 10:17:15.123  1726  4471 I System.out: port:0
+04-28 10:17:15.189  1726  4472 I System.out: port:0
+04-28 10:17:15.264  1726  4473 I System.out: port:0
+04-28 10:17:15.325  1726  4474 I System.out: port:0
+04-28 10:17:15.396  1726  4475 I System.out: port:0
+04-28 10:17:15.468  1726  4476 I System.out: port:0
+04-28 10:17:15.509  1726  2812 E Gb28181Local: GPs GPS  GPS  GPS 0.00.0
+04-28 10:17:15.535  1726  4477 I System.out: port:0
+04-28 10:17:15.608  1726  4478 I System.out: port:0
+04-28 10:17:15.672  1726  4479 I System.out: port:0
+04-28 10:17:15.750  1726  4480 I System.out: port:0
+04-28 10:17:15.840  1726  4481 I System.out: port:0
+04-28 10:17:15.888  1726  4482 I System.out: port:0
+04-28 10:17:15.954  1726  4484 I System.out: port:0
+04-28 10:17:16.049  1726  4485 I System.out: port:0
+04-28 10:17:16.092  1726  4486 I System.out: port:0
+04-28 10:17:16.171  1726  4487 I System.out: port:0
+04-28 10:17:16.252  1726  4488 I System.out: port:0
+04-28 10:17:16.310  1726  4489 I System.out: port:0
+04-28 10:17:16.376  1726  4490 I System.out: port:0
+04-28 10:17:16.465  1726  4491 I System.out: port:0
+04-28 10:17:16.509  1726  2812 E Gb28181Local: GPs GPS  GPS  GPS 0.00.0
+04-28 10:17:16.518  1726  4492 I System.out: port:0
+04-28 10:17:16.585  1726  4493 I System.out: port:0
+04-28 10:17:16.667  1726  4494 I System.out: port:0
+04-28 10:17:16.730  1726  4495 I System.out: port:0
+04-28 10:17:16.797  1726  4496 I System.out: port:0
+04-28 10:17:16.876  1726  4497 I System.out: port:0
+04-28 10:17:16.939  1726  4498 I System.out: port:0
+04-28 10:17:17.006  1726  4499 I System.out: port:0
+04-28 10:17:17.085  1726  4500 I System.out: port:0
+04-28 10:17:17.155  1726  4501 I System.out: port:0
+04-28 10:17:17.224  1726  4502 I System.out: port:0
+04-28 10:17:17.309  1726  4503 I System.out: port:0
+04-28 10:17:17.356  1726  4504 I System.out: port:0
+04-28 10:17:17.424  1726  4505 I System.out: port:0
+04-28 10:17:17.501  1726  4506 I System.out: port:0
+04-28 10:17:17.508  1726  2812 E Gb28181Local: GPs GPS  GPS  GPS 0.00.0
+04-28 10:17:17.573  1726  4507 I System.out: port:0
+04-28 10:17:17.643  1726  4508 I System.out: port:0
+04-28 10:17:17.709  1726  4509 I System.out: port:0
+04-28 10:17:17.776  1726  4510 I System.out: port:0
+04-28 10:17:17.843  1726  4511 I System.out: port:0
+04-28 10:17:17.925  1726  4512 I System.out: port:0
+04-28 10:17:17.993  1726  4513 I System.out: port:0
+04-28 10:17:18.066  1726  4514 I System.out: port:0
+04-28 10:17:18.132  1726  4515 I System.out: port:0
+04-28 10:17:18.200  1726  4516 I System.out: port:0
+04-28 10:17:18.270  1726  4520 I System.out: port:0
+04-28 10:17:18.352  1726  4521 I System.out: port:0
+04-28 10:17:18.411  1726  4522 I System.out: port:0
+04-28 10:17:18.477  1726  4523 I System.out: port:0
+04-28 10:17:18.508  1726  2812 E Gb28181Local: GPs GPS  GPS  GPS 0.00.0
+04-28 10:17:18.550  1726  4524 I System.out: port:0
+04-28 10:17:18.619  1726  4525 I System.out: port:0
+04-28 10:17:18.689  1726  4526 I System.out: port:0
+04-28 10:17:18.758  1726  4527 I System.out: port:0
+04-28 10:17:18.827  1726  4528 I System.out: port:0
+04-28 10:17:18.897  1726  4529 I System.out: port:0
+04-28 10:17:18.967  1726  4530 I System.out: port:0
+04-28 10:17:19.047  1726  4531 I System.out: port:0
+04-28 10:17:19.115  1726  4532 I System.out: port:0
+04-28 10:17:19.183  1726  4450 I System.out: port:0
+04-28 10:17:19.249  1726  4534 I System.out: port:0
+04-28 10:17:19.316  1726  4535 I System.out: port:0
+04-28 10:17:19.401  1726  4536 I System.out: port:0
+04-28 10:17:19.462  1726  4537 I System.out: port:0
+04-28 10:17:19.508  1726  2812 E Gb28181Local: GPs GPS  GPS  GPS 0.00.0
+04-28 10:17:19.530  1726  4538 I System.out: port:0
+04-28 10:17:19.598  1726  4539 I System.out: port:0
+04-28 10:17:19.666  1726  4540 I System.out: port:0
+04-28 10:17:19.745  1726  4541 I System.out: port:0
+04-28 10:17:19.818  1726  4542 I System.out: port:0
+04-28 10:17:19.876  1726  4543 I System.out: port:0
+04-28 10:17:19.954  1726  4544 I System.out: port:0
+04-28 10:17:20.023  1726  4545 I System.out: port:0
+04-28 10:17:20.093  1726  4546 I System.out: port:0
+04-28 10:17:20.159  1726  4547 I System.out: port:0
+04-28 10:17:20.228  1726  4548 I System.out: port:0
+04-28 10:17:20.296  1726  4549 I System.out: port:0
+04-28 10:17:20.380  1726  4550 I System.out: port:0
+04-28 10:17:20.440  1726  4551 I System.out: port:0
+04-28 10:17:20.508  1726  4552 I System.out: port:0
+04-28 10:17:20.509  1726  2812 E Gb28181Local: GPs GPS  GPS  GPS 0.00.0
+04-28 10:17:20.582  1726  4553 I System.out: port:0
+04-28 10:17:20.649  1726  4554 I System.out: port:0
+04-28 10:17:20.720  1726  4555 I System.out: port:0
+04-28 10:17:20.790  1726  4556 I System.out: port:0
+04-28 10:17:20.858  1726  4557 I System.out: port:0
+04-28 10:17:20.925  1726  4558 I System.out: port:0
+04-28 10:17:21.005  1726  4559 I System.out: port:0
+04-28 10:17:21.069  1726  4560 I System.out: port:0
+04-28 10:17:21.137  1726  4561 I System.out: port:0
+04-28 10:17:21.206  1726  4562 I System.out: port:0
+04-28 10:17:21.274  1726  4563 I System.out: port:0
+04-28 10:17:21.344  1726  4564 I System.out: port:0
+04-28 10:17:21.421  1726  4565 I System.out: port:0
+04-28 10:17:21.489  1726  4566 I System.out: port:0
+04-28 10:17:21.508  1726  2812 E Gb28181Local: GPs GPS  GPS  GPS 0.00.0
+04-28 10:17:21.558  1726  4567 I System.out: port:0
+04-28 10:17:21.626  1726  4568 I System.out: port:0
+04-28 10:17:21.697  1726  4569 I System.out: port:0
+04-28 10:17:21.768  1726  4570 I System.out: port:0
+04-28 10:17:21.836  1726  4571 I System.out: port:0
+04-28 10:17:21.906  1726  4572 I System.out: port:0
+04-28 10:17:21.979  1726  4573 I System.out: port:0
+04-28 10:17:22.050  1726  4574 I System.out: port:0
+04-28 10:17:22.122  1726  4575 I System.out: port:0
+04-28 10:17:22.182  1726  4576 I System.out: port:0
+04-28 10:17:22.261  1726  4577 I System.out: port:0
+04-28 10:17:22.328  1726  4533 I System.out: port:0
+04-28 10:17:22.404  1726  4579 I System.out: port:0
+04-28 10:17:22.477  1726  4580 I System.out: port:0
+04-28 10:17:22.508  1726  2812 E Gb28181Local: GPs GPS  GPS  GPS 0.00.0
+04-28 10:17:22.534  1726  4581 I System.out: port:0
+04-28 10:17:22.618  1726  4451 I System.out: port:0
+04-28 10:17:22.694  1726  4452 I System.out: port:0
+04-28 10:17:22.753  1726  4453 I System.out: port:0
+04-28 10:17:22.816  1726  4454 I System.out: port:0
+04-28 10:17:22.886  1726  4455 I System.out: port:0
+04-28 10:17:22.955  1726  4456 I System.out: port:0
+04-28 10:17:23.024  1726  4457 I System.out: port:0
+04-28 10:17:23.100  1726  4458 I System.out: port:0
+04-28 10:17:23.169  1726  4459 I System.out: port:0
+04-28 10:17:23.235  1726  4460 I System.out: port:0
+04-28 10:17:23.309  1726  4461 I System.out: port:0
+04-28 10:17:23.378  1726  4462 I System.out: port:0
+04-28 10:17:23.444  1726  4463 I System.out: port:0
+04-28 10:17:23.509  1726  2812 E Gb28181Local: GPs GPS  GPS  GPS 0.00.0
+04-28 10:17:23.528  1726  4464 I System.out: port:0
+04-28 10:17:23.586  1726  4465 I System.out: port:0
+04-28 10:17:23.659  1726  4466 I System.out: port:0
+04-28 10:17:23.728  1726  4467 I System.out: port:0
+04-28 10:17:23.791  1726  4468 I System.out: port:0
+04-28 10:17:23.869  1726  4469 I System.out: port:0
+04-28 10:17:23.939  1726  4470 I System.out: port:0
+04-28 10:17:24.012  1726  4471 I System.out: port:0
+04-28 10:17:24.072  1726  4472 I System.out: port:0
+04-28 10:17:24.146  1726  4473 I System.out: port:0
+04-28 10:17:24.213  1726  4474 I System.out: port:0
+04-28 10:17:24.283  1726  4475 I System.out: port:0
+04-28 10:17:24.356  1726  4476 I System.out: port:0
+04-28 10:17:24.423  1726  4477 I System.out: port:0
+04-28 10:17:24.495  1726  4478 I System.out: port:0
+04-28 10:17:24.509  1726  2812 E Gb28181Local: GPs GPS  GPS  GPS 0.00.0
+04-28 10:17:24.573  1726  4479 I System.out: port:0
+04-28 10:17:24.632  1726  4480 I System.out: port:0
+04-28 10:17:24.720  1726  4481 I System.out: port:0
+04-28 10:17:24.777  1726  4482 I System.out: port:0
+04-28 10:17:24.845  1726  4484 I System.out: port:0
+04-28 10:17:24.914  1726  4485 I System.out: port:0
+04-28 10:17:24.985  1726  4486 I System.out: port:0
+04-28 10:17:25.052  1726  4487 I System.out: port:0
+04-28 10:17:25.121  1726  4488 I System.out: port:0
+04-28 10:17:25.192  1726  4489 I System.out: port:0
+04-28 10:17:25.261  1726  4490 I System.out: port:0
+04-28 10:17:25.347  1726  4491 I System.out: port:0
+04-28 10:17:25.408  1726  4492 I System.out: port:0
+04-28 10:17:25.482  1726  4493 I System.out: port:0
+04-28 10:17:25.508  1726  2812 E Gb28181Local: GPs GPS  GPS  GPS 0.00.0
+04-28 10:17:25.544  1726  4494 I System.out: port:0
+04-28 10:17:25.611  1726  4495 I System.out: port:0
+04-28 10:17:25.690  1726  4496 I System.out: port:0
+04-28 10:17:25.766  1726  4497 I System.out: port:0
+04-28 10:17:25.824  1726  4498 I System.out: port:0
+04-28 10:17:25.892  1726  4499 I System.out: port:0
+04-28 10:17:25.966  1726  4500 I System.out: port:0
+04-28 10:17:26.033  1726  4501 I System.out: port:0
+04-28 10:17:26.105  1726  4502 I System.out: port:0
+04-28 10:17:26.170  1726  4503 I System.out: port:0
+04-28 10:17:26.237  1726  4504 I System.out: port:0
+04-28 10:17:26.315  1726  4505 I System.out: port:0
+04-28 10:17:26.397  1726  4506 I System.out: port:0
+04-28 10:17:26.455  1726  4507 I System.out: port:0
+04-28 10:17:26.509  1726  2812 E Gb28181Local: GPs GPS  GPS  GPS 0.00.0
+04-28 10:17:26.524  1726  4508 I System.out: port:0
+04-28 10:17:26.597  1726  4509 I System.out: port:0
+04-28 10:17:26.668  1726  4510 I System.out: port:0
+04-28 10:17:26.742  1726  4511 I System.out: port:0
+04-28 10:17:26.801  1726  4512 I System.out: port:0
+04-28 10:17:26.881  1726  4513 I System.out: port:0
+04-28 10:17:26.944  1726  4514 I System.out: port:0
+04-28 10:17:27.015  1726  4515 I System.out: port:0
+04-28 10:17:27.078  1726  4516 I System.out: port:0
+04-28 10:17:27.158  1726  4520 I System.out: port:0
+04-28 10:17:27.225  1726  4521 I System.out: port:0
+04-28 10:17:27.292  1726  4522 I System.out: port:0
+04-28 10:17:27.366  1726  4523 I System.out: port:0
+04-28 10:17:27.433  1726  4524 I System.out: port:0
+04-28 10:17:27.501  1726  4525 I System.out: port:0
+04-28 10:17:27.508  1726  2812 E Gb28181Local: GPs GPS  GPS  GPS 0.00.0
+04-28 10:17:27.569  1726  4526 I System.out: port:0
+04-28 10:17:27.648  1726  4527 I System.out: port:0
+04-28 10:17:27.720  1726  4528 I System.out: port:0
+04-28 10:17:27.786  1726  4529 I System.out: port:0
+04-28 10:17:27.865  1726  4530 I System.out: port:0
+04-28 10:17:27.934  1726  4531 I System.out: port:0
+04-28 10:17:28.004  1726  4532 I System.out: port:0
+04-28 10:17:28.076  1726  4450 I System.out: port:0
+04-28 10:17:28.143  1726  4534 I System.out: port:0
+04-28 10:17:28.204  1726  4535 I System.out: port:0
+04-28 10:17:28.281  1726  4536 I System.out: port:0
+04-28 10:17:28.350  1726  4537 I System.out: port:0
+04-28 10:17:28.421  1726  4538 I System.out: port:0
+04-28 10:17:28.489  1726  4539 I System.out: port:0
+04-28 10:17:28.508  1726  2812 E Gb28181Local: GPs GPS  GPS  GPS 0.00.0
+04-28 10:17:28.557  1726  4540 I System.out: port:0
+04-28 10:17:28.624  1726  4541 I System.out: port:0
+04-28 10:17:28.698  1726  4542 I System.out: port:0
+04-28 10:17:28.773  1726  4543 I System.out: port:0
+04-28 10:17:28.846  1726  4544 I System.out: port:0
+04-28 10:17:28.914  1726  4545 I System.out: port:0
+04-28 10:17:28.983  1726  4546 I System.out: port:0
+04-28 10:17:29.053  1726  4547 I System.out: port:0
+04-28 10:17:29.125  1726  4548 I System.out: port:0
+04-28 10:17:29.191  1726  4549 I System.out: port:0
+04-28 10:17:29.266  1726  4550 I System.out: port:0
+04-28 10:17:29.334  1726  4551 I System.out: port:0
+04-28 10:17:29.402  1726  4552 I System.out: port:0
+04-28 10:17:29.458  1726  4553 I System.out: port:0
+04-28 10:17:29.509  1726  2812 E Gb28181Local: GPs GPS  GPS  GPS 0.00.0
+04-28 10:17:29.554  1726  4554 I System.out: port:0
+04-28 10:17:29.604  1726  4555 I System.out: port:0
+04-28 10:17:29.674  1726  4556 I System.out: port:0
+04-28 10:17:29.758  1726  4557 I System.out: port:0
+04-28 10:17:29.814  1726  4558 I System.out: port:0
+04-28 10:17:29.888  1726  4559 I System.out: port:0
+04-28 10:17:29.957  1726  4560 I System.out: port:0
+04-28 10:17:30.047  1726  4561 I System.out: port:0
+04-28 10:17:30.104  1726  4562 I System.out: port:0
+04-28 10:17:30.161  1726  4563 I System.out: port:0
+04-28 10:17:30.239  1726  4564 I System.out: port:0
+04-28 10:17:30.307  1726  4565 I System.out: port:0
+04-28 10:17:30.375  1726  4566 I System.out: port:0
+04-28 10:17:30.452  1726  4567 I System.out: port:0
+04-28 10:17:30.509  1726  2812 E Gb28181Local: GPs GPS  GPS  GPS 0.00.0
+04-28 10:17:30.524  1726  4568 I System.out: port:0
+04-28 10:17:30.588  1726  4569 I System.out: port:0
+04-28 10:17:30.671  1726  4570 I System.out: port:0
+04-28 10:17:30.732  1726  4571 I System.out: port:0
+04-28 10:17:30.795  1726  4572 I System.out: port:0
+04-28 10:17:30.866  1726  4573 I System.out: port:0
+04-28 10:17:30.875  1726  3261 I System.out: GB28181--->>>-----C++回调java:状态回调 回调函数--- sysState:2 connState:2heartbeatExceptionCount:0 liveState:2 talkState:0 videotapeState:0videotapedownloadState:0---------------------
+04-28 10:17:30.875  1726  3261 E Gb28181Local: onStateUpdate sysState:2,connState:2,heartbeatExceptionCount:0,liveState:2,talkState:0,videotapeState:0,videotapeDownloadState:0
+04-28 10:17:30.886  1726  4619 I System.out: GB28181--->>>-----C++回调java:状态回调 回调函数--- sysState:2 connState:2heartbeatExceptionCount:0 liveState:0 talkState:0 videotapeState:0videotapedownloadState:0---------------------
+04-28 10:17:30.886  1726  4619 E Gb28181Local: onStateUpdate sysState:2,connState:2,heartbeatExceptionCount:0,liveState:0,talkState:0,videotapeState:0,videotapeDownloadState:0
+04-28 10:17:30.979  1726  3261 I System.out: GB28181--->>>-----C++回调java:状态回调 回调函数--- sysState:2 connState:2heartbeatExceptionCount:0 liveState:0 talkState:0 videotapeState:0videotapedownloadState:0---------------------
+04-28 10:17:30.979  1726  3261 E Gb28181Local: onStateUpdate sysState:2,connState:2,heartbeatExceptionCount:0,liveState:0,talkState:0,videotapeState:0,videotapeDownloadState:0
+04-28 10:17:30.983  1726  3261 I System.out: GB28181--->>>-----C++回调java:状态回调 回调函数--- sysState:2 connState:2heartbeatExceptionCount:0 liveState:0 talkState:0 videotapeState:0videotapedownloadState:0---------------------
+04-28 10:17:30.984  1726  3261 E Gb28181Local: onStateUpdate sysState:2,connState:2,heartbeatExceptionCount:0,liveState:0,talkState:0,videotapeState:0,videotapeDownloadState:0
+04-28 10:17:31.509  1726  2812 E Gb28181Local: GPs GPS  GPS  GPS 0.00.0
+04-28 10:17:32.508  1726  2812 E Gb28181Local: GPs GPS  GPS  GPS 0.00.0
+04-28 10:17:33.509  1726  2812 E Gb28181Local: GPs GPS  GPS  GPS 0.00.0
+04-28 10:17:34.092  1726  3261 I System.out: GB28181--->>>-----C++回调java:状态回调 回调函数--- sysState:2 connState:2heartbeatExceptionCount:0 liveState:0 talkState:0 videotapeState:0videotapedownloadState:0---------------------
+04-28 10:17:34.092  1726  3261 E Gb28181Local: onStateUpdate sysState:2,connState:2,heartbeatExceptionCount:0,liveState:0,talkState:0,videotapeState:0,videotapeDownloadState:0
+04-28 10:17:34.097  1726  3261 I System.out: GB28181--->>>-----C++回调java:状态回调 回调函数--- sysState:2 connState:2heartbeatExceptionCount:0 liveState:0 talkState:0 videotapeState:0videotapedownloadState:0---------------------
+04-28 10:17:34.098  1726  3261 E Gb28181Local: onStateUpdate sysState:2,connState:2,heartbeatExceptionCount:0,liveState:0,talkState:0,videotapeState:0,videotapeDownloadState:0
+04-28 10:17:34.180  1726  3261 I System.out: GB28181--->>>-----C++回调java:状态回调 回调函数--- sysState:2 connState:2heartbeatExceptionCount:0 liveState:0 talkState:0 videotapeState:0videotapedownloadState:0---------------------
+04-28 10:17:34.180  1726  3261 E Gb28181Local: onStateUpdate sysState:2,connState:2,heartbeatExceptionCount:0,liveState:0,talkState:0,videotapeState:0,videotapeDownloadState:0
+04-28 10:17:34.188  1726  4641 I System.out: GB28181--->>>-----C++回调java:状态回调 回调函数--- sysState:2 connState:2heartbeatExceptionCount:0 liveState:2 talkState:0 videotapeState:0videotapedownloadState:0---------------------
+04-28 10:17:34.188  1726  4641 E Gb28181Local: onStateUpdate sysState:2,connState:2,heartbeatExceptionCount:0,liveState:2,talkState:0,videotapeState:0,videotapeDownloadState:0
+04-28 10:17:34.217  1726  1726 E DCWLog-dcwAvcEncoder: mediaCodec----------------configure完成，isFrant false
+04-28 10:17:34.383  1726  4575 I System.out: port:0
+04-28 10:17:34.389  1726  4576 I System.out: port:0
+04-28 10:17:34.455  1726  4577 I System.out: port:0
+04-28 10:17:34.464  1726  4533 I System.out: port:0
+04-28 10:17:34.508  1726  2812 E Gb28181Local: GPs GPS  GPS  GPS 0.00.0
+04-28 10:17:34.520  1726  4579 I System.out: port:0
+04-28 10:17:34.592  1726  4580 I System.out: port:0
+04-28 10:17:34.665  1726  4581 I System.out: port:0
+04-28 10:17:34.741  1726  4451 I System.out: port:0
+04-28 10:17:34.801  1726  4452 I System.out: port:0
+04-28 10:17:34.876  1726  4453 I System.out: port:0
+04-28 10:17:34.938  1726  4454 I System.out: port:0
+04-28 10:17:35.011  1726  4455 I System.out: port:0
+04-28 10:17:35.084  1726  4456 I System.out: port:0
+04-28 10:17:35.141  1726  4457 I System.out: port:0
+04-28 10:17:35.217  1726  4458 I System.out: port:0
+04-28 10:17:35.294  1726  4459 I System.out: port:0
+04-28 10:17:35.356  1726  4460 I System.out: port:0
+04-28 10:17:35.423  1726  4461 I System.out: port:0
+04-28 10:17:35.495  1726  4462 I System.out: port:0
+04-28 10:17:35.508  1726  2812 E Gb28181Local: GPs GPS  GPS  GPS 0.00.0
+04-28 10:17:35.572  1726  4463 I System.out: port:0
+04-28 10:17:35.630  1726  4464 I System.out: port:0
+04-28 10:17:35.708  1726  4465 I System.out: port:0
+04-28 10:17:35.778  1726  4466 I System.out: port:0
+04-28 10:17:35.846  1726  4467 I System.out: port:0
+04-28 10:17:35.917  1726  4468 I System.out: port:0
+04-28 10:17:35.984  1726  4469 I System.out: port:0
+04-28 10:17:36.050  1726  4470 I System.out: port:0
+04-28 10:17:36.141  1726  4471 I System.out: port:0
+04-28 10:17:36.189  1726  4472 I System.out: port:0
+04-28 10:17:36.257  1726  4473 I System.out: port:0
+04-28 10:17:36.344  1726  4474 I System.out: port:0
+04-28 10:17:36.406  1726  4475 I System.out: port:0
+04-28 10:17:36.474  1726  4476 I System.out: port:0
+04-28 10:17:36.508  1726  2812 E Gb28181Local: GPs GPS  GPS  GPS 0.00.0
+04-28 10:17:36.559  1726  4477 I System.out: port:0
+04-28 10:17:36.616  1726  4478 I System.out: port:0
+04-28 10:17:36.683  1726  4479 I System.out: port:0
+04-28 10:17:36.757  1726  4480 I System.out: port:0
+04-28 10:17:36.824  1726  4481 I System.out: port:0
+04-28 10:17:36.893  1726  4482 I System.out: port:0
+04-28 10:17:36.966  1726  4484 I System.out: port:0
+04-28 10:17:37.035  1726  4485 I System.out: port:0
+04-28 10:17:37.104  1726  4486 I System.out: port:0
+04-28 10:17:37.181  1726  4487 I System.out: port:0
+04-28 10:17:37.248  1726  4488 I System.out: port:0
+04-28 10:17:37.316  1726  4489 I System.out: port:0
+04-28 10:17:37.395  1726  4490 I System.out: port:0
+04-28 10:17:37.452  1726  4491 I System.out: port:0
+04-28 10:17:37.508  1726  2812 E Gb28181Local: GPs GPS  GPS  GPS 0.00.0
+04-28 10:17:37.529  1726  4492 I System.out: port:0
+04-28 10:17:37.601  1726  4493 I System.out: port:0
+04-28 10:17:37.660  1726  4494 I System.out: port:0
+04-28 10:17:37.740  1726  4495 I System.out: port:0
+04-28 10:17:37.806  1726  4496 I System.out: port:0
+04-28 10:17:37.874  1726  4497 I System.out: port:0
+04-28 10:17:37.942  1726  4498 I System.out: port:0
+04-28 10:17:38.031  1726  4499 I System.out: port:0
+04-28 10:17:38.081  1726  4500 I System.out: port:0
+04-28 10:17:38.148  1726  4501 I System.out: port:0
+04-28 10:17:38.235  1726  4502 I System.out: port:0
+04-28 10:17:38.297  1726  4503 I System.out: port:0
+04-28 10:17:38.364  1726  4504 I System.out: port:0
+04-28 10:17:38.442  1726  4505 I System.out: port:0
+04-28 10:17:38.503  1726  4506 I System.out: port:0
+04-28 10:17:38.508  1726  2812 E Gb28181Local: GPs GPS  GPS  GPS 0.00.0
+04-28 10:17:38.571  1726  4507 I System.out: port:0
+04-28 10:17:38.659  1726  4508 I System.out: port:0
+04-28 10:17:38.733  1726  4509 I System.out: port:0
+04-28 10:17:38.797  1726  4510 I System.out: port:0
+04-28 10:17:38.866  1726  4511 I System.out: port:0
+04-28 10:17:38.933  1726  4512 I System.out: port:0
+04-28 10:17:39.005  1726  4513 I System.out: port:0
+04-28 10:17:39.072  1726  4514 I System.out: port:0
+04-28 10:17:39.140  1726  4515 I System.out: port:0
+04-28 10:17:39.213  1726  4516 I System.out: port:0
+04-28 10:17:39.284  1726  4520 I System.out: port:0
+04-28 10:17:39.354  1726  4521 I System.out: port:0
+04-28 10:17:39.427  1726  4522 I System.out: port:0
+04-28 10:17:39.496  1726  4523 I System.out: port:0
+04-28 10:17:39.508  1726  2812 E Gb28181Local: GPs GPS  GPS  GPS 0.00.0
+04-28 10:17:39.567  1726  4524 I System.out: port:0
+04-28 10:17:39.637  1726  4525 I System.out: port:0
+04-28 10:17:39.712  1726  4526 I System.out: port:0
+04-28 10:17:39.770  1726  4527 I System.out: port:0
+04-28 10:17:39.847  1726  4528 I System.out: port:0
+04-28 10:17:39.915  1726  4529 I System.out: port:0
+04-28 10:17:39.985  1726  4530 I System.out: port:0
+04-28 10:17:40.054  1726  4531 I System.out: port:0
+04-28 10:17:40.138  1726  4532 I System.out: port:0
+04-28 10:17:40.196  1726  4450 I System.out: port:0
+04-28 10:17:40.266  1726  4534 I System.out: port:0
+04-28 10:17:40.338  1726  4535 I System.out: port:0
+04-28 10:17:40.408  1726  4536 I System.out: port:0
+04-28 10:17:40.473  1726  4537 I System.out: port:0
+04-28 10:17:40.508  1726  2812 E Gb28181Local: GPs GPS  GPS  GPS 0.00.0
+04-28 10:17:40.554  1726  4538 I System.out: port:0
+04-28 10:17:40.612  1726  4539 I System.out: port:0
+04-28 10:17:40.683  1726  4540 I System.out: port:0
+04-28 10:17:40.768  1726  4541 I System.out: port:0
+04-28 10:17:40.825  1726  4542 I System.out: port:0
+04-28 10:17:40.892  1726  4543 I System.out: port:0
+04-28 10:17:40.969  1726  4544 I System.out: port:0
+04-28 10:17:41.027  1726  4545 I System.out: port:0
+04-28 10:17:41.106  1726  4546 I System.out: port:0
+04-28 10:17:41.175  1726  4547 I System.out: port:0
+04-28 10:17:41.244  1726  4548 I System.out: port:0
+04-28 10:17:41.312  1726  4549 I System.out: port:0
+04-28 10:17:41.391  1726  4550 I System.out: port:0
+04-28 10:17:41.457  1726  4551 I System.out: port:0
+04-28 10:17:41.508  1726  2812 E Gb28181Local: GPs GPS  GPS  GPS 0.00.0
+04-28 10:17:41.525  1726  4552 I System.out: port:0
+04-28 10:17:41.599  1726  4553 I System.out: port:0
+04-28 10:17:41.664  1726  4554 I System.out: port:0
+04-28 10:17:41.738  1726  4555 I System.out: port:0
+04-28 10:17:41.807  1726  4556 I System.out: port:0
+04-28 10:17:41.878  1726  4557 I System.out: port:0
+04-28 10:17:41.950  1726  4558 I System.out: port:0
+04-28 10:17:42.029  1726  4559 I System.out: port:0
+04-28 10:17:42.087  1726  4560 I System.out: port:0
+04-28 10:17:42.145  1726  4561 I System.out: port:0
+04-28 10:17:42.226  1726  4562 I System.out: port:0
+04-28 10:17:42.298  1726  4563 I System.out: port:0
+04-28 10:17:42.351  1726  4564 I System.out: port:0
+04-28 10:17:42.434  1726  4565 I System.out: port:0
+04-28 10:17:42.507  1726  4566 I System.out: port:0
+04-28 10:17:42.509  1726  2812 E Gb28181Local: GPs GPS  GPS  GPS 0.00.0
+04-28 10:17:42.569  1726  4567 I System.out: port:0
+04-28 10:17:42.654  1726  4568 I System.out: port:0
+04-28 10:17:42.732  1726  4569 I System.out: port:0
+04-28 10:17:42.799  1726  4570 I System.out: port:0
+04-28 10:17:42.869  1726  4571 I System.out: port:0
+04-28 10:17:42.939  1726  4572 I System.out: port:0
+04-28 10:17:43.012  1726  4573 I System.out: port:0
+04-28 10:17:43.070  1726  4578 I System.out: port:0
+04-28 10:17:43.148  1726  4575 I System.out: port:0
+04-28 10:17:43.213  1726  4576 I System.out: port:0
+04-28 10:17:43.283  1726  4577 I System.out: port:0
+04-28 10:17:43.366  1726  4533 I System.out: port:0
+04-28 10:17:43.425  1726  4579 I System.out: port:0
+04-28 10:17:43.494  1726  4580 I System.out: port:0
+04-28 10:17:43.508  1726  2812 E Gb28181Local: GPs GPS  GPS  GPS 0.00.0
+04-28 10:17:43.566  1726  4581 I System.out: port:0
+04-28 10:17:43.633  1726  4451 I System.out: port:0
+04-28 10:17:43.707  1726  4452 I System.out: port:0
+04-28 10:17:43.781  1726  4453 I System.out: port:0
+04-28 10:17:43.846  1726  4454 I System.out: port:0
+04-28 10:17:43.913  1726  4455 I System.out: port:0
+04-28 10:17:43.992  1726  4456 I System.out: port:0
+04-28 10:17:44.065  1726  4457 I System.out: port:0
+04-28 10:17:44.127  1726  4458 I System.out: port:0
+04-28 10:17:44.195  1726  4459 I System.out: port:0
+04-28 10:17:44.273  1726  4460 I System.out: port:0
+04-28 10:17:44.341  1726  4461 I System.out: port:0
+04-28 10:17:44.409  1726  4462 I System.out: port:0
+04-28 10:17:44.475  1726  4463 I System.out: port:0
+04-28 10:17:44.508  1726  2812 E Gb28181Local: GPs GPS  GPS  GPS 0.00.0
+04-28 10:17:44.544  1726  4464 I System.out: port:0
+04-28 10:17:44.630  1726  4465 I System.out: port:0
+04-28 10:17:44.695  1726  4466 I System.out: port:0
+04-28 10:17:44.752  1726  4467 I System.out: port:0
+04-28 10:17:44.824  1726  4468 I System.out: port:0
+04-28 10:17:44.902  1726  4469 I System.out: port:0
+04-28 10:17:44.970  1726  4470 I System.out: port:0
+04-28 10:17:45.063  1726  4471 I System.out: port:0
+04-28 10:17:45.112  1726  4472 I System.out: port:0
+04-28 10:17:45.179  1726  4473 I System.out: port:0
+04-28 10:17:45.256  1726  4474 I System.out: port:0
+04-28 10:17:45.319  1726  4475 I System.out: port:0
+04-28 10:17:45.391  1726  4476 I System.out: port:0
+04-28 10:17:45.457  1726  4477 I System.out: port:0
+04-28 10:17:45.509  1726  2812 E Gb28181Local: GPs GPS  GPS  GPS 0.00.0
+04-28 10:17:45.530  1726  4478 I System.out: port:0
+04-28 10:17:45.597  1726  4479 I System.out: port:0
+04-28 10:17:45.665  1726  4480 I System.out: port:0
+04-28 10:17:45.734  1726  4481 I System.out: port:0
+04-28 10:17:45.803  1726  4482 I System.out: port:0
+04-28 10:17:45.884  1726  4484 I System.out: port:0
+04-28 10:17:45.937  1726  4485 I System.out: port:0
+04-28 10:17:46.018  1726  4486 I System.out: port:0
+04-28 10:17:46.101  1726  4487 I System.out: port:0
+04-28 10:17:46.153  1726  4488 I System.out: port:0
+04-28 10:17:46.218  1726  4489 I System.out: port:0
+04-28 10:17:46.306  1726  4490 I System.out: port:0
+04-28 10:17:46.363  1726  4491 I System.out: port:0
+04-28 10:17:46.432  1726  4492 I System.out: port:0
+04-28 10:17:46.504  1726  4493 I System.out: port:0
+04-28 10:17:46.508  1726  2812 E Gb28181Local: GPs GPS  GPS  GPS 0.00.0
+04-28 10:17:46.579  1726  4494 I System.out: port:0
+04-28 10:17:46.648  1726  4495 I System.out: port:0
+04-28 10:17:46.723  1726  4496 I System.out: port:0
+04-28 10:17:46.786  1726  4497 I System.out: port:0
+04-28 10:17:46.860  1726  4498 I System.out: port:0
+04-28 10:17:46.933  1726  4499 I System.out: port:0
+04-28 10:17:46.992  1726  4500 I System.out: port:0
+04-28 10:17:47.061  1726  4501 I System.out: port:0
+04-28 10:17:47.137  1726  4502 I System.out: port:0
+04-28 10:17:47.212  1726  4503 I System.out: port:0
+04-28 10:17:47.269  1726  4504 I System.out: port:0
+04-28 10:17:47.347  1726  4505 I System.out: port:0
+04-28 10:17:47.418  1726  4506 I System.out: port:0
+04-28 10:17:47.486  1726  4507 I System.out: port:0
+04-28 10:17:47.508  1726  2812 E Gb28181Local: GPs GPS  GPS  GPS 0.00.0
+04-28 10:17:47.554  1726  4508 I System.out: port:0
+04-28 10:17:47.623  1726  4509 I System.out: port:0
+04-28 10:17:47.695  1726  4510 I System.out: port:0
+04-28 10:17:47.784  1726  4511 I System.out: port:0
+04-28 10:17:47.826  1726  4512 I System.out: port:0
+04-28 10:17:47.903  1726  4513 I System.out: port:0
+04-28 10:17:47.980  1726  4514 I System.out: port:0
+04-28 10:17:48.048  1726  4515 I System.out: port:0
+04-28 10:17:48.126  1726  4516 I System.out: port:0
+04-28 10:17:48.186  1726  4520 I System.out: port:0
+04-28 10:17:48.254  1726  4521 I System.out: port:0
+04-28 10:17:48.333  1726  4522 I System.out: port:0
+04-28 10:17:48.396  1726  4523 I System.out: port:0
+04-28 10:17:48.465  1726  4524 I System.out: port:0
+04-28 10:17:48.509  1726  2812 E Gb28181Local: GPs GPS  GPS  GPS 0.00.0
+04-28 10:17:48.533  1726  4525 I System.out: port:0
+04-28 10:17:48.603  1726  4526 I System.out: port:0
+04-28 10:17:48.671  1726  4527 I System.out: port:0
+04-28 10:17:48.740  1726  4528 I System.out: port:0
+04-28 10:17:48.822  1726  4529 I System.out: port:0
+04-28 10:17:48.893  1726  4530 I System.out: port:0
+04-28 10:17:48.952  1726  4531 I System.out: port:0
+04-28 10:17:49.044  1726  4532 I System.out: port:0
+04-28 10:17:49.096  1726  4450 I System.out: port:0
+04-28 10:17:49.166  1726  4534 I System.out: port:0
+04-28 10:17:49.243  1726  4535 I System.out: port:0
+04-28 10:17:49.299  1726  4536 I System.out: port:0
+04-28 10:17:49.381  1726  4537 I System.out: port:0
+04-28 10:17:49.448  1726  4538 I System.out: port:0
+04-28 10:17:49.506  1726  4539 I System.out: port:0
+04-28 10:17:49.508  1726  2812 E Gb28181Local: GPs GPS  GPS  GPS 0.00.0
+04-28 10:17:49.586  1726  4540 I System.out: port:0
+04-28 10:17:49.660  1726  4541 I System.out: port:0
+04-28 10:17:49.731  1726  4542 I System.out: port:0
+04-28 10:17:49.788  1726  4543 I System.out: port:0
+04-28 10:17:49.867  1726  4544 I System.out: port:0
+04-28 10:17:49.944  1726  4545 I System.out: port:0
+04-28 10:17:50.005  1726  4546 I System.out: port:0
+04-28 10:17:50.096  1726  4547 I System.out: port:0
+04-28 10:17:50.145  1726  4548 I System.out: port:0
+04-28 10:17:50.211  1726  4549 I System.out: port:0
+04-28 10:17:50.294  1726  4550 I System.out: port:0
+04-28 10:17:50.353  1726  4551 I System.out: port:0
+04-28 10:17:50.429  1726  4552 I System.out: port:0
+04-28 10:17:50.504  1726  4553 I System.out: port:0
+04-28 10:17:50.508  1726  2812 E Gb28181Local: GPs GPS  GPS  GPS 0.00.0
+04-28 10:17:50.559  1726  4554 I System.out: port:0
+04-28 10:17:50.639  1726  4555 I System.out: port:0
+04-28 10:17:50.705  1726  4556 I System.out: port:0
+04-28 10:17:50.773  1726  4557 I System.out: port:0
+04-28 10:17:50.841  1726  4558 I System.out: port:0
+04-28 10:17:50.920  1726  4559 I System.out: port:0
+04-28 10:17:50.989  1726  4560 I System.out: port:0
+04-28 10:17:51.058  1726  4561 I System.out: port:0
+04-28 10:17:51.137  1726  4562 I System.out: port:0
+04-28 10:17:51.205  1726  4563 I System.out: port:0
+04-28 10:17:51.279  1726  4564 I System.out: port:0
+04-28 10:17:51.348  1726  4565 I System.out: port:0
+04-28 10:17:51.409  1726  4566 I System.out: port:0
+04-28 10:17:51.474  1726  4567 I System.out: port:0
+04-28 10:17:51.484  1726  3261 I System.out: GB28181--->>>-----C++回调java:状态回调 回调函数--- sysState:2 connState:2heartbeatExceptionCount:0 liveState:2 talkState:0 videotapeState:0videotapedownloadState:0---------------------
+04-28 10:17:51.484  1726  3261 E Gb28181Local: onStateUpdate sysState:2,connState:2,heartbeatExceptionCount:0,liveState:2,talkState:0,videotapeState:0,videotapeDownloadState:0
+04-28 10:17:51.498  1726  4641 I System.out: GB28181--->>>-----C++回调java:状态回调 回调函数--- sysState:2 connState:2heartbeatExceptionCount:0 liveState:0 talkState:0 videotapeState:0videotapedownloadState:0---------------------
+04-28 10:17:51.498  1726  4641 E Gb28181Local: onStateUpdate sysState:2,connState:2,heartbeatExceptionCount:0,liveState:0,talkState:0,videotapeState:0,videotapeDownloadState:0
+04-28 10:17:51.508  1726  2812 E Gb28181Local: GPs GPS  GPS  GPS 0.00.0
+04-28 10:17:51.588  1726  3261 I System.out: GB28181--->>>-----C++回调java:状态回调 回调函数--- sysState:2 connState:2heartbeatExceptionCount:0 liveState:0 talkState:0 videotapeState:0videotapedownloadState:0---------------------
+04-28 10:17:51.588  1726  3261 E Gb28181Local: onStateUpdate sysState:2,connState:2,heartbeatExceptionCount:0,liveState:0,talkState:0,videotapeState:0,videotapeDownloadState:0
+04-28 10:17:51.590  1726  3261 I System.out: GB28181--->>>-----C++回调java:状态回调 回调函数--- sysState:2 connState:2heartbeatExceptionCount:0 liveState:0 talkState:0 videotapeState:0videotapedownloadState:0---------------------
+04-28 10:17:51.590  1726  3261 E Gb28181Local: onStateUpdate sysState:2,connState:2,heartbeatExceptionCount:0,liveState:0,talkState:0,videotapeState:0,videotapeDownloadState:0
+04-28 10:17:52.509  1726  2812 E Gb28181Local: GPs GPS  GPS  GPS 0.00.0
+04-28 10:17:53.508  1726  2812 E Gb28181Local: GPs GPS  GPS  GPS 0.00.0
+04-28 10:17:53.858  1726  3261 I System.out: GB28181--->>>-----C++回调java:状态回调 回调函数--- sysState:2 connState:2heartbeatExceptionCount:0 liveState:0 talkState:0 videotapeState:0videotapedownloadState:0---------------------
+04-28 10:17:53.858  1726  3261 E Gb28181Local: onStateUpdate sysState:2,connState:2,heartbeatExceptionCount:0,liveState:0,talkState:0,videotapeState:0,videotapeDownloadState:0
+04-28 10:17:53.865  1726  3261 I System.out: GB28181--->>>-----C++回调java:状态回调 回调函数--- sysState:2 connState:2heartbeatExceptionCount:0 liveState:0 talkState:0 videotapeState:0videotapedownloadState:0---------------------
+04-28 10:17:53.865  1726  3261 E Gb28181Local: onStateUpdate sysState:2,connState:2,heartbeatExceptionCount:0,liveState:0,talkState:0,videotapeState:0,videotapeDownloadState:0
+04-28 10:17:54.198  1726  3261 I System.out: GB28181--->>>-----C++回调java:状态回调 回调函数--- sysState:2 connState:2heartbeatExceptionCount:0 liveState:0 talkState:0 videotapeState:0videotapedownloadState:0---------------------
+04-28 10:17:54.198  1726  3261 E Gb28181Local: onStateUpdate sysState:2,connState:2,heartbeatExceptionCount:0,liveState:0,talkState:0,videotapeState:0,videotapeDownloadState:0
+04-28 10:17:54.208  1726  4658 I System.out: GB28181--->>>-----C++回调java:状态回调 回调函数--- sysState:2 connState:2heartbeatExceptionCount:0 liveState:2 talkState:0 videotapeState:0videotapedownloadState:0---------------------
+04-28 10:17:54.208  1726  4658 E Gb28181Local: onStateUpdate sysState:2,connState:2,heartbeatExceptionCount:0,liveState:2,talkState:0,videotapeState:0,videotapeDownloadState:0
+04-28 10:17:54.239  1726  1726 E DCWLog-dcwAvcEncoder: mediaCodec----------------configure完成，isFrant false
+04-28 10:17:54.425  1726  4569 I System.out: port:0
+04-28 10:17:54.431  1726  4570 I System.out: port:0
+04-28 10:17:54.508  1726  2812 E Gb28181Local: GPs GPS  GPS  GPS 0.00.0
+04-28 10:17:54.509  1726  4571 I System.out: port:0
+04-28 10:17:54.522  1726  4572 I System.out: port:0
+04-28 10:17:54.566  1726  4573 I System.out: port:0
+04-28 10:17:54.636  1726  4578 I System.out: port:0
+04-28 10:17:54.712  1726  4575 I System.out: port:0
+04-28 10:17:54.773  1726  4576 I System.out: port:0
+04-28 10:17:54.849  1726  4577 I System.out: port:0
+04-28 10:17:54.919  1726  4533 I System.out: port:0
+04-28 10:17:54.993  1726  4579 I System.out: port:0
+04-28 10:17:55.065  1726  4580 I System.out: port:0
+04-28 10:17:55.128  1726  4581 I System.out: port:0
+04-28 10:17:55.195  1726  4451 I System.out: port:0
+04-28 10:17:55.264  1726  4452 I System.out: port:0
+04-28 10:17:55.330  1726  4453 I System.out: port:0
+04-28 10:17:55.409  1726  4454 I System.out: port:0
+04-28 10:17:55.465  1726  4455 I System.out: port:0
+04-28 10:17:55.509  1726  2812 E Gb28181Local: GPs GPS  GPS  GPS 0.00.0
+04-28 10:17:55.557  1726  4456 I System.out: port:0
+04-28 10:17:55.619  1726  4457 I System.out: port:0
+04-28 10:17:55.684  1726  4458 I System.out: port:0
+04-28 10:17:55.757  1726  4459 I System.out: port:0
+04-28 10:17:55.819  1726  4460 I System.out: port:0
+04-28 10:17:55.893  1726  4461 I System.out: port:0
+04-28 10:17:55.978  1726  4462 I System.out: port:0
+04-28 10:17:56.025  1726  4463 I System.out: port:0
+04-28 10:17:56.109  1726  4464 I System.out: port:0
+04-28 10:17:56.184  1726  4465 I System.out: port:0
+04-28 10:17:56.241  1726  4466 I System.out: port:0
+04-28 10:17:56.306  1726  4467 I System.out: port:0
+04-28 10:17:56.398  1726  4468 I System.out: port:0
+04-28 10:17:56.455  1726  4469 I System.out: port:0
+04-28 10:17:56.508  1726  2812 E Gb28181Local: GPs GPS  GPS  GPS 0.00.0
+04-28 10:17:56.537  1726  4470 I System.out: port:0
+04-28 10:17:56.601  1726  4471 I System.out: port:0
+04-28 10:17:56.661  1726  4472 I System.out: port:0
+04-28 10:17:56.731  1726  4473 I System.out: port:0
+04-28 10:17:56.804  1726  4474 I System.out: port:0
+04-28 10:17:56.876  1726  4475 I System.out: port:0
+04-28 10:17:56.946  1726  4476 I System.out: port:0
+04-28 10:17:57.012  1726  4477 I System.out: port:0
+04-28 10:17:57.079  1726  4478 I System.out: port:0
+04-28 10:17:57.145  1726  4479 I System.out: port:0
+04-28 10:17:57.226  1726  4480 I System.out: port:0
+04-28 10:17:57.290  1726  4481 I System.out: port:0
+04-28 10:17:57.364  1726  4482 I System.out: port:0
+04-28 10:17:57.431  1726  4484 I System.out: port:0
+04-28 10:17:57.502  1726  4485 I System.out: port:0
+04-28 10:17:57.508  1726  2812 E Gb28181Local: GPs GPS  GPS  GPS 0.00.0
+04-28 10:17:57.568  1726  4486 I System.out: port:0
+04-28 10:17:57.643  1726  4487 I System.out: port:0
+04-28 10:17:57.709  1726  4488 I System.out: port:0
+04-28 10:17:57.775  1726  4489 I System.out: port:0
+04-28 10:17:57.849  1726  4490 I System.out: port:0
+04-28 10:17:57.916  1726  4491 I System.out: port:0
+04-28 10:17:57.995  1726  4492 I System.out: port:0
+04-28 10:17:58.079  1726  4493 I System.out: port:0
+04-28 10:17:58.136  1726  4494 I System.out: port:0
+04-28 10:17:58.208  1726  4495 I System.out: port:0
+04-28 10:17:58.278  1726  4496 I System.out: port:0
+04-28 10:17:58.350  1726  4497 I System.out: port:0
+04-28 10:17:58.406  1726  4498 I System.out: port:0
+04-28 10:17:58.490  1726  4499 I System.out: port:0
+04-28 10:17:58.508  1726  2812 E Gb28181Local: GPs GPS  GPS  GPS 0.00.0
+04-28 10:17:58.564  1726  4500 I System.out: port:0
+04-28 10:17:58.618  1726  4501 I System.out: port:0
+04-28 10:17:58.692  1726  4502 I System.out: port:0
+04-28 10:17:58.767  1726  4503 I System.out: port:0
+04-28 10:17:58.832  1726  4504 I System.out: port:0
+04-28 10:17:58.905  1726  4505 I System.out: port:0
+04-28 10:17:58.965  1726  4506 I System.out: port:0
+04-28 10:17:59.032  1726  4507 I System.out: port:0
+04-28 10:17:59.116  1726  4508 I System.out: port:0
+04-28 10:17:59.183  1726  4509 I System.out: port:0
+04-28 10:17:59.249  1726  4510 I System.out: port:0
+04-28 10:17:59.325  1726  4511 I System.out: port:0
+04-28 10:17:59.383  1726  4512 I System.out: port:0
+04-28 10:17:59.464  1726  4513 I System.out: port:0
+04-28 10:17:59.509  1726  2812 E Gb28181Local: GPs GPS  GPS  GPS 0.00.0
+04-28 10:17:59.545  1726  4514 I System.out: port:0
+04-28 10:17:59.601  1726  4515 I System.out: port:0
+04-28 10:17:59.668  1726  4516 I System.out: port:0
+04-28 10:17:59.758  1726  4520 I System.out: port:0
+04-28 10:17:59.805  1726  4521 I System.out: port:0
+04-28 10:17:59.885  1726  4522 I System.out: port:0
+04-28 10:17:59.958  1726  4523 I System.out: port:0
+04-28 10:18:00.014  1726  4524 I System.out: port:0
+04-28 10:18:00.096  1726  4525 I System.out: port:0
+04-28 10:18:00.180  1726  4526 I System.out: port:0
+04-28 10:18:00.227  1726  4527 I System.out: port:0
+04-28 10:18:00.300  1726  4528 I System.out: port:0
+04-28 10:18:00.375  1726  4529 I System.out: port:0
+04-28 10:18:00.437  1726  4530 I System.out: port:0
+04-28 10:18:00.508  1726  2812 E Gb28181Local: GPs GPS  GPS  GPS 0.00.0
+04-28 10:18:00.521  1726  4531 I System.out: port:0
+04-28 10:18:00.581  1726  4532 I System.out: port:0
+04-28 10:18:00.651  1726  4450 I System.out: port:0
+04-28 10:18:00.715  1726  4534 I System.out: port:0
+04-28 10:18:00.793  1726  4535 I System.out: port:0
+04-28 10:18:00.864  1726  4536 I System.out: port:0
+04-28 10:18:00.931  1726  4537 I System.out: port:0
+04-28 10:18:00.998  1726  4538 I System.out: port:0
+04-28 10:18:01.082  1726  4539 I System.out: port:0
+04-28 10:18:01.143  1726  4540 I System.out: port:0
+04-28 10:18:01.207  1726  4541 I System.out: port:0
+04-28 10:18:01.300  1726  4542 I System.out: port:0
+04-28 10:18:01.349  1726  4543 I System.out: port:0
+04-28 10:18:01.429  1726  4544 I System.out: port:0
+04-28 10:18:01.497  1726  4545 I System.out: port:0
+04-28 10:18:01.508  1726  2812 E Gb28181Local: GPs GPS  GPS  GPS 0.00.0
+04-28 10:18:01.543  1726  3261 I System.out: GB28181--->>>-----C++回调java:状态回调 回调函数--- sysState:2 connState:2heartbeatExceptionCount:0 liveState:2 talkState:0 videotapeState:0videotapedownloadState:0---------------------
+04-28 10:18:01.544  1726  3261 E Gb28181Local: onStateUpdate sysState:2,connState:2,heartbeatExceptionCount:0,liveState:2,talkState:0,videotapeState:0,videotapeDownloadState:0
+04-28 10:18:01.566  1726  4546 I System.out: port:0
+04-28 10:18:01.635  1726  4547 I System.out: port:0
+04-28 10:18:01.709  1726  4548 I System.out: port:0
+04-28 10:18:01.779  1726  4549 I System.out: port:0
+04-28 10:18:01.845  1726  4550 I System.out: port:0
+04-28 10:18:01.916  1726  4551 I System.out: port:0
+04-28 10:18:01.984  1726  4552 I System.out: port:0
+04-28 10:18:02.057  1726  4553 I System.out: port:0
+04-28 10:18:02.126  1726  4554 I System.out: port:0
+04-28 10:18:02.201  1726  4555 I System.out: port:0
+04-28 10:18:02.278  1726  4556 I System.out: port:0
+04-28 10:18:02.340  1726  4557 I System.out: port:0
+04-28 10:18:02.417  1726  4558 I System.out: port:0
+04-28 10:18:02.477  1726  4559 I System.out: port:0
+04-28 10:18:02.508  1726  2812 E Gb28181Local: GPs GPS  GPS  GPS 0.00.0
+04-28 10:18:02.539  1726  4560 I System.out: port:0
+04-28 10:18:02.609  1726  4561 I System.out: port:0
+04-28 10:18:02.675  1726  4562 I System.out: port:0
+04-28 10:18:02.755  1726  4563 I System.out: port:0
+04-28 10:18:02.822  1726  4564 I System.out: port:0
+04-28 10:18:02.889  1726  4565 I System.out: port:0
+04-28 10:18:02.966  1726  4566 I System.out: port:0
+04-28 10:18:03.042  1726  4567 I System.out: port:0
+04-28 10:18:03.111  1726  4574 I System.out: port:0
+04-28 10:18:03.195  1726  4569 I System.out: port:0
+04-28 10:18:03.254  1726  4570 I System.out: port:0
+04-28 10:18:03.321  1726  4571 I System.out: port:0
+04-28 10:18:03.391  1726  4572 I System.out: port:0
+04-28 10:18:03.458  1726  4573 I System.out: port:0
+04-28 10:18:03.509  1726  2812 E Gb28181Local: GPs GPS  GPS  GPS 0.00.0
+04-28 10:18:03.538  1726  4578 I System.out: port:0
+04-28 10:18:03.605  1726  4575 I System.out: port:0
+04-28 10:18:03.672  1726  4576 I System.out: port:0
+04-28 10:18:03.741  1726  4577 I System.out: port:0
+04-28 10:18:03.809  1726  4533 I System.out: port:0
+04-28 10:18:03.873  1726  4579 I System.out: port:0
+04-28 10:18:03.956  1726  4580 I System.out: port:0
+04-28 10:18:04.012  1726  4581 I System.out: port:0
+04-28 10:18:04.091  1726  4451 I System.out: port:0
+04-28 10:18:04.172  1726  4452 I System.out: port:0
+04-28 10:18:04.224  1726  4453 I System.out: port:0
+04-28 10:18:04.293  1726  4454 I System.out: port:0
+04-28 10:18:04.371  1726  4455 I System.out: port:0
+04-28 10:18:04.440  1726  4456 I System.out: port:0
+04-28 10:18:04.509  1726  2812 E Gb28181Local: GPs GPS  GPS  GPS 0.00.0
+04-28 10:18:04.510  1726  4457 I System.out: port:0
+04-28 10:18:04.590  1726  4458 I System.out: port:0
+04-28 10:18:04.649  1726  4459 I System.out: port:0
+04-28 10:18:04.730  1726  4460 I System.out: port:0
+04-28 10:18:04.799  1726  4461 I System.out: port:0
+04-28 10:18:04.857  1726  4462 I System.out: port:0
+04-28 10:18:04.924  1726  4463 I System.out: port:0
+04-28 10:18:05.005  1726  4464 I System.out: port:0
+04-28 10:18:05.073  1726  4465 I System.out: port:0
+04-28 10:18:05.153  1726  4466 I System.out: port:0
+04-28 10:18:05.214  1726  4467 I System.out: port:0
+04-28 10:18:05.283  1726  4468 I System.out: port:0
+04-28 10:18:05.355  1726  4469 I System.out: port:0
+04-28 10:18:05.437  1726  4470 I System.out: port:0
+04-28 10:18:05.495  1726  4471 I System.out: port:0
+04-28 10:18:05.508  1726  2812 E Gb28181Local: GPs GPS  GPS  GPS 0.00.0
+04-28 10:18:05.563  1726  4472 I System.out: port:0
+04-28 10:18:05.642  1726  4473 I System.out: port:0
+04-28 10:18:05.705  1726  4474 I System.out: port:0
+04-28 10:18:05.775  1726  4475 I System.out: port:0
+04-28 10:18:05.847  1726  4476 I System.out: port:0
+04-28 10:18:05.913  1726  4477 I System.out: port:0
+04-28 10:18:05.985  1726  4478 I System.out: port:0
+04-28 10:18:06.062  1726  4479 I System.out: port:0
+04-28 10:18:06.120  1726  4480 I System.out: port:0
+04-28 10:18:06.192  1726  4481 I System.out: port:0
+04-28 10:18:06.266  1726  4482 I System.out: port:0
+04-28 10:18:06.335  1726  4484 I System.out: port:0
+04-28 10:18:06.406  1726  4485 I System.out: port:0
+04-28 10:18:06.475  1726  4486 I System.out: port:0
+04-28 10:18:06.508  1726  2812 E Gb28181Local: GPs GPS  GPS  GPS 0.00.0
+04-28 10:18:06.541  1726  4487 I System.out: port:0
+04-28 10:18:06.609  1726  4488 I System.out: port:0
+04-28 10:18:06.689  1726  4489 I System.out: port:0
+04-28 10:18:06.749  1726  4490 I System.out: port:0
+04-28 10:18:06.817  1726  4491 I System.out: port:0
+04-28 10:18:06.910  1726  4492 I System.out: port:0
+04-28 10:18:06.963  1726  4493 I System.out: port:0
+04-28 10:18:07.035  1726  4494 I System.out: port:0
+04-28 10:18:07.106  1726  4495 I System.out: port:0
+04-28 10:18:07.173  1726  4496 I System.out: port:0
+04-28 10:18:07.243  1726  4497 I System.out: port:0
+04-28 10:18:07.324  1726  4498 I System.out: port:0
+04-28 10:18:07.382  1726  4499 I System.out: port:0
+04-28 10:18:07.451  1726  4500 I System.out: port:0
+04-28 10:18:07.514  1726  2812 E Gb28181Local: GPs GPS  GPS  GPS 0.00.0
+04-28 10:18:07.529  1726  4501 I System.out: port:0
+04-28 10:18:07.596  1726  4502 I System.out: port:0
+04-28 10:18:07.674  1726  4503 I System.out: port:0
+04-28 10:18:07.747  1726  4504 I System.out: port:0
+04-28 10:18:07.804  1726  4505 I System.out: port:0
+04-28 10:18:07.881  1726  4506 I System.out: port:0
+04-28 10:18:07.948  1726  4507 I System.out: port:0
+04-28 10:18:08.015  1726  4508 I System.out: port:0
+04-28 10:18:08.093  1726  4509 I System.out: port:0
+04-28 10:18:08.165  1726  4510 I System.out: port:0
+04-28 10:18:08.223  1726  4511 I System.out: port:0
+04-28 10:18:08.300  1726  4512 I System.out: port:0
+04-28 10:18:08.373  1726  4513 I System.out: port:0
+04-28 10:18:08.442  1726  4514 I System.out: port:0
+04-28 10:18:08.509  1726  2812 E Gb28181Local: GPs GPS  GPS  GPS 0.00.0
+04-28 10:18:08.509  1726  4515 I System.out: port:0
+04-28 10:18:08.581  1726  4516 I System.out: port:0
+04-28 10:18:08.654  1726  4520 I System.out: port:0
+04-28 10:18:08.711  1726  4521 I System.out: port:0
+04-28 10:18:08.788  1726  4522 I System.out: port:0
+04-28 10:18:08.856  1726  4523 I System.out: port:0
+04-28 10:18:08.925  1726  4524 I System.out: port:0
+04-28 10:18:09.013  1726  4525 I System.out: port:0
+04-28 10:18:09.065  1726  4526 I System.out: port:0
+04-28 10:18:09.132  1726  4527 I System.out: port:0
+04-28 10:18:09.206  1726  4528 I System.out: port:0
+04-28 10:18:09.278  1726  4529 I System.out: port:0
+04-28 10:18:09.347  1726  4530 I System.out: port:0
+04-28 10:18:09.423  1726  4531 I System.out: port:0
+04-28 10:18:09.488  1726  4532 I System.out: port:0
+04-28 10:18:09.508  1726  2812 E Gb28181Local: GPs GPS  GPS  GPS 0.00.0
+04-28 10:18:09.558  1726  4450 I System.out: port:0
+04-28 10:18:09.627  1726  4534 I System.out: port:0
+04-28 10:18:09.692  1726  4535 I System.out: port:0
+04-28 10:18:09.770  1726  4536 I System.out: port:0
+04-28 10:18:09.843  1726  4537 I System.out: port:0
+04-28 10:18:09.910  1726  4538 I System.out: port:0
+04-28 10:18:09.977  1726  4539 I System.out: port:0
+04-28 10:18:10.051  1726  4540 I System.out: port:0
+04-28 10:18:10.119  1726  4541 I System.out: port:0
+04-28 10:18:10.188  1726  4542 I System.out: port:0
+04-28 10:18:10.283  1726  4543 I System.out: port:0
+04-28 10:18:10.329  1726  4544 I System.out: port:0
+04-28 10:18:10.396  1726  4545 I System.out: port:0
+04-28 10:18:10.470  1726  4546 I System.out: port:0
+04-28 10:18:10.508  1726  2812 E Gb28181Local: GPs GPS  GPS  GPS 0.00.0
+04-28 10:18:10.542  1726  4547 I System.out: port:0
+04-28 10:18:10.613  1726  4548 I System.out: port:0
+04-28 10:18:10.680  1726  4549 I System.out: port:0
+04-28 10:18:10.745  1726  4550 I System.out: port:0
+04-28 10:18:10.823  1726  4551 I System.out: port:0
+04-28 10:18:10.901  1726  4552 I System.out: port:0
+04-28 10:18:10.961  1726  4553 I System.out: port:0
+04-28 10:18:11.031  1726  4554 I System.out: port:0
+04-28 10:18:11.103  1726  4555 I System.out: port:0
+04-28 10:18:11.170  1726  4556 I System.out: port:0
+04-28 10:18:11.239  1726  4557 I System.out: port:0
+04-28 10:18:11.326  1726  4558 I System.out: port:0
+04-28 10:18:11.382  1726  4559 I System.out: port:0
+04-28 10:18:11.451  1726  4560 I System.out: port:0
+04-28 10:18:11.511  1726  2812 E Gb28181Local: GPs GPS  GPS  GPS 0.00.0
+04-28 10:18:11.529  1726  4561 I System.out: port:0
+04-28 10:18:11.584  1726  4562 I System.out: port:0
+04-28 10:18:11.661  1726  4563 I System.out: port:0
+04-28 10:18:11.740  1726  4564 I System.out: port:0
+04-28 10:18:11.795  1726  4565 I System.out: port:0
+04-28 10:18:11.872  1726  4566 I System.out: port:0
+04-28 10:18:11.944  1726  4567 I System.out: port:0
+04-28 10:18:12.012  1726  4574 I System.out: port:0
+04-28 10:18:12.080  1726  4569 I System.out: port:0
+04-28 10:18:12.166  1726  4570 I System.out: port:0
+04-28 10:18:12.223  1726  4571 I System.out: port:0
+04-28 10:18:12.297  1726  4572 I System.out: port:0
+04-28 10:18:12.370  1726  4573 I System.out: port:0
+04-28 10:18:12.431  1726  4578 I System.out: port:0
+04-28 10:18:12.498  1726  4575 I System.out: port:0
+04-28 10:18:12.508  1726  2812 E Gb28181Local: GPs GPS  GPS  GPS 0.00.0
+04-28 10:18:12.586  1726  4576 I System.out: port:0
+04-28 10:18:12.650  1726  4577 I System.out: port:0
+04-28 10:18:12.719  1726  4533 I System.out: port:0
+04-28 10:18:12.782  1726  4579 I System.out: port:0
+04-28 10:18:12.854  1726  4580 I System.out: port:0
+04-28 10:18:12.915  1726  4581 I System.out: port:0
+04-28 10:18:12.991  1726  4451 I System.out: port:0
+04-28 10:18:13.061  1726  4452 I System.out: port:0
+04-28 10:18:13.131  1726  4453 I System.out: port:0
+04-28 10:18:13.209  1726  4454 I System.out: port:0
+04-28 10:18:13.281  1726  4455 I System.out: port:0
+04-28 10:18:13.341  1726  4456 I System.out: port:0
+04-28 10:18:13.425  1726  4457 I System.out: port:0
+04-28 10:18:13.482  1726  4458 I System.out: port:0
+04-28 10:18:13.508  1726  2812 E Gb28181Local: GPs GPS  GPS  GPS 0.00.0
+04-28 10:18:13.549  1726  4459 I System.out: port:0
+04-28 10:18:13.617  1726  4460 I System.out: port:0
+04-28 10:18:13.684  1726  4461 I System.out: port:0
+04-28 10:18:13.780  1726  4462 I System.out: port:0
+04-28 10:18:13.827  1726  4463 I System.out: port:0
+04-28 10:18:13.908  1726  4464 I System.out: port:0
+04-28 10:18:13.971  1726  4465 I System.out: port:0
+04-28 10:18:14.041  1726  4466 I System.out: port:0
+04-28 10:18:14.108  1726  4467 I System.out: port:0
+04-28 10:18:14.189  1726  4468 I System.out: port:0
+04-28 10:18:14.247  1726  4469 I System.out: port:0
+04-28 10:18:14.324  1726  4470 I System.out: port:0
+04-28 10:18:14.405  1726  4471 I System.out: port:0
+04-28 10:18:14.463  1726  4472 I System.out: port:0
+04-28 10:18:14.509  1726  2812 E Gb28181Local: GPs GPS  GPS  GPS 0.00.0
+04-28 10:18:14.541  1726  4473 I System.out: port:0
+04-28 10:18:14.612  1726  4474 I System.out: port:0
+04-28 10:18:14.676  1726  4475 I System.out: port:0
+04-28 10:18:14.745  1726  4476 I System.out: port:0
+04-28 10:18:14.823  1726  4477 I System.out: port:0
+04-28 10:18:14.888  1726  4478 I System.out: port:0
+04-28 10:18:14.960  1726  4479 I System.out: port:0
+04-28 10:18:15.034  1726  4480 I System.out: port:0
+04-28 10:18:15.092  1726  4481 I System.out: port:0
+04-28 10:18:15.170  1726  4482 I System.out: port:0
+04-28 10:18:15.238  1726  4484 I System.out: port:0
+04-28 10:18:15.315  1726  4485 I System.out: port:0
+04-28 10:18:15.377  1726  4486 I System.out: port:0
+04-28 10:18:15.447  1726  4487 I System.out: port:0
+04-28 10:18:15.509  1726  2812 E Gb28181Local: GPs GPS  GPS  GPS 0.00.0
+04-28 10:18:15.516  1726  4488 I System.out: port:0
+04-28 10:18:15.590  1726  4489 I System.out: port:0
+04-28 10:18:15.658  1726  4490 I System.out: port:0
+04-28 10:18:15.736  1726  4491 I System.out: port:0
+04-28 10:18:15.803  1726  4492 I System.out: port:0
+04-28 10:18:15.860  1726  4493 I System.out: port:0
+04-28 10:18:15.938  1726  4494 I System.out: port:0
+04-28 10:18:16.009  1726  4495 I System.out: port:0
+04-28 10:18:16.081  1726  4496 I System.out: port:0
+04-28 10:18:16.149  1726  4497 I System.out: port:0
+04-28 10:18:16.235  1726  4498 I System.out: port:0
+04-28 10:18:16.287  1726  4499 I System.out: port:0
+04-28 10:18:16.357  1726  4500 I System.out: port:0
+04-28 10:18:16.437  1726  4501 I System.out: port:0
+04-28 10:18:16.495  1726  4502 I System.out: port:0
+04-28 10:18:16.508  1726  2812 E Gb28181Local: GPs GPS  GPS  GPS 0.00.0
+04-28 10:18:16.565  1726  4503 I System.out: port:0
+04-28 10:18:16.636  1726  4504 I System.out: port:0
+04-28 10:18:16.704  1726  4505 I System.out: port:0
+04-28 10:18:16.774  1726  4506 I System.out: port:0
+04-28 10:18:16.844  1726  4507 I System.out: port:0
+04-28 10:18:16.924  1726  4508 I System.out: port:0
+04-28 10:18:16.982  1726  4509 I System.out: port:0
+04-28 10:18:17.063  1726  4510 I System.out: port:0
+04-28 10:18:17.134  1726  4511 I System.out: port:0
+04-28 10:18:17.205  1726  4512 I System.out: port:0
+04-28 10:18:17.267  1726  4513 I System.out: port:0
+04-28 10:18:17.334  1726  4514 I System.out: port:0
+04-28 10:18:17.405  1726  4515 I System.out: port:0
+04-28 10:18:17.495  1726  4516 I System.out: port:0
+04-28 10:18:17.513  1726  2812 E Gb28181Local: GPs GPS  GPS  GPS 0.00.0
+04-28 10:18:17.557  1726  4520 I System.out: port:0
+04-28 10:18:17.613  1726  4521 I System.out: port:0
+04-28 10:18:17.691  1726  4522 I System.out: port:0
+04-28 10:18:17.758  1726  4523 I System.out: port:0
+04-28 10:18:17.827  1726  4524 I System.out: port:0
+04-28 10:18:17.897  1726  4525 I System.out: port:0
+04-28 10:18:17.967  1726  4526 I System.out: port:0
+04-28 10:18:18.036  1726  4527 I System.out: port:0
+04-28 10:18:18.123  1726  4528 I System.out: port:0
+04-28 10:18:18.181  1726  4529 I System.out: port:0
+04-28 10:18:18.249  1726  4530 I System.out: port:0
+04-28 10:18:18.320  1726  3261 I System.out: GB28181--->>>-----C++回调java:状态回调 回调函数--- sysState:2 connState:2heartbeatExceptionCount:0 liveState:2 talkState:0 videotapeState:0videotapedownloadState:0---------------------
+04-28 10:18:18.320  1726  3261 E Gb28181Local: onStateUpdate sysState:2,connState:2,heartbeatExceptionCount:0,liveState:2,talkState:0,videotapeState:0,videotapeDownloadState:0
+04-28 10:18:18.330  1726  3261 I System.out: GB28181--->>>-----C++回调java:状态回调 回调函数--- sysState:2 connState:2heartbeatExceptionCount:0 liveState:2 talkState:0 videotapeState:0videotapedownloadState:0---------------------
+04-28 10:18:18.331  1726  3261 E Gb28181Local: onStateUpdate sysState:2,connState:2,heartbeatExceptionCount:0,liveState:2,talkState:0,videotapeState:0,videotapeDownloadState:0
+04-28 10:18:18.332  1726  3261 I System.out: GB28181--->>>-----C++回调java:状态回调 回调函数--- sysState:2 connState:2heartbeatExceptionCount:0 liveState:2 talkState:0 videotapeState:0videotapedownloadState:0---------------------
+04-28 10:18:18.333  1726  3261 E Gb28181Local: onStateUpdate sysState:2,connState:2,heartbeatExceptionCount:0,liveState:2,talkState:0,videotapeState:0,videotapeDownloadState:0
+04-28 10:18:18.337  1726  4658 I System.out: GB28181--->>>-----C++回调java:状态回调 回调函数--- sysState:2 connState:2heartbeatExceptionCount:0 liveState:0 talkState:0 videotapeState:0videotapedownloadState:0---------------------
+04-28 10:18:18.337  1726  4658 E Gb28181Local: onStateUpdate sysState:2,connState:2,heartbeatExceptionCount:0,liveState:0,talkState:0,videotapeState:0,videotapeDownloadState:0
+04-28 10:18:18.517  1726  2812 E Gb28181Local: GPs GPS  GPS  GPS 0.00.0
+04-28 10:18:19.508  1726  2812 E Gb28181Local: GPs GPS  GPS  GPS 0.00.0
+04-28 10:18:20.508  1726  2812 E Gb28181Local: GPs GPS  GPS  GPS 0.00.0
+04-28 10:18:21.508  1726  2812 E Gb28181Local: GPs GPS  GPS  GPS 0.00.0
+04-28 10:18:22.509  1726  2812 E Gb28181Local: GPs GPS  GPS  GPS 0.00.0
+04-28 10:18:23.509  1726  2812 E Gb28181Local: GPs GPS  GPS  GPS 0.00.0
