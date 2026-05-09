@@ -34,3 +34,11 @@ certificates
 /打包/
 /snap/
 /config/
+
+# Tool configs
+.claude/
+.vscode/
+.windsurf/
+
+# Temp files
+tmp_events.txt
