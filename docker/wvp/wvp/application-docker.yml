@@ -15,15 +15,10 @@ spring:
     data:
       # REDIS数据库配置
       redis:
-          # [必须修改] Redis服务器IP, REDIS安装在本机的,使用127.0.0.1
           host: ${REDIS_HOST:127.0.0.1}
-          # [必须修改] 端口号
           port: ${REDIS_PORT:6379}
-          # [可选] 数据库 DB
-          database: 1
-          # [可选] 访问密码,若你的redis服务器没有设置密码，就不需要用密码去连接
-          password:
-          # [可选] 超时时间
+          database: ${REDIS_DATABASE:1}
+          password: ${REDIS_PASSWORD:}
           timeout: 10000
          ## [可选] 一个pool最多可分配多少个jedis实例
          #poolMaxTotal: 1000
@@ -108,9 +103,9 @@ media:
   # 启用多端口模式, 多端口模式使用端口区分每路流，兼容性更好。 单端口使用流的ssrc区分， 点播超时建议使用多端口测试
   rtp:
     # [可选] 是否启用多端口模式, 开启后会在portRange范围内选择端口用于媒体流传输
-    enable: false
+    enable: true
     # [可选] 
-    port-range: 30000,30500 
+    port-range: 31000,31500
     # [可选] 
     send-port-range: 50502,50506 
 
@@ -118,6 +113,7 @@ media:
   record-day: 7
   record-assist-port: 0
 user-settings:
+    sip-log: true
     auto-apply-play: true
     play-timeout: 30000
     wait-track: false

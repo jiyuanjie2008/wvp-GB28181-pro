@@ -27,8 +27,8 @@ import java.util.Collections;
 @ServletComponentScan("com.genersoft.iot.vmp.conf")
 @SpringBootApplication
 @EnableScheduling
-@EnableAsync
-@EnableCaching
+@EnableAsync(proxyTargetClass = true)
+@EnableCaching(proxyTargetClass = true)
 @Slf4j
 public class VManageBootstrap extends SpringBootServletInitializer {
 

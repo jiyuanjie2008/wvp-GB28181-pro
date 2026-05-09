@@ -1,27 +1,7 @@
 version: '3'
 services:
-  polaris-redis:
-    image: redis:latest  # 使用官方Redis镜像
-    restart: unless-stopped
-    healthcheck:
-      test: [ "CMD", "redis-cli", "--raw", "incr", "ping" ]
-      interval: 15s
-      timeout: 5s
-      retries: 10
-      start_period: 10s
-    networks:
-      - media-net
-    # ports:
-    #   - 6379:6379
-    volumes:
-      - ./redis/conf/redis.conf:/opt/polaris/redis/redis.conf
-      - ./volumes/redis/data/:/data
-    environment:
-      TZ: "Asia/Shanghai"
-    command: redis-server /opt/polaris/redis/redis.conf --appendonly yes
-
   polaris-mysql:
-    image: mysql:8  # 使用官方MySQL 8镜像
+    image: mysql:8.0  # 使用官方MySQL 8镜像
     restart: unless-stopped
     healthcheck:
       test: [ "CMD", "bash", "-c", "cat < /dev/null > /dev/tcp/127.0.0.1/3306" ]
@@ -59,7 +39,7 @@ services:
     networks:
       - media-net
     ports:
-     #- "6080:80/tcp"     # [播流]HTTP  安全考虑-非测试阶段需要注释掉，改为由nginx代理播流地址
+      - "6080:80/tcp"     # [播流]HTTP 暴露ZLM HTTP端口供浏览器直接访问流媒体
      #- "4443:443/tcp"     # [播流]HTTPS 安全考虑-非测试阶段需要注释掉，改为由nginx代理播流地址
       - "${MediaRtmp:-10935}:${MediaRtmp:-10935}/tcp"   # [收流]RTMP  
       - "${MediaRtmp:-10935}:${MediaRtmp:-10935}/udp"   # [收流]RTMP  
@@ -67,8 +47,10 @@ services:
       - "${MediaRtsp:-5540}:${MediaRtsp:-5540}/tcp"     # [收流]RTSP  
       - "${MediaRtsp:-5540}:${MediaRtsp:-5540}/udp"     # [收流]RTSP  
      #- "45540:45540/tcp"   # [收流]RTSPS 无效
-      - "${MediaRtp:-10000}:${MediaRtp:-10000}/tcp"   # [收流]RTP   
-      - "${MediaRtp:-10000}:${MediaRtp:-10000}/udp"   # [收流]RTP   
+      - "${MediaRtp:-10000}:${MediaRtp:-10000}/tcp"   # [收流]RTP（单端口备用）
+      - "${MediaRtp:-10000}:${MediaRtp:-10000}/udp"   # [收流]RTP（单端口备用）
+      - "31000-31500:31000-31500/tcp"                  # [收流]RTP多端口模式
+      - "31000-31500:31000-31500/udp"                  # [收流]RTP多端口模式
     volumes:
       - ./volumes/video:/opt/media/bin/www/record/
       - ./logs/media:/opt/media/log/
@@ -87,12 +69,12 @@ services:
     restart: always
     networks:
       - media-net
+      - jxt-web
     ports:
       - "18978:18978"
       - "${SIP_Port:-8116}:${SIP_Port:-8116}/udp"
       - "${SIP_Port:-8116}:${SIP_Port:-8116}/tcp"
     depends_on:
-      - polaris-redis
       - polaris-mysql
       - polaris-media
     volumes:
@@ -118,8 +100,9 @@ services:
       MediaRtsp: ${MediaRtsp:-5540}
       MediaRtp: ${MediaRtp:-10000}
 
-      REDIS_HOST: polaris-redis
+      REDIS_HOST: jxt-redis
       REDIS_PORT: 6379
+      REDIS_PASSWORD: jxt-redis-2026
 
       DATABASE_HOST: polaris-mysql
       DATABASE_PORT: 3306
@@ -156,3 +139,5 @@ services:
 networks:
   media-net:
     driver: bridge
+  jxt-web:
+    external: true
