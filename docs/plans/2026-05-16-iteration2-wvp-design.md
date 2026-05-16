@@ -110,6 +110,22 @@ CREATE TABLE IF NOT EXISTS wvp_realm_transition (
 CREATE INDEX idx_realm_transition_device ON wvp_realm_transition(device_id, valid_until);
 ```
 
+#### wvp_idempotency_log（幂等日志）
+
+IAM 推送幂等去重使用。
+
+```sql
+CREATE TABLE IF NOT EXISTS wvp_idempotency_log (
+    idempotency_key VARCHAR(128) PRIMARY KEY,
+    operation       VARCHAR(32) NOT NULL,
+    device_id       VARCHAR(50) NOT NULL,
+    status          VARCHAR(16) NOT NULL DEFAULT 'success',
+    created_at      DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+```
+
+定期清理：`DELETE FROM wvp_idempotency_log WHERE created_at < NOW() - INTERVAL 7 DAY`
+
 #### wvp_callback_events
 
 **已存在**（W07 IamCallbackClient 已实现）。无需创建。
@@ -218,6 +234,26 @@ WVP 的 `SignAuthenticationFilter` 要求所有 `/api/sy/*` 请求携带以下 *
 }
 ```
 
+**payload_specific 字段定义**：
+
+| 字段 | 必填 | 默认值 | 说明 |
+|------|------|--------|------|
+| deviceName | 是 | — | 设备名称 |
+| sipHa1 | 是 | — | HA1 摘要（32/64 位 hex） |
+| realm | 是 | — | SIP 域（必须与 sipConfig.domain 一致） |
+| charset | 否 | `"GB2312"` | 字符集 |
+| streamMode | 否 | `"TCP-PASSIVE"` | 流传输模式 |
+| sdpIp | 否 | `null` | SDP 接收 IP（null 时由 WVP 在 SIP 注册时从 Contact/SDP 获取） |
+| mediaServerId | 否 | `"auto"` | 流媒体服务器 ID |
+| ssrcCheck | 否 | `false` | SSRC 校验开关 |
+| geoCoordSys | 否 | `"WGS84"` | 地理坐标系 |
+| asMessageChannel | 否 | `false` | 作为消息通道 |
+| broadcastPushAfterAck | 否 | `false` | ACK 后广播推送 |
+| heartbeatInterval | 否 | `60` | 心跳间隔（秒） |
+| heartbeatCount | 否 | `3` | 心跳超时次数 |
+
+**已知 bug**：`Device.java:getHeartBeatInterval()` 方法（约 228-232 行）在 `heartBeatCount == null` 时返回 60，但实际检查的是 `heartBeatCount` 而非 `heartBeatInterval`。此 bug 为既有问题，不在迭代 2 修复范围内，但开发时需注意不要依赖此方法的正确性。
+
 ### 4.3 输入校验
 
 | 字段 | 规则 | 错误码 |
@@ -264,12 +300,12 @@ POST /api/sy/device
        expires      = 3600  -- 占位值（原始秒数），终端 REGISTER 时由 SIP Expires header 覆盖
    ↓
    设备已存在:
-     UPDATE wvp_device SET
-       sip_ha1      = sipHa1
-       name         = COALESCE(deviceName, name)
-       charset      = COALESCE(charset, charset)
-       mediaServerId = COALESCE(mediaServerId, mediaServerId)
-       -- 其他终端属性按需更新（仅非 null 字段）
+     Java 端构建 UPDATE（MyBatis 注解风格，仅非 null 字段参与更新）：
+       sip_ha1: 必更（核心字段）
+       name: if (deviceName != null) -> SET name=#{deviceName}
+       charset: if (charset != null) -> SET charset=#{charset}
+       mediaServerId: if (mediaServerId != null) -> SET media_server_id=#{mediaServerId}
+       其他可选字段同理，仅非 null 时追加 SET 子句
      WHERE device_id = target_deviceId
    ↓
 4. 记录幂等 key（INSERT wvp_idempotency_log）
