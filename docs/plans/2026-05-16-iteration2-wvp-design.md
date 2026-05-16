@@ -250,7 +250,7 @@ POST /api/sy/device
        disabled     = false
        activated    = true
        password     = null
-       expires_time = 当前时间 + sipConfig.getKeepaliveTime() * 3
+       expires      = 3600  -- 占位值（原始秒数），终端 REGISTER 时由 SIP Expires header 覆盖
    ↓
    设备已存在:
      UPDATE wvp_device SET
