@@ -294,6 +294,16 @@ Same pattern as Step 7.
 
 Same pattern — add the 5 columns to the SELECT list.
 
+**Step 9b: Scan ALL remaining methods**
+
+The methods listed above (Steps 1-9) are the confirmed ones. However, **any future additions to DeviceMapper.java that reference `wvp_device` must also include the 5 new columns**. Before closing Task 3, search for all `@Select`/`@Insert`/`@Update` annotations touching `wvp_device` and verify none were missed:
+
+```bash
+grep -n "wvp_device" src/main/java/com/genersoft/iot/vmp/gb28181/dao/DeviceMapper.java
+```
+
+Pay special attention to `batchUpdate()` (around line 414) — it updates all fields in a foreach loop.
+
 **Step 10: Verify compilation**
 
 Run: `mvn compile -pl . -q`
@@ -838,8 +848,17 @@ public interface DeviceIdentityMapper {
                              @Param("deviceId") String deviceId,
                              @Param("status") String status);
 
+    @Select("SELECT status FROM wvp_idempotency_log WHERE idempotency_key = #{key}")
+    String findIdempotencyStatus(@Param("key") String key);
+
     @Select("SELECT device_id FROM wvp_idempotency_log WHERE idempotency_key = #{key}")
     String findIdempotencyDeviceId(@Param("key") String key);
+
+    @Update("UPDATE wvp_idempotency_log SET status = #{status} WHERE idempotency_key = #{key}")
+    int updateIdempotencyStatus(@Param("key") String key, @Param("status") String status);
+
+    @Delete("DELETE FROM wvp_idempotency_log WHERE idempotency_key = #{key}")
+    int deleteIdempotencyLog(@Param("key") String key);
 
     @Delete("DELETE FROM wvp_idempotency_log WHERE created_at < DATE_SUB(NOW(), INTERVAL #{days} DAY)")
     int cleanOldEntries(@Param("days") int days);
@@ -902,38 +921,51 @@ public class DeviceIdentityService {
     public DeviceIdentityResult register(IamSyncRequest request) {
         String deviceId = request.getTargetDeviceId();
         IamSyncPayloadSpecific payload = request.getPayloadSpecific();
+        String key = request.getIdempotencyKey();
 
-        // Idempotency check
-        String existingDeviceId = identityMapper.findIdempotencyDeviceId(request.getIdempotencyKey());
-        if (existingDeviceId != null) {
-            log.info("Idempotent hit: key={}, device={}", request.getIdempotencyKey(), existingDeviceId);
-            return DeviceIdentityResult.ok(deviceId, false);
-        }
-
-        Device device = deviceMapper.getDeviceByDeviceId(deviceId);
-        boolean created;
-
-        if (device == null) {
-            device = buildNewDevice(deviceId, payload);
-            identityMapper.insertDevice(device);
-            created = true;
-            log.info("IAM register: created device {} with sipHa1", deviceId);
-        } else {
-            updateDevice(device, payload);
-            created = false;
-            log.info("IAM register: updated device {} with new sipHa1", deviceId);
-        }
-
-        // Record idempotency
+        // Idempotency: INSERT (status='processing') to claim
         try {
-            identityMapper.insertIdempotencyLog(
-                    request.getIdempotencyKey(), request.getOperation(), deviceId, "success");
+            identityMapper.insertIdempotencyLog(key, request.getOperation(), deviceId, "processing");
         } catch (DuplicateKeyException e) {
-            log.info("Idempotency log race: key={}, returning existing result", request.getIdempotencyKey());
-            return DeviceIdentityResult.ok(deviceId, false);
+            // Key already exists — check status
+            String existingStatus = identityMapper.findIdempotencyStatus(key);
+            if ("success".equals(existingStatus)) {
+                log.info("Idempotent hit (success): key={}, device={}", key, deviceId);
+                return DeviceIdentityResult.ok(deviceId, false);
+            } else if ("processing".equals(existingStatus)) {
+                log.info("Idempotent hit (processing): key={}", key);
+                return DeviceIdentityResult.fail(13009, "request already processing");
+            } else {
+                // failed — delete and retry
+                log.info("Idempotent hit (failed), retrying: key={}", key);
+                identityMapper.deleteIdempotencyLog(key);
+                identityMapper.insertIdempotencyLog(key, request.getOperation(), deviceId, "processing");
+            }
         }
 
-        return DeviceIdentityResult.ok(deviceId, created);
+        try {
+            Device device = deviceMapper.getDeviceByDeviceId(deviceId);
+            boolean created;
+
+            if (device == null) {
+                device = buildNewDevice(deviceId, payload);
+                identityMapper.insertDevice(device);
+                created = true;
+                log.info("IAM register: created device {} with sipHa1", deviceId);
+            } else {
+                updateDevice(device, payload);
+                created = false;
+                log.info("IAM register: updated device {} with new sipHa1", deviceId);
+            }
+
+            // Mark idempotency as success
+            identityMapper.updateIdempotencyStatus(key, "success");
+            return DeviceIdentityResult.ok(deviceId, created);
+        } catch (Exception e) {
+            // Mark idempotency as failed to allow retry
+            identityMapper.updateIdempotencyStatus(key, "failed");
+            throw e;
+        }
     }
 
     private Device buildNewDevice(String deviceId, IamSyncPayloadSpecific payload) {

@@ -144,17 +144,26 @@ private Boolean activated = true;
 ```
 
 MyBatis 映射在 `DeviceMapper.java` 注解 SQL 中同步添加（本项目无 XML mapper）。
-需修改的方法：
 
-| 方法 | 类型 | 需追加字段 |
-|------|------|-----------|
-| `add()` | @Insert | sip_ha1, sip_ha1_previous, previous_valid_until, disabled, activated |
-| `addCustomDevice()` | @Insert | 同上（当前不写 expires，注意也需补新列） |
-| `update()` | @Update | sip_ha1, sip_ha1_previous, previous_valid_until, disabled, activated |
-| `updateCustom()` | @Update | 同上 |
-| `query()` | @Select | 结果字段追加 sipHa1 等（影响列表页） |
-| `getAll()` | @Select | 结果字段追加 |
-| `getDeviceByDeviceId()` | @Select | 结果字段追加（REGISTER 认证依赖此查询，sipHa1 必须返回） |
+**原则**：DeviceMapper.java 内所有涉及 `wvp_device` 表的 `@Select` / `@Insert` / `@Update` 方法必须逐一扫描，补充 `sip_ha1, sip_ha1_previous, previous_valid_until, disabled, activated` 五个字段。漏一个 SELECT 会导致运行时 sipHa1=null（REGISTER 认证失败）；漏一个 UPDATE 会导致字段被覆盖为 null。
+
+已确认需修改的方法（按出现顺序）：
+
+| 方法 | 类型 | 说明 |
+|------|------|------|
+| `getDeviceByDeviceId()` | @Select | **最高优先**：REGISTER 认证查询，sipHa1 必须返回 |
+| `add()` | @Insert | 新设备插入，需含新列 |
+| `update()` | @Update | 设备信息更新，需含新列 |
+| `getDevices()` | @Select | 列表查询（带 dataType/online 过滤） |
+| `getOnlineDevices()` | @Select | 在线设备列表 |
+| `getOnlineDevicesByServerId()` | @Select | 按服务器过滤的在线设备 |
+| `updateCustom()` | @Update | 自定义设备更新 |
+| `addCustomDevice()` | @Insert | 自定义设备插入 |
+| `getAll()` | @Select | 全量查询（`select *` 已自动覆盖） |
+| `getDeviceList()` | @Select | 管理页面列表查询 |
+| `batchUpdate()` | @Update | 批量更新（需含新列） |
+
+注意：`getAll()` 和 `queryDeviceWithAsMessageChannel()` 使用 `select *`，无需修改。其余显式列名的方法必须逐一补充。
 
 ---
 
@@ -274,31 +283,38 @@ POST /api/sy/device
   ↓
 1. 输入校验（字段格式 + realm 一致性）
    ↓
-2. 幂等检查（idempotency_key）
-   - 用 key 查 wvp_idempotency_log 表（或内存缓存）
-   - 已存在且成功 → 直接返回 200 {"created": false}
-   - 已存在但失败 → 重新处理
+2. 幂等检查：INSERT wvp_idempotency_log (key, operation, device_id, status='processing')
+   - INSERT 成功 → 首次处理，继续
+   - INSERT 失败（唯一键冲突）→ 查询已有记录：
+     - status='success' → 直接返回 200 {"created": false}
+     - status='processing' → 返回 200 {"code": 13009, "msg": "request already processing"}
+     - status='failed' → 删除旧记录，重新 INSERT 抢占，继续处理
    ↓
-3. 查找设备（target_deviceId → wvp_device.device_id）
+3. 【事务内】查找设备 + 写入设备（target_deviceId → wvp_device.device_id）
    ↓
    设备不存在:
-     INSERT wvp_device
+     INSERT wvp_device（默认值与 DeviceMapper.add() 保持一致）
        device_id    = target_deviceId
        name         = deviceName
        sip_ha1      = sipHa1
        stream_mode  = streamMode
        transport    = null          -- at SIP REGISTER via ViaHeader
-       charset      = charset
-       mediaServerId = mediaServerId
-       ssrcCheck    = ssrcCheck
-       geoCoordSys  = geoCoordSys
-       asMessageChannel = asMessageChannel
-       heartbeatInterval = heartbeatInterval
-       heartbeatCount    = heartbeatCount
+       charset      = charset ?? "GB2312"
+       mediaServerId = mediaServerId ?? "auto"
+       ssrcCheck    = ssrcCheck ?? false
+       geoCoordSys  = geoCoordSys ?? "WGS84"
+       asMessageChannel = asMessageChannel ?? false
+       broadcastPushAfterAck = broadcastPushAfterAck ?? false
+       heartbeatInterval = heartbeatInterval ?? 60
+       heartbeatCount    = heartbeatCount ?? 3
        disabled     = false
        activated    = true
        password     = null
-       expires      = 3600  -- 占位值（原始秒数），终端 REGISTER 时由 SIP Expires header 覆盖
+       expires      = 3600
+       on_line      = false
+       serverId     = "auto"
+       createTime   = now()
+       updateTime   = now()
    ↓
    设备已存在:
      Java 端构建 UPDATE（MyBatis 注解风格，仅非 null 字段参与更新）：
@@ -309,10 +325,14 @@ POST /api/sy/device
        其他可选字段同理，仅非 null 时追加 SET 子句
      WHERE device_id = target_deviceId
    ↓
-4. 记录幂等 key（INSERT wvp_idempotency_log）
+4. 【同一事务】UPDATE wvp_idempotency_log SET status='success' WHERE key=...
    ↓
 5. 返回 200
+   ↓
+异常时：UPDATE wvp_idempotency_log SET status='failed' WHERE key=...
 ```
+
+**并发安全**：步骤 2 的 INSERT 抢占 + 步骤 3-4 在同一事务内完成。唯一键冲突确保同一 idempotency_key 不会被并发处理两次。
 
 ### 4.5 响应格式
 
@@ -358,20 +378,21 @@ realm 不匹配：
 
 ### 4.6 幂等机制
 
-使用独立轻量表记录已处理的 idempotency_key：
+使用独立轻量表 + INSERT 抢占保证幂等：
 
 ```sql
 CREATE TABLE IF NOT EXISTS wvp_idempotency_log (
     idempotency_key VARCHAR(128) PRIMARY KEY,
     operation       VARCHAR(32) NOT NULL,
     device_id       VARCHAR(50) NOT NULL,
-    status          VARCHAR(16) NOT NULL DEFAULT 'success',
+    status          VARCHAR(16) NOT NULL DEFAULT 'success',  -- processing / success / failed
     created_at      DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 ```
 
-- INSERT 成功 = 首次处理
-- INSERT 失败（唯一约束冲突）= 幂等命中，查询已有结果返回
+- INSERT (status='processing') 成功 = 抢占成功，处理设备写入，事务结束时 UPDATE status='success'
+- INSERT 失败（唯一键冲突）= 查询已有记录判断状态
+- 异常时 UPDATE status='failed'，允许重试
 
 定期清理：`DELETE FROM wvp_idempotency_log WHERE created_at < NOW() - INTERVAL 7 DAY`
 
@@ -387,8 +408,10 @@ com.genersoft.iot.vmp.jxt.identity/
 ├── service/
 │   └── DeviceIdentityService.java       // 设备创建/更新 + 幂等
 └── mapper/
-    └── DeviceIdentityMapper.java        // MyBatis 设备写入
+    └── DeviceIdentityMapper.java        // MyBatis 设备写入 + 幂等日志
 ```
+
+**DeviceIdentityMapper 与 DeviceMapper 的关系**：DeviceIdentityMapper 独立负责 IAM 推送的设备写入（INSERT/UPDATE）和幂等日志。不复用 DeviceMapper.add()，因为 IAM 场景的字段集不同（有 sipHa1、无 ip/port/hostAddress 等）。但字段默认值必须与 DeviceMapper.add() 保持一致，避免 RegisterRequestProcessor 后续处理时字段缺失。关键默认值：`streamMode="TCP-PASSIVE"`, `charset="GB2312"`, `mediaServerId="auto"`, `ssrcCheck=false`, `geoCoordSys="WGS84"`, `asMessageChannel=false`, `broadcastPushAfterAck=false`, `heartbeatInterval=60`, `heartbeatCount=3`, `disabled=false`, `activated=true`, `onLine=false`, `serverId="auto"`, `expires=3600`。
 
 ---
 
@@ -605,6 +628,11 @@ Step 6: 修复 E2E 中发现的问题                          [Day 7]
 ## 8. 配置项
 
 ```yaml
+sy:
+  enable: true                           # SignAuthenticationFilter 总开关（已有配置项）
+                                         # DeviceIdentityController 依赖此开关进行 SM3+SM4 验签
+                                         # sy.enable=false 时 /api/sy/* 不验签，接口裸露
+
 jxt:
   identity:
     enabled: true                        # WVP 设备身份功能总开关
@@ -616,6 +644,8 @@ jxt:
     idempotency:
       cleanup-days: 7                    # 幂等日志保留天数
 ```
+
+**注意**：`jxt.identity.controller.enabled` 控制控制器 Bean 是否注册，`sy.enable` 控制 SM3+SM4 验签过滤器是否生效。生产环境两者都必须为 true。开发环境可临时设置 `sy.enable=false` 跳过签名调试。
 
 所有新功能通过 `@ConditionalOnProperty` 开关控制，关闭后完全回退到现有行为。
 
