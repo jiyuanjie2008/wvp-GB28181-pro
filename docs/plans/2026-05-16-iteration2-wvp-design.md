@@ -443,8 +443,15 @@ boolean authorized;
 if (result == AuthResult.SUCCESS) {
     authorized = true;
 } else if (result == AuthResult.SKIP) {
-    // 所有策略都 SKIP：设备无 HA1 也无 password → 兜底全局密码（监控级）
-    authorized = digestHelper.doAuthenticatePlainTextPassword(request, sipConfig.getPassword());
+    // 所有策略都 SKIP：设备无 HA1 也无 password
+    String globalPassword = sipConfig.getPassword();
+    if (ObjectUtils.isEmpty(globalPassword)) {
+        // 无鉴权模式：与现有行为一致（RegisterRequestProcessor:167）
+        // 当 password 和全局密码都为空时，直接放行
+        authorized = true;
+    } else {
+        authorized = digestHelper.doAuthenticatePlainTextPassword(request, globalPassword);
+    }
 } else {
     // FAIL：有凭证但验证失败 → 拒绝
     authorized = false;
@@ -457,7 +464,8 @@ if (result == AuthResult.SUCCESS) {
 |------|---------|--------|
 | IAM 推送的设备（有 sipHa1，无 password） | 用全局密码验证 → **失败** | Ha1Strategy 验证 → **成功** |
 | 旧设备（无 sipHa1，有 password） | 用 device password 验证 → 成功 | PlaintextStrategy 验证 → 成功 |
-| 监控级设备（无 sipHa1，无 password） | 用全局密码 → 成功 | SKIP → 兜底全局密码 → 成功 |
+| 监控级设备（无 sipHa1，无 password，有全局密码） | 用全局密码 → 成功 | SKIP → 兜底全局密码 → 成功 |
+| 无鉴权设备（无 sipHa1，无 password，无全局密码） | 直接放行 → 成功 | SKIP → 全局密码为空 → 放行 → 成功 |
 | 禁用设备（未来） | 正常验证 | DisabledStrategy → FAIL（Phase 2） |
 
 ### 5.5 代码结构
