@@ -19,6 +19,7 @@
 | 多租户 | **不考虑** | 当前单租户部署 |
 | 幂等机制 | 用 IAM payload 的 idempotency_key | 无需额外设计 |
 | WVP 新代码包 | `com.genersoft.iot.vmp.jxt.identity` | 遵循 §12.9 WVP Fork 维护策略 |
+| IAM→WVP 认证 | **SM3+SM4 签名（query params）** | 复用 SignAuthenticationFilter，IAM SyncDispatcher 实现签名客户端 |
 
 ---
 
@@ -135,10 +136,47 @@ MyBatis 映射在 `DeviceMapper.xml` 的 resultMap 和 insert/update 语句中�
 ### 4.1 端点定义
 
 ```
-POST /api/sy/device
-认证: SignAuthenticationFilter（SM3+SM4 签名，已有基础设施）
+POST /api/sy/device?appKey={appKey}&accessToken={sm4Ciphertext}&timestamp={epochMillis}&sign={sm3Hex}
+认证: SignAuthenticationFilter（SM3+SM4 签名，通过 URL query params 传递）
 Content-Type: application/json
 ```
+
+### 4.1a IAM→WVP 签名契约（SM3+SM4）
+
+WVP 的 `SignAuthenticationFilter` 要求所有 `/api/sy/*` 请求携带以下 **URL query parameters**：
+
+| 参数 | 类型 | 说明 |
+|------|------|------|
+| `appKey` | string | 应用标识，从 WVP Redis `SYSTEM_APPKEY` 获取 |
+| `accessToken` | string | SM4-ECB 加密的 JSON token（hex 编码） |
+| `timestamp` | long | 请求生成的 epoch 毫秒时间戳 |
+| `sign` | string | SM3 签名（lowercase hex） |
+
+**SM3 签名算法**：
+1. 收集所有 query parameter（排除 `sign`）
+2. 按 parameter name **字典序排列**
+3. 拼接：`key1 + value1 + key2 + value2 + ...`
+4. POST JSON 请求：**追加请求 body 原始字符串**
+5. **追加 `secret`**（从 WVP Redis `SYSTEM_APPKEY` 对应的 appSecret）
+6. 计算 `SM3(utf8Bytes)` → lowercase hex
+
+**SM4 accessToken 生成**：
+1. 明文：`{"expirationTime": <未来时间戳毫秒>}`
+2. 密钥：WVP Redis `SYSTEM_SM4_KEY`（hex 编码的 128-bit key）
+3. 算法：SM4-ECB，PKCS5 padding
+4. 输出：hex 编码密文
+
+**时间戳校验**：`currentTime > timestamp + expires * 60 * 1000` → 拒绝（code=3）。
+`expires` 从 WVP Redis `sys_INTERFACE_VALID_TIME.systemValue` 获取（单位：分钟）。
+
+**IAM 需要的配置**（从 WVP Redis 或共享配置获取）：
+- `appKey` + `appSecret`（签名密钥对）
+- `sm4Key`（accessToken 加密密钥）
+- `expires`（时间戳有效期，分钟）
+
+**响应判断**：WVP 始终返回 HTTP 200，通过 JSON body 的 `code` 字段判断：
+- `code == 0`：成功
+- `code != 0`：失败（`msg` 字段有原因）
 
 ### 4.2 请求体
 
