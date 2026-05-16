@@ -127,7 +127,18 @@ private Boolean disabled = false;
 private Boolean activated = true;
 ```
 
-MyBatis 映射在 `DeviceMapper.xml` 的 resultMap 和 insert/update 语句中同步添加。
+MyBatis 映射在 `DeviceMapper.java` 注解 SQL 中同步添加（本项目无 XML mapper）。
+需修改的方法：
+
+| 方法 | 类型 | 需追加字段 |
+|------|------|-----------|
+| `add()` | @Insert | sip_ha1, sip_ha1_previous, previous_valid_until, disabled, activated |
+| `addCustomDevice()` | @Insert | 同上（当前不写 expires，注意也需补新列） |
+| `update()` | @Update | sip_ha1, sip_ha1_previous, previous_valid_until, disabled, activated |
+| `updateCustom()` | @Update | 同上 |
+| `query()` | @Select | 结果字段追加 sipHa1 等（影响列表页） |
+| `getAll()` | @Select | 结果字段追加 |
+| `getDeviceByDeviceId()` | @Select | 结果字段追加（REGISTER 认证依赖此查询，sipHa1 必须返回） |
 
 ---
 
