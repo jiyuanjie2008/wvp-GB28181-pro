@@ -144,9 +144,9 @@ public interface DeviceMapper {
                 ", mobile_position_submission_interval=#{mobilePositionSubmissionInterval}" +
                 ", subscribe_cycle_for_alarm=#{subscribeCycleForAlarm}" +
                 ", expires=#{expires}" +
-                ", sip_ha1=#{sipHa1}" +
-                ", disabled=#{disabled}" +
-                ", activated=#{activated}" +
+                "<if test='sipHa1 != null'>, sip_ha1=#{sipHa1}</if>" +
+                "<if test='disabled != null'>, disabled=#{disabled}</if>" +
+                "<if test='activated != null'>, activated=#{activated}</if>" +
                 ", server_id=#{serverId}" +
                 " WHERE device_id=#{deviceId}"+
             " </script>"})
@@ -305,7 +305,9 @@ public interface DeviceMapper {
             ", ip=#{ip}, sdp_ip=#{sdpIp}, port=#{port}, charset=#{charset}" +
             ", ssrc_check=#{ssrcCheck}, as_message_channel=#{asMessageChannel}" +
             ", broadcast_push_after_ack=#{broadcastPushAfterAck}, geo_coord_sys=#{geoCoordSys}, media_server_id=#{mediaServerId}" +
-            ", sip_ha1=#{sipHa1}, disabled=#{disabled}, activated=#{activated}" +
+            "<if test='sipHa1 != null'>, sip_ha1=#{sipHa1}</if>" +
+            "<if test='disabled != null'>, disabled=#{disabled}</if>" +
+            "<if test='activated != null'>, activated=#{activated}</if>" +
             " WHERE id=#{id}"+
             " </script>"})
     void updateCustom(Device device);
@@ -466,9 +468,9 @@ public interface DeviceMapper {
             ", subscribe_cycle_for_alarm=#{item.subscribeCycleForAlarm}" +
             ", expires=#{item.expires}" +
             ", server_id=#{item.serverId}" +
-            ", sip_ha1=#{item.sipHa1}" +
-            ", disabled=#{item.disabled}" +
-            ", activated=#{item.activated}" +
+            "<if test='item.sipHa1 != null'>, sip_ha1=#{item.sipHa1}</if>" +
+            "<if test='item.disabled != null'>, disabled=#{item.disabled}</if>" +
+            "<if test='item.activated != null'>, activated=#{item.activated}</if>" +
             " WHERE device_id=#{item.deviceId}"+
             "</foreach>" +
             "</script>"})

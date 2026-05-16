@@ -6,7 +6,7 @@ import com.genersoft.iot.vmp.jxt.identity.service.DeviceIdentityService;
 import com.genersoft.iot.vmp.vmanager.bean.WVPResult;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,7 +15,7 @@ import java.util.regex.Pattern;
 @Slf4j
 @RestController
 @RequestMapping(value = "/api/sy")
-@ConditionalOnProperty(prefix = "jxt.identity.controller", name = "enabled", havingValue = "true", matchIfMissing = true)
+@ConditionalOnExpression("'${sy.enable:false}' == 'true' && '${jxt.identity.controller.enabled:true}' == 'true'")
 public class DeviceIdentityController {
 
     private static final Pattern DEVICE_ID_PATTERN = Pattern.compile("^\\d{20}$");
@@ -28,7 +28,10 @@ public class DeviceIdentityController {
     private SipConfig sipConfig;
 
     @PostMapping(value = "/device", consumes = "application/json", produces = "application/json")
-    public WVPResult<DeviceIdentityData> register(@RequestBody IamSyncRequest request) {
+    public WVPResult<DeviceIdentityData> register(@RequestBody(required = false) IamSyncRequest request) {
+        if (request == null) {
+            return fail(13000, "Missing request body");
+        }
         log.info("IAM sync: operation={}, device={}, key={}", request.getOperation(),
                 request.getTargetDeviceId(), request.getIdempotencyKey());
 
