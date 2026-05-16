@@ -630,32 +630,39 @@ Replace lines 116-177 (the password resolution + auth logic) with the strategy c
 
 ```java
             if (device != null) {
-                // === Strategy chain authentication (new) ===
-                AuthResult result = strategyChain.authenticate(device, request, sipConfig.getDomain());
+                // Determine if device needs auth at all
+                boolean deviceHasHa1 = !ObjectUtils.isEmpty(device.getSipHa1());
+                boolean deviceHasPassword = !ObjectUtils.isEmpty(device.getPassword());
+                String globalPassword = sipConfig.getPassword();
+                boolean hasGlobalPassword = !ObjectUtils.isEmpty(globalPassword);
+                boolean needsAuth = deviceHasHa1 || deviceHasPassword || hasGlobalPassword;
 
-                if (result == AuthResult.SUCCESS) {
+                // If device needs auth but no Authorization header → send 401 challenge
+                AuthorizationHeader authHead = (AuthorizationHeader) request.getHeader(AuthorizationHeader.NAME);
+                if (authHead == null && needsAuth) {
+                    log.info(title + " 设备：{}, 回复401: {}", deviceId, requestAddress);
+                    response = getMessageFactory().createResponse(Response.UNAUTHORIZED, request);
+                    new DigestServerAuthenticationHelper().generateChallenge(getHeaderFactory(), response, sipConfig.getDomain());
+                    sipSender.transmitRequest(request.getLocalAddress().getHostAddress(), response);
+                    return;
+                }
+
+                if (!needsAuth) {
+                    // No-auth mode: device has no HA1, no password, no global password → allow
                     passwordCorrect = true;
-                } else if (result == AuthResult.SKIP) {
-                    // All strategies skipped: device has no HA1 and no device-level password
-                    String globalPassword = sipConfig.getPassword();
-                    if (ObjectUtils.isEmpty(globalPassword)) {
-                        // No-auth mode: device has no password, no global password → allow
-                        passwordCorrect = true;
-                    } else {
-                        // Fallback to global password
-                        AuthorizationHeader authHead = (AuthorizationHeader) request.getHeader(AuthorizationHeader.NAME);
-                        if (authHead == null) {
-                            log.info(title + " 设备：{}, 回复401: {}", deviceId, requestAddress);
-                            response = getMessageFactory().createResponse(Response.UNAUTHORIZED, request);
-                            new DigestServerAuthenticationHelper().generateChallenge(getHeaderFactory(), response, sipConfig.getDomain());
-                            sipSender.transmitRequest(request.getLocalAddress().getHostAddress(), response);
-                            return;
-                        }
-                        passwordCorrect = new DigestServerAuthenticationHelper().doAuthenticatePlainTextPassword(request, globalPassword);
-                    }
                 } else {
-                    // FAIL: device has credentials but verification failed
-                    passwordCorrect = false;
+                    // Run strategy chain
+                    AuthResult result = strategyChain.authenticate(device, request, sipConfig.getDomain());
+
+                    if (result == AuthResult.SUCCESS) {
+                        passwordCorrect = true;
+                    } else if (result == AuthResult.SKIP) {
+                        // No strategy matched (no HA1, no device password) → try global password
+                        passwordCorrect = new DigestServerAuthenticationHelper().doAuthenticatePlainTextPassword(request, globalPassword);
+                    } else {
+                        // FAIL: a strategy matched but verification failed
+                        passwordCorrect = false;
+                    }
                 }
             } else {
                 // Device not in DB: use global password or reject
@@ -934,7 +941,8 @@ public class DeviceIdentityService {
         device.setDeviceId(deviceId);
         device.setName(payload.getDeviceName());
         device.setSipHa1(payload.getSipHa1());
-        device.setTransport(payload.getStreamMode() != null ? payload.getStreamMode().toLowerCase() : "tcp-passive");
+        device.setStreamMode(payload.getStreamMode() != null ? payload.getStreamMode() : "TCP-PASSIVE");
+        // transport (UDP/TCP) is NOT set here — determined at SIP REGISTER time from ViaHeader
         device.setCharset(payload.getCharset() != null ? payload.getCharset() : "GB2312");
         device.setMediaServerId(payload.getMediaServerId() != null ? payload.getMediaServerId() : "auto");
         device.setSsrcCheck(payload.getSsrcCheck() != null ? payload.getSsrcCheck() : false);
@@ -963,7 +971,8 @@ public class DeviceIdentityService {
         if (payload.getDeviceName() != null) device.setName(payload.getDeviceName());
         if (payload.getCharset() != null) device.setCharset(payload.getCharset());
         if (payload.getMediaServerId() != null) device.setMediaServerId(payload.getMediaServerId());
-        if (payload.getStreamMode() != null) device.setTransport(payload.getStreamMode().toLowerCase());
+        if (payload.getStreamMode() != null) device.setStreamMode(payload.getStreamMode());
+        // transport (UDP/TCP) is NOT updated here — determined at SIP REGISTER time from ViaHeader
         if (payload.getSsrcCheck() != null) device.setSsrcCheck(payload.getSsrcCheck());
         if (payload.getGeoCoordSys() != null) device.setGeoCoordSys(payload.getGeoCoordSys());
         if (payload.getAsMessageChannel() != null) device.setAsMessageChannel(payload.getAsMessageChannel());
@@ -1046,7 +1055,7 @@ import java.util.regex.Pattern;
 public class DeviceIdentityController {
 
     private static final Pattern DEVICE_ID_PATTERN = Pattern.compile("^\\d{20}$");
-    private static final Pattern HA1_PATTERN = Pattern.compile("^[0-9a-fA-F]{32}$|^[0-9a-fA-F]{64}$");
+    private static final Pattern HA1_PATTERN = Pattern.compile("^[0-9a-fA-F]{32}$");
 
     @Autowired
     private DeviceIdentityService identityService;
@@ -1079,7 +1088,7 @@ public class DeviceIdentityController {
             return fail(13007, "Missing payload_specific.sipHa1");
         }
         if (!HA1_PATTERN.matcher(request.getPayloadSpecific().getSipHa1()).matches()) {
-            return fail(13004, "Invalid sipHa1 format: expected 32 or 64 hex chars");
+            return fail(13004, "Invalid sipHa1 format: expected 32 hex chars (MD5 digest)");
         }
         if (ObjectUtils.isEmpty(request.getPayloadSpecific().getRealm())) {
             return fail(13008, "Missing payload_specific.realm");

@@ -239,7 +239,7 @@ WVP 的 `SignAuthenticationFilter` 要求所有 `/api/sy/*` 请求携带以下 *
 | 字段 | 必填 | 默认值 | 说明 |
 |------|------|--------|------|
 | deviceName | 是 | — | 设备名称 |
-| sipHa1 | 是 | — | HA1 摘要（32/64 位 hex） |
+| sipHa1 | 是 | — | HA1 摘要（32 位 hex，MD5 输出） |
 | realm | 是 | — | SIP 域（必须与 sipConfig.domain 一致） |
 | charset | 否 | `"GB2312"` | 字符集 |
 | streamMode | 否 | `"TCP-PASSIVE"` | 流传输模式 |
@@ -261,7 +261,7 @@ WVP 的 `SignAuthenticationFilter` 要求所有 `/api/sy/*` 请求携带以下 *
 | schema_version | 必须为 1 | 13001 |
 | operation | 必须为 "register" | 13002 |
 | target_deviceId | 20 位数字 | 13003 |
-| sipHa1 | 32 位或 64 位 hex | 13004 |
+| sipHa1 | 32 位 hex（MD5 摘要） | 13004 |
 | realm | 与 sipConfig.domain 一致 | 13005 |
 | idempotency_key | 非空 | 13006 |
 | payload_specific.sipHa1 | 非空 | 13007 |
@@ -286,7 +286,8 @@ POST /api/sy/device
        device_id    = target_deviceId
        name         = deviceName
        sip_ha1      = sipHa1
-       transport    = streamMode.toLowerCase()
+       stream_mode  = streamMode
+       transport    = null          -- at SIP REGISTER via ViaHeader
        charset      = charset
        mediaServerId = mediaServerId
        ssrcCheck    = ssrcCheck
@@ -462,12 +463,14 @@ public class DeviceAuthStrategyChain {
                 return result;
             }
         }
-        return AuthResult.FAIL;
+        return AuthResult.SKIP;
     }
 }
 ```
 
-**语义**：第一条匹配的策略给出最终结果（SUCCESS 或 FAIL），后续策略不执行。
+**语义**：第一条匹配的策略给出最终结果（SUCCESS 或 FAIL），后续策略不执行。所有策略均 SKIP 时返回 SKIP（由调用方决定兜底行为）。
+
+**401 challenge 前置检查**：策略链不负责发送 401。调用方（RegisterRequestProcessor）在进入策略链之前，先判断设备是否需要鉴权（sipHa1 非空、或 password 非空、或全局密码非空）。若需鉴权但 AuthorizationHeader == null，直接发送 401 challenge 并 return。
 
 ### 5.4 RegisterRequestProcessor 改造
 
@@ -484,24 +487,35 @@ boolean authorized = digestHelper.doAuthenticatePlainTextPassword(request, passw
 
 ```java
 // 新代码
-AuthResult result = strategyChain.authenticate(device, request, sipConfig.getDomain());
+boolean deviceHasHa1 = !ObjectUtils.isEmpty(device.getSipHa1());
+boolean deviceHasPassword = !ObjectUtils.isEmpty(device.getPassword());
+String globalPassword = sipConfig.getPassword();
+boolean hasGlobalPassword = !ObjectUtils.isEmpty(globalPassword);
+boolean needsAuth = deviceHasHa1 || deviceHasPassword || hasGlobalPassword;
+
+// 需要鉴权但无 Authorization 头 → 发送 401 challenge
+AuthorizationHeader authHead = (AuthorizationHeader) request.getHeader(AuthorizationHeader.NAME);
+if (authHead == null && needsAuth) {
+    response = getMessageFactory().createResponse(Response.UNAUTHORIZED, request);
+    new DigestServerAuthenticationHelper().generateChallenge(getHeaderFactory(), response, sipConfig.getDomain());
+    sipSender.transmitRequest(request.getLocalAddress().getHostAddress(), response);
+    return;
+}
 
 boolean authorized;
-if (result == AuthResult.SUCCESS) {
-    authorized = true;
-} else if (result == AuthResult.SKIP) {
-    // 所有策略都 SKIP：设备无 HA1 也无 password
-    String globalPassword = sipConfig.getPassword();
-    if (ObjectUtils.isEmpty(globalPassword)) {
-        // 无鉴权模式：与现有行为一致（RegisterRequestProcessor:167）
-        // 当 password 和全局密码都为空时，直接放行
-        authorized = true;
-    } else {
-        authorized = digestHelper.doAuthenticatePlainTextPassword(request, globalPassword);
-    }
+if (!needsAuth) {
+    authorized = true;  // 无鉴权模式
 } else {
-    // FAIL：有凭证但验证失败 → 拒绝
-    authorized = false;
+    AuthResult result = strategyChain.authenticate(device, request, sipConfig.getDomain());
+    if (result == AuthResult.SUCCESS) {
+        authorized = true;
+    } else if (result == AuthResult.SKIP) {
+        // 所有策略都 SKIP：设备无 HA1 也无 device password → 尝试全局密码
+        authorized = digestHelper.doAuthenticatePlainTextPassword(request, globalPassword);
+    } else {
+        // FAIL：有凭证但验证失败 → 拒绝
+        authorized = false;
+    }
 }
 ```
 
