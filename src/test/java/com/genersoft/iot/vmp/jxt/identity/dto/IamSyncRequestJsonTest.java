@@ -26,6 +26,12 @@ class IamSyncRequestJsonTest {
             "realm": "3502000000",
             "charset": "GB2312",
             "streamMode": "TCP-PASSIVE",
+            "sdpIp": "192.168.1.100",
+            "mediaServerId": "auto",
+            "ssrcCheck": false,
+            "geoCoordSys": "WGS84",
+            "asMessageChannel": false,
+            "broadcastPushAfterAck": false,
             "heartbeatInterval": 60,
             "heartbeatCount": 3
           }
@@ -47,6 +53,12 @@ class IamSyncRequestJsonTest {
         assertEquals("3502000000", request.getPayloadSpecific().getRealm());
         assertEquals("GB2312", request.getPayloadSpecific().getCharset());
         assertEquals("TCP-PASSIVE", request.getPayloadSpecific().getStreamMode());
+        assertEquals("192.168.1.100", request.getPayloadSpecific().getSdpIp());
+        assertEquals("auto", request.getPayloadSpecific().getMediaServerId());
+        assertFalse(request.getPayloadSpecific().getSsrcCheck());
+        assertEquals("WGS84", request.getPayloadSpecific().getGeoCoordSys());
+        assertFalse(request.getPayloadSpecific().getAsMessageChannel());
+        assertFalse(request.getPayloadSpecific().getBroadcastPushAfterAck());
         assertEquals(60, request.getPayloadSpecific().getHeartbeatInterval());
         assertEquals(3, request.getPayloadSpecific().getHeartbeatCount());
     }
@@ -76,5 +88,38 @@ class IamSyncRequestJsonTest {
         assertNull(request.getPayloadSpecific().getStreamMode());
         assertNull(request.getPayloadSpecific().getHeartbeatInterval());
         assertNull(request.getPayloadSpecific().getHeartbeatCount());
+        assertNull(request.getPayloadSpecific().getSdpIp());
+        assertNull(request.getPayloadSpecific().getMediaServerId());
+        assertNull(request.getPayloadSpecific().getSsrcCheck());
+        assertNull(request.getPayloadSpecific().getGeoCoordSys());
+        assertNull(request.getPayloadSpecific().getAsMessageChannel());
+        assertNull(request.getPayloadSpecific().getBroadcastPushAfterAck());
+    }
+
+    @Test
+    void deserializeWithUnknownFieldsSilentlyIgnored() throws Exception {
+        String json = """
+        {
+          "schema_version": 1,
+          "idempotency_key": "key-002",
+          "trace_id": "trace-002",
+          "tenant_id": 1,
+          "target_deviceId": "34020000001320000003",
+          "operation": "register",
+          "occurred_at": "2026-05-16T14:00:00Z",
+          "unknown_top_level": "ignored",
+          "payload_specific": {
+            "deviceName": "Cam003",
+            "sipHa1": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "realm": "3502000000",
+            "futureField": "also ignored"
+          }
+        }
+        """;
+
+        IamSyncRequest request = mapper.readValue(json, IamSyncRequest.class);
+
+        assertEquals("Cam003", request.getPayloadSpecific().getDeviceName());
+        assertEquals("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", request.getPayloadSpecific().getSipHa1());
     }
 }
