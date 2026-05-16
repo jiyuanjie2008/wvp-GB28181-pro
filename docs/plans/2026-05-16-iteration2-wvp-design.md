@@ -3,7 +3,7 @@
 > Date: 2026-05-16
 > Based on: `2026-05-07-unified-terminal-identity-credential-design-v3.6.md` §12.1–12.5
 > Status: Draft
-> Scope: 迭代 2 WVP 线（W01 + W04 Phase 1 + W05），W02 已完成，W03 NonceStore 移至后续迭代
+> Scope: 迭代 2 WVP 线 — **W01 + W05 only**（W02 已完成，W04 Phase 1 策略链 + RegisterRequestProcessor 改造已移入 `iteration2-plus-wvp-implementation.md`），W03 NonceStore 移至后续迭代
 > Approach: 方案 B — 先跑通 E2E，再完善
 
 ---
@@ -29,11 +29,11 @@
 |---|------|------|------|------|
 | W01 | SQL 迁移 | Device 表新增列 + 2 张新表 | 待做 | 1d |
 | W02 | SIP Digest 认证修复 | doAuthenticateHashedPassword 补全 qop/nc | **已完成** (6a9415033) | 0d |
-| W04 | 策略链 Phase 1 | Ha1Strategy + PlaintextStrategy | 待做 | 2d |
+| ~~W04~~ | ~~策略链 Phase 1~~ | ~~Ha1Strategy + PlaintextStrategy~~ | **移入 plus 计划** | — |
 | W05 | DeviceIdentityController | POST /api/sy/device（register） | 待做 | 3d |
 | — | E2E 集成验证 | 真实终端注册测试 | 待做 | 0.5d |
 | ~~W03~~ | ~~NonceStore~~ | ~~Redis nonce + 三态状态机~~ | **移至后续迭代** | — |
-| | | | **合计** | **6.5d** |
+| | | | **合计** | **3.5d** |
 
 ---
 
@@ -47,17 +47,27 @@
 
 ### 3.2 Device 表新增列
 
+**本迭代（W01）**：仅新增 3 列 + 1 索引。轮换相关列推迟到迭代 3（D6）。
+
 ```sql
--- 证据级终端凭证
+-- 证据级终端凭证（迭代 2）
 ALTER TABLE wvp_device
   ADD COLUMN sip_ha1              VARCHAR(64) DEFAULT NULL COMMENT 'HA1摘要 = MD5(deviceId:realm:password)',
-  ADD COLUMN sip_ha1_previous     VARCHAR(64) DEFAULT NULL COMMENT '轮换双发窗口：旧HA1',
-  ADD COLUMN previous_valid_until DATETIME    DEFAULT NULL COMMENT '旧HA1过期时间',
   ADD COLUMN disabled             BOOLEAN     DEFAULT FALSE COMMENT '设备禁用标记',
   ADD COLUMN activated            BOOLEAN     DEFAULT TRUE  COMMENT '激活标记';
 
 -- 索引
 CREATE INDEX idx_wvp_device_disabled ON wvp_device(disabled);
+```
+
+**迭代 3 预留**（不在本迭代创建）：
+
+```sql
+-- 轮换双发窗口（迭代 3）
+ALTER TABLE wvp_device
+  ADD COLUMN sip_ha1_previous     VARCHAR(64) DEFAULT NULL COMMENT '轮换双发窗口：旧HA1',
+  ADD COLUMN previous_valid_until DATETIME    DEFAULT NULL COMMENT '旧HA1过期时间';
+
 CREATE INDEX idx_wvp_device_prev_expiry_cover ON wvp_device(previous_valid_until, sip_ha1_previous);
 ```
 
@@ -69,9 +79,37 @@ CREATE INDEX idx_wvp_device_prev_expiry_cover ON wvp_device(previous_valid_until
 
 ### 3.3 新增表
 
+**本迭代（W01）**：仅创建 `wvp_idempotency_log`（D6）。其余表推迟到迭代 3。
+
+#### wvp_idempotency_log（幂等日志）
+
+IAM 推送幂等去重使用。
+
+```sql
+CREATE TABLE IF NOT EXISTS wvp_idempotency_log (
+    idempotency_key VARCHAR(128) PRIMARY KEY,
+    operation       VARCHAR(32) NOT NULL,
+    device_id       VARCHAR(50) NOT NULL,
+    status          VARCHAR(16) NOT NULL DEFAULT 'success',
+    created_at      DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX idx_wvp_idempotency_log_created_at ON wvp_idempotency_log(created_at);
+```
+
+定期清理：`DELETE FROM wvp_idempotency_log WHERE created_at < NOW() - INTERVAL 7 DAY`
+
+#### wvp_callback_events
+
+**已存在**（W07 IamCallbackClient 已实现）。无需创建。
+
+---
+
+> **以下为迭代 3 参考表**，本迭代不创建。schema 保留供后续迭代使用。
+
 #### wvp_revocation_task（吊销异步任务队列）
 
-迭代 3 使用，schema 先建。
+> **迭代 3 使用**，本迭代不创建。schema 仅供参考。
 
 ```sql
 CREATE TABLE IF NOT EXISTS wvp_revocation_task (
@@ -95,7 +133,7 @@ CREATE INDEX idx_revocation_task_status ON wvp_revocation_task(status, created_a
 
 #### wvp_realm_transition（Realm 变更双发历史）
 
-迭代 3 使用，schema 先建。
+> **迭代 3 使用**，本迭代不创建。schema 仅供参考。
 
 ```sql
 CREATE TABLE IF NOT EXISTS wvp_realm_transition (
@@ -110,42 +148,30 @@ CREATE TABLE IF NOT EXISTS wvp_realm_transition (
 CREATE INDEX idx_realm_transition_device ON wvp_realm_transition(device_id, valid_until);
 ```
 
-#### wvp_idempotency_log（幂等日志）
-
-IAM 推送幂等去重使用。
-
-```sql
-CREATE TABLE IF NOT EXISTS wvp_idempotency_log (
-    idempotency_key VARCHAR(128) PRIMARY KEY,
-    operation       VARCHAR(32) NOT NULL,
-    device_id       VARCHAR(50) NOT NULL,
-    status          VARCHAR(16) NOT NULL DEFAULT 'success',
-    created_at      DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
-);
-```
-
-定期清理：`DELETE FROM wvp_idempotency_log WHERE created_at < NOW() - INTERVAL 7 DAY`
-
-#### wvp_callback_events
-
-**已存在**（W07 IamCallbackClient 已实现）。无需创建。
-
 ### 3.4 Device.java 实体变更
 
 在 `com.genersoft.iot.vmp.gb28181.bean.Device` 新增字段：
 
+**本迭代（W01）**：仅添加 3 个字段。轮换相关字段推迟到迭代 3（D6）。
+
 ```java
-// 证据级终端凭证
+// 证据级终端凭证（迭代 2）
 private String sipHa1;
-private String sipHa1Previous;
-private Date previousValidUntil;
 private Boolean disabled = false;
 private Boolean activated = true;
 ```
 
+**迭代 3 预留**（不在本迭代添加）：
+
+```java
+// 轮换双发窗口（迭代 3）
+private String sipHa1Previous;
+private Date previousValidUntil;
+```
+
 MyBatis 映射在 `DeviceMapper.java` 注解 SQL 中同步添加（本项目无 XML mapper）。
 
-**原则**：DeviceMapper.java 内所有涉及 `wvp_device` 表的 `@Select` / `@Insert` / `@Update` 方法必须逐一扫描，补充 `sip_ha1, sip_ha1_previous, previous_valid_until, disabled, activated` 五个字段。漏一个 SELECT 会导致运行时 sipHa1=null（REGISTER 认证失败）；漏一个 UPDATE 会导致字段被覆盖为 null。
+**原则**：DeviceMapper.java 内所有涉及 `wvp_device` 表的 `@Select` / `@Insert` / `@Update` 方法必须逐一扫描，补充 `sip_ha1, disabled, activated` 三个字段。`sip_ha1_previous` 和 `previous_valid_until` 列在 DB schema 中已创建但本迭代不使用（迭代 3 凭证轮换时启用）。漏一个 SELECT 会导致运行时 sipHa1=null（REGISTER 认证失败）；漏一个 UPDATE 会导致字段被覆盖为 null。
 
 已确认需修改的方法（按出现顺序）：
 
@@ -275,6 +301,7 @@ WVP 的 `SignAuthenticationFilter` 要求所有 `/api/sy/*` 请求携带以下 *
 | idempotency_key | 非空 | 13006 |
 | payload_specific.sipHa1 | 非空 | 13007 |
 | payload_specific.realm | 非空 | 13008 |
+| payload_specific (整体) | 非空 | 13009 |
 
 ### 4.4 处理逻辑
 
@@ -283,12 +310,9 @@ POST /api/sy/device
   ↓
 1. 输入校验（字段格式 + realm 一致性）
    ↓
-2. 幂等检查：INSERT wvp_idempotency_log (key, operation, device_id, status='processing')
+2. 幂等检查：INSERT wvp_idempotency_log (key, operation, device_id, status='success')
    - INSERT 成功 → 首次处理，继续
-   - INSERT 失败（唯一键冲突）→ 查询已有记录：
-     - status='success' → 直接返回 200 {"created": false}
-     - status='processing' → 返回 200 {"code": 13009, "msg": "request already processing"}
-     - status='failed' → 删除旧记录，重新 INSERT 抢占，继续处理
+   - INSERT 失败（唯一键冲突）→ 已处理过，直接返回 200 {"created": false}
    ↓
 3. 【事务内】查找设备 + 写入设备（target_deviceId → wvp_device.device_id）
    ↓
@@ -325,11 +349,9 @@ POST /api/sy/device
        其他可选字段同理，仅非 null 时追加 SET 子句
      WHERE device_id = target_deviceId
    ↓
-4. 【同一事务】UPDATE wvp_idempotency_log SET status='success' WHERE key=...
+4. 返回 200
    ↓
-5. 返回 200
-   ↓
-异常时：UPDATE wvp_idempotency_log SET status='failed' WHERE key=...
+异常时：DELETE wvp_idempotency_log WHERE key=...（允许 IAM 重试）
 ```
 
 **并发安全**：步骤 2 的 INSERT 抢占 + 步骤 3-4 在同一事务内完成。唯一键冲突确保同一 idempotency_key 不会被并发处理两次。
@@ -364,7 +386,7 @@ POST /api/sy/device
 ```json
 {
   "code": 13004,
-  "msg": "Invalid sipHa1 format: expected 32 or 64 hex chars"
+  "msg": "Invalid sipHa1 format: expected 32 hex chars (MD5 digest)"
 }
 ```
 
@@ -385,14 +407,15 @@ CREATE TABLE IF NOT EXISTS wvp_idempotency_log (
     idempotency_key VARCHAR(128) PRIMARY KEY,
     operation       VARCHAR(32) NOT NULL,
     device_id       VARCHAR(50) NOT NULL,
-    status          VARCHAR(16) NOT NULL DEFAULT 'success',  -- processing / success / failed
+    status          VARCHAR(16) NOT NULL DEFAULT 'success',
     created_at      DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 ```
 
-- INSERT (status='processing') 成功 = 抢占成功，处理设备写入，事务结束时 UPDATE status='success'
-- INSERT 失败（唯一键冲突）= 查询已有记录判断状态
-- 异常时 UPDATE status='failed'，允许重试
+- INSERT (status='success') 成功 = 首次处理，继续执行业务逻辑
+- INSERT 失败（唯一键冲突）= 已处理过，直接返回幂等命中
+- 业务异常时 DELETE 幂等记录，允许 IAM 重试
+- 不存在 processing 中间态，避免崩溃后记录残留（D4 Option B）
 
 定期清理：`DELETE FROM wvp_idempotency_log WHERE created_at < NOW() - INTERVAL 7 DAY`
 
@@ -415,14 +438,20 @@ com.genersoft.iot.vmp.jxt.identity/
 
 ---
 
-## 5. W04 策略链 Phase 1
+## 5. W04 策略链 Phase 1 — 已移入 PLUS 计划
+
+> **本迭代移出范围**：W04 策略链（Ha1Strategy、PlaintextStrategy、RegisterRequestProcessor 改造）已从本迭代的 W01+W05 窄范围移出，移入 `docs/plans/2026-05-16-iteration2-plus-wvp-implementation.md`。以下 §5.1-§5.5 内容仅供参考，不在本迭代实施。
+>
+> **注意**：§5.1 策略接口使用 `AuthCredentials` 参数。PLUS 实施计划（D2）改为直接使用 `SIPRequest`，避免引入额外 DTO。实际实施以 PLUS 计划为准。
 
 ### 5.1 策略接口
+
+> **设计参考**：此处使用 `AuthCredentials` 参数。PLUS 实施计划（D2）决策改为 `SIPRequest`，实际实施以 PLUS 计划为准。
 
 ```java
 public interface DeviceAuthStrategy {
     int priority();
-    AuthResult authenticate(Device device, Request sipRequest, String realm);
+    AuthResult authenticate(Device device, AuthCredentials credentials);
 }
 ```
 
@@ -431,6 +460,19 @@ public enum AuthResult {
     SUCCESS,  // 认证通过
     FAIL,     // 认证失败
     SKIP      // 本策略不适用
+}
+```
+
+```java
+@Value
+@Builder
+public class AuthCredentials {
+    String ha1Response;   // Authorization header 中的 response
+    String nonce;
+    String realm;
+    String uri;
+    String method;
+    boolean hasAuthorizationHeader;
 }
 ```
 
@@ -443,11 +485,11 @@ Ha1Strategy(priority=1) → PlaintextStrategy(priority=2)
 **Ha1Strategy**：
 
 ```
-输入: Device, SIP Request, realm
+输入: Device, AuthCredentials
   ↓
 if device.sipHa1 == null → SKIP
   ↓
-调用 DigestServerAuthenticationHelper.doAuthenticateHashedPassword(request, device.sipHa1)
+调用 DigestServerAuthenticationHelper.doAuthenticateHashedPassword(credentials, device.sipHa1)
   成功 → SUCCESS
   失败 → FAIL
 ```
@@ -455,12 +497,12 @@ if device.sipHa1 == null → SKIP
 **PlaintextStrategy**（过渡期兼容旧设备）：
 
 ```
-输入: Device, SIP Request, realm
+输入: Device, AuthCredentials
   ↓
 password = device.getPassword()
 if password == null || password.isEmpty() → SKIP
   ↓
-调用 DigestServerAuthenticationHelper.doAuthenticatePlainTextPassword(request, password)
+调用 DigestServerAuthenticationHelper.doAuthenticatePlainTextPassword(credentials, password)
   成功 → SUCCESS
   失败 → FAIL
 ```
@@ -479,9 +521,9 @@ public class DeviceAuthStrategyChain {
             .toList();
     }
 
-    public AuthResult authenticate(Device device, Request sipRequest, String realm) {
+    public AuthResult authenticate(Device device, AuthCredentials credentials) {
         for (DeviceAuthStrategy strategy : strategies) {
-            AuthResult result = strategy.authenticate(device, sipRequest, realm);
+            AuthResult result = strategy.authenticate(device, credentials);
             if (result != AuthResult.SKIP) {
                 return result;
             }
@@ -520,7 +562,7 @@ boolean needsAuth = deviceHasHa1 || deviceHasPassword || hasGlobalPassword;
 AuthorizationHeader authHead = (AuthorizationHeader) request.getHeader(AuthorizationHeader.NAME);
 if (authHead == null && needsAuth) {
     response = getMessageFactory().createResponse(Response.UNAUTHORIZED, request);
-    new DigestServerAuthenticationHelper().generateChallenge(getHeaderFactory(), response, sipConfig.getDomain());
+    digestHelper.generateChallenge(getHeaderFactory(), response, sipConfig.getDomain());
     sipSender.transmitRequest(request.getLocalAddress().getHostAddress(), response);
     return;
 }
@@ -529,12 +571,14 @@ boolean authorized;
 if (!needsAuth) {
     authorized = true;  // 无鉴权模式
 } else {
-    AuthResult result = strategyChain.authenticate(device, request, sipConfig.getDomain());
+    // 从 SIP Request 提取 AuthCredentials 后传入策略链
+    AuthCredentials credentials = extractCredentials(request, sipConfig.getDomain());
+    AuthResult result = strategyChain.authenticate(device, credentials);
     if (result == AuthResult.SUCCESS) {
         authorized = true;
     } else if (result == AuthResult.SKIP) {
         // 所有策略都 SKIP：设备无 HA1 也无 device password → 尝试全局密码
-        authorized = digestHelper.doAuthenticatePlainTextPassword(request, globalPassword);
+        authorized = digestHelper.doAuthenticatePlainTextPassword(credentials, globalPassword);
     } else {
         // FAIL：有凭证但验证失败 → 拒绝
         authorized = false;
@@ -566,23 +610,19 @@ com.genersoft.iot.vmp.jxt.identity/
 
 ---
 
-## 6. 实现顺序（方案 B）
+## 6. 实现顺序（W01 + W05 窄范围）
 
 ```
 Step 1: W01 SQL 迁移 + Device.java 实体变更           [Day 1]
   ↓
-Step 2: W05 DeviceIdentityController (POST register)  [Day 2-4]
-  ↓ 可并行启动 IAM 推送，验证 WVP 能接收并写入 sip_ha1
-Step 3: W04 策略链 (Ha1Strategy + PlaintextStrategy)  [Day 4-5]
+Step 2: W05 DeviceIdentityController (POST register)  [Day 2-3]
+  ↓ 完成后即可与 IAM 线联调
+Step 3: 单元测试 + 构建验证                            [Day 3-4]
   ↓
-Step 4: RegisterRequestProcessor 改造                  [Day 5-6]
-  ↓
-Step 5: E2E 集成验证（真实终端注册）                    [Day 6-7]
-  ↓
-Step 6: 修复 E2E 中发现的问题                          [Day 7]
+Step 4: E2E 集成验证                                  [Day 4]
 ```
 
-**Step 2 完成后即可与 IAM 线联调**（IAM 推送 → WVP 写入 → 确认 sip_ha1 存在），无需等策略链完成。
+**Step 2 完成后即可与 IAM 线联调**（IAM 推送 → WVP 写入 → 确认 sip_ha1 存在）。W04 策略链 + RegisterRequestProcessor 改造已在单独的 `iteration2-plus-wvp-implementation.md` 中定义。
 
 ---
 
@@ -675,7 +715,7 @@ jxt:
 | DisabledStrategy | device.disabled → 拒绝认证 | §12.2 |
 | NotActivatedStrategy | device.activated=false → 拒绝 | §12.2 |
 | GlobalPasswordStrategy | 全局密码兜底（独立策略） | §12.2 |
-| Ha1PreviousStrategy | 轮换双发窗口旧 HA1 | 迭代 3 |
+| Ha1PreviousStrategy | 轮换双发窗口旧 HA1。DB schema 中 `sip_ha1_previous`+`previous_valid_until` 列已创建（预留）。**必须**实现策略化双发窗口 + 过期清理，不允许简单覆盖旧 HA1 | 迭代 3 |
 | RealmFallbackStrategy | Realm 变更 24h fallback | 迭代 3 |
 | PUT credential / DELETE previous | 轮换相关端点 | 迭代 3 |
 | DELETE device | 吊销端点 | 迭代 3 |

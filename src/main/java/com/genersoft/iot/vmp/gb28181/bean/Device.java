@@ -192,6 +192,15 @@ public class Device {
 	@Schema(description = "地理坐标系， 目前支持 WGS84,GCJ02")
 	private String geoCoordSys;
 
+	@Schema(description = "HA1摘要 = MD5(deviceId:realm:password)")
+	private String sipHa1;
+
+	@Schema(description = "设备禁用标记")
+	private Boolean disabled = false;
+
+	@Schema(description = "激活标记")
+	private Boolean activated = true;
+
 	@Schema(description = "密码")
 	private String password;
 

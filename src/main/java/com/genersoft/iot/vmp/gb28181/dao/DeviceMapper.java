@@ -44,6 +44,9 @@ public interface DeviceMapper {
             "server_id,"+
             "media_server_id," +
             "broadcast_push_after_ack," +
+            "sip_ha1," +
+            "disabled," +
+            "activated," +
             "(SELECT count(0) FROM wvp_device_channel dc WHERE dc.data_type = 1 and dc.data_device_id= de.id) as channel_count "+
             " FROM wvp_device de WHERE de.device_id = #{deviceId}")
     Device getDeviceByDeviceId( @Param("deviceId") String deviceId);
@@ -78,7 +81,10 @@ public interface DeviceMapper {
                 "broadcast_push_after_ack,"+
                 "geo_coord_sys,"+
                 "server_id,"+
-                "on_line"+
+                "on_line,"+
+                "sip_ha1,"+
+                "disabled,"+
+                "activated"+
             ") VALUES (" +
                 "#{deviceId}," +
                 "#{name}," +
@@ -109,7 +115,10 @@ public interface DeviceMapper {
                 "#{broadcastPushAfterAck}," +
                 "#{geoCoordSys}," +
                 "#{serverId}," +
-                "#{onLine}" +
+                "#{onLine}," +
+                "#{sipHa1}," +
+                "#{disabled}," +
+                "#{activated}" +
             ")")
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
     int add(Device device);
@@ -135,6 +144,9 @@ public interface DeviceMapper {
                 ", mobile_position_submission_interval=#{mobilePositionSubmissionInterval}" +
                 ", subscribe_cycle_for_alarm=#{subscribeCycleForAlarm}" +
                 ", expires=#{expires}" +
+                ", sip_ha1=#{sipHa1}" +
+                ", disabled=#{disabled}" +
+                ", activated=#{activated}" +
                 ", server_id=#{serverId}" +
                 " WHERE device_id=#{deviceId}"+
             " </script>"})
@@ -171,6 +183,9 @@ public interface DeviceMapper {
             "geo_coord_sys,"+
             "on_line,"+
             "media_server_id,"+
+            "sip_ha1,"+
+            "disabled,"+
+            "activated,"+
             "(SELECT count(0) FROM wvp_device_channel dc WHERE dc.data_type = #{dataType} and dc.data_device_id= de.id) as channel_count " +
             "FROM wvp_device de" +
             "<if test='online != null'> where de.on_line=${online}</if>"+
@@ -210,7 +225,10 @@ public interface DeviceMapper {
             "broadcast_push_after_ack,"+
             "geo_coord_sys,"+
             "server_id,"+
-            "on_line"+
+            "on_line,"+
+            "sip_ha1,"+
+            "disabled,"+
+            "activated"+
             " FROM wvp_device WHERE on_line = true")
     List<Device> getOnlineDevices();
 
@@ -243,7 +261,10 @@ public interface DeviceMapper {
             "broadcast_push_after_ack,"+
             "geo_coord_sys,"+
             "server_id,"+
-            "on_line"+
+            "on_line,"+
+            "sip_ha1,"+
+            "disabled,"+
+            "activated"+
             " FROM wvp_device WHERE on_line = true and server_id = #{serverId}")
     List<Device> getOnlineDevicesByServerId(@Param("serverId") String serverId);
 
@@ -284,6 +305,7 @@ public interface DeviceMapper {
             ", ip=#{ip}, sdp_ip=#{sdpIp}, port=#{port}, charset=#{charset}" +
             ", ssrc_check=#{ssrcCheck}, as_message_channel=#{asMessageChannel}" +
             ", broadcast_push_after_ack=#{broadcastPushAfterAck}, geo_coord_sys=#{geoCoordSys}, media_server_id=#{mediaServerId}" +
+            ", sip_ha1=#{sipHa1}, disabled=#{disabled}, activated=#{activated}" +
             " WHERE id=#{id}"+
             " </script>"})
     void updateCustom(Device device);
@@ -303,7 +325,10 @@ public interface DeviceMapper {
             "on_line,"+
             "stream_mode," +
             "server_id," +
-            "media_server_id"+
+            "media_server_id,"+
+            "sip_ha1,"+
+            "disabled,"+
+            "activated"+
             ") VALUES (" +
             "#{deviceId}," +
             "#{name}," +
@@ -319,7 +344,10 @@ public interface DeviceMapper {
             "#{onLine}," +
             "#{streamMode}," +
             "#{serverId}," +
-            "#{mediaServerId}" +
+            "#{mediaServerId}," +
+            "#{sipHa1}," +
+            "#{disabled}," +
+            "#{activated}" +
             ")")
     void addCustomDevice(Device device);
 
@@ -363,6 +391,9 @@ public interface DeviceMapper {
             ",position_capability" +
             ",broadcast_push_after_ack" +
             ",server_id" +
+            ",sip_ha1" +
+            ",disabled" +
+            ",activated" +
             ",(SELECT count(0) FROM wvp_device_channel dc WHERE dc.data_type = #{dataType} and dc.data_device_id= de.id) as channel_count " +
             " FROM wvp_device de" +
             " where 1 = 1 "+
@@ -435,6 +466,9 @@ public interface DeviceMapper {
             ", subscribe_cycle_for_alarm=#{item.subscribeCycleForAlarm}" +
             ", expires=#{item.expires}" +
             ", server_id=#{item.serverId}" +
+            ", sip_ha1=#{item.sipHa1}" +
+            ", disabled=#{item.disabled}" +
+            ", activated=#{item.activated}" +
             " WHERE device_id=#{item.deviceId}"+
             "</foreach>" +
             "</script>"})
@@ -474,6 +508,9 @@ public interface DeviceMapper {
             ",position_capability" +
             ",broadcast_push_after_ack" +
             ",server_id" +
+            ",sip_ha1" +
+            ",disabled" +
+            ",activated" +
             " FROM wvp_device" +
             " WHERE device_id in"+
             "<foreach collection='deviceIds' item='item'  open='(' separator=',' close=')' > #{item}</foreach>" +

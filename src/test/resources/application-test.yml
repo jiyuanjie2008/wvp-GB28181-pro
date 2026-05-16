@@ -1,0 +1,39 @@
+server:
+  port: 18080
+
+spring:
+  datasource:
+    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+
+sip:
+  ip: 127.0.0.1
+  port: 5060
+  domain: "3502000000"
+  id: "35020000002000000001"
+  password: ""
+
+media:
+  ip: 127.0.0.1
+  http-port: 80
+  stream-ip: "127.0.0.1"
+  sdp-ip: "127.0.0.1"
+
+sy:
+  enable: true
+
+jxt:
+  identity:
+    enabled: true
+    controller:
+      enabled: true
+    strategy:
+      ha1-enabled: true
+      plaintext-enabled: true
+    idempotency:
+      cleanup-days: 7
+
+user-setting:
+  stream-on-demand: false
