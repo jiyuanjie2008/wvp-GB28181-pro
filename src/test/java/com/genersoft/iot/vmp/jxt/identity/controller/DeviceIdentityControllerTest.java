@@ -98,6 +98,13 @@ class DeviceIdentityControllerTest {
     }
 
     @Test
+    void nullSipHa1_returns13007() {
+        IamSyncRequest req = validRequest();
+        req.getPayloadSpecific().setSipHa1(null);
+        assertEquals(13007, controller.register(req).getCode());
+    }
+
+    @Test
     void invalidSipHa1Format_returns13004() {
         IamSyncRequest req = validRequest();
         req.getPayloadSpecific().setSipHa1("not-hex");
@@ -109,6 +116,19 @@ class DeviceIdentityControllerTest {
         IamSyncRequest req = validRequest();
         req.getPayloadSpecific().setRealm("");
         assertEquals(13008, controller.register(req).getCode());
+    }
+
+    @Test
+    void nullRealm_returns13008() {
+        IamSyncRequest req = validRequest();
+        req.getPayloadSpecific().setRealm(null);
+        assertEquals(13008, controller.register(req).getCode());
+    }
+
+    @Test
+    void nullRequest_returns13000() {
+        WVPResult<DeviceIdentityController.DeviceIdentityData> result = controller.register(null);
+        assertEquals(13000, result.getCode());
     }
 
     @Test

@@ -106,6 +106,51 @@ class DeviceIdentityTxServiceTest {
     }
 
     @Test
+    void existingDevice_nullPayloadFields_preserveExistingValues() {
+        Device existing = new Device();
+        existing.setDeviceId("34020000001320000001");
+        existing.setName("OriginalName");
+        existing.setCharset("UTF-8");
+        existing.setStreamMode("UDP");
+        existing.setIp("10.0.0.1");
+        existing.setPort(5060);
+
+        when(deviceMapper.getDeviceByDeviceId("34020000001320000001")).thenReturn(existing);
+        when(identityMapper.updateDevice(any(Device.class))).thenReturn(1);
+
+        IamSyncRequest req = validRequest();
+        req.getPayloadSpecific().setDeviceName(null);
+        req.getPayloadSpecific().setCharset(null);
+        req.getPayloadSpecific().setStreamMode(null);
+
+        txService.doRegister(req);
+
+        verify(identityMapper).updateDevice(argThat((Device device) ->
+                "OriginalName".equals(device.getName()) &&
+                "UTF-8".equals(device.getCharset()) &&
+                "UDP".equals(device.getStreamMode()) &&
+                "a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4".equals(device.getSipHa1()) &&
+                "10.0.0.1".equals(device.getIp())
+        ));
+    }
+
+    @Test
+    void existingDevice_sipHa1IsAlwaysUpdated() {
+        Device existing = new Device();
+        existing.setDeviceId("34020000001320000001");
+        existing.setSipHa1("old-ha1-value-000000000000000000000000000000");
+
+        when(deviceMapper.getDeviceByDeviceId("34020000001320000001")).thenReturn(existing);
+        when(identityMapper.updateDevice(any(Device.class))).thenReturn(1);
+
+        txService.doRegister(validRequest());
+
+        verify(identityMapper).updateDevice(argThat((Device device) ->
+                "a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4".equals(device.getSipHa1())
+        ));
+    }
+
+    @Test
     void newDevice_usesDefaultsWhenPayloadFieldsNull() {
         when(deviceMapper.getDeviceByDeviceId("34020000001320000001")).thenReturn(null);
         when(identityMapper.insertDevice(any(Device.class))).thenReturn(1);
