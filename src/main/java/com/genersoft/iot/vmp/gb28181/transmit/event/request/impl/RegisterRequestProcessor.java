@@ -14,6 +14,8 @@ import com.genersoft.iot.vmp.gb28181.transmit.SIPSender;
 import com.genersoft.iot.vmp.gb28181.transmit.event.request.ISIPRequestProcessor;
 import com.genersoft.iot.vmp.gb28181.transmit.event.request.SIPRequestProcessorParent;
 import com.genersoft.iot.vmp.gb28181.utils.SipUtils;
+import com.genersoft.iot.vmp.jxt.identity.auth.AuthResult;
+import com.genersoft.iot.vmp.jxt.identity.auth.DeviceAuthStrategyChain;
 import com.genersoft.iot.vmp.storager.IRedisCatchStorage;
 import com.genersoft.iot.vmp.utils.IpPortUtil;
 import gov.nist.javax.sip.address.AddressImpl;
@@ -24,6 +26,7 @@ import gov.nist.javax.sip.message.SIPResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
 
@@ -71,6 +74,12 @@ public class RegisterRequestProcessor extends SIPRequestProcessorParent implemen
     @Autowired
     private com.genersoft.iot.vmp.gb28181.event.EventPublisher eventPublisher;
 
+    @Autowired
+    private DeviceAuthStrategyChain strategyChain;
+
+    @Value("${jxt.identity.enabled:true}")
+    private boolean identityEnabled;
+
 
     @Override
     public void afterPropertiesSet() throws Exception {
@@ -86,7 +95,6 @@ public class RegisterRequestProcessor extends SIPRequestProcessorParent implemen
         try {
             SIPRequest request = (SIPRequest) evt.getRequest();
             Response response = null;
-            boolean passwordCorrect = false;
             // 注册标志
             boolean registerFlag = request.getExpires().getExpires() != 0;
             // 注销成功
@@ -154,18 +162,33 @@ public class RegisterRequestProcessor extends SIPRequestProcessorParent implemen
                 }
             }
 
+            // --- D6: 401 challenge handled HERE in caller, not in helper methods ---
+            boolean needsAuth;
+            if (identityEnabled) {
+                boolean deviceHasHa1 = device != null && !ObjectUtils.isEmpty(device.getSipHa1());
+                boolean deviceHasPassword = device != null && !ObjectUtils.isEmpty(device.getPassword());
+                boolean hasGlobalPassword = !ObjectUtils.isEmpty(sipConfig.getPassword());
+                needsAuth = deviceHasHa1 || deviceHasPassword || hasGlobalPassword;
+            } else {
+                needsAuth = !ObjectUtils.isEmpty(password);
+            }
+
             AuthorizationHeader authHead = (AuthorizationHeader) request.getHeader(AuthorizationHeader.NAME);
-            if (authHead == null && !ObjectUtils.isEmpty(password)) {
-                log.info(title + " 设备：{}, 回复401: {}", deviceId, requestAddress);
+            if (authHead == null && needsAuth) {
+                log.info("{} 设备：{}, 回复401: {}", title, deviceId, requestAddress);
                 response = getMessageFactory().createResponse(Response.UNAUTHORIZED, request);
                 new DigestServerAuthenticationHelper().generateChallenge(getHeaderFactory(), response, sipConfig.getDomain());
                 sipSender.transmitRequest(request.getLocalAddress().getHostAddress(), response);
                 return;
             }
 
-            // 校验密码是否正确
-            passwordCorrect = ObjectUtils.isEmpty(password) ||
-                    new DigestServerAuthenticationHelper().doAuthenticatePlainTextPassword(request, password);
+            // --- Authentication verification ---
+            boolean passwordCorrect;
+            if (identityEnabled) {
+                passwordCorrect = authenticateWithStrategyChain(request, device);
+            } else {
+                passwordCorrect = authenticateWithLegacyPath(request, password);
+            }
 
             if (!passwordCorrect) {
                 // 注册失败
@@ -253,6 +276,51 @@ public class RegisterRequestProcessor extends SIPRequestProcessorParent implemen
         } catch (SipException | NoSuchAlgorithmException | ParseException e) {
             log.error("未处理的异常 ", e);
         }
+    }
+
+    // D6: Pure verification — no 401 sending. Returns true if auth passes, false if rejected.
+    // Package-private for test access (same package as test class).
+    boolean authenticateWithStrategyChain(SIPRequest request, Device device)
+            throws javax.sip.SipException, java.security.NoSuchAlgorithmException, java.text.ParseException {
+        // 策略链认证
+        if (device != null) {
+            AuthResult result = strategyChain.authenticate(device, request);
+            if (result == AuthResult.SUCCESS) {
+                return true;
+            }
+            if (result == AuthResult.FAIL) {
+                return false;
+            }
+            // SKIP — fall through
+        }
+
+        // 所有策略 SKIP → 全局密码兜底
+        String globalPassword = sipConfig.getPassword();
+        if (!ObjectUtils.isEmpty(globalPassword)) {
+            return new DigestServerAuthenticationHelper()
+                    .doAuthenticatePlainTextPassword(request, globalPassword);
+        }
+
+        // 设备发了 Authorization 但没有策略验证 → 拒绝（防止 SKIP 绕过）
+        AuthorizationHeader authHead = (AuthorizationHeader) request.getHeader(AuthorizationHeader.NAME);
+        if (authHead != null) {
+            log.warn("authenticateWithStrategyChain: device sent auth but no strategy verified — rejecting");
+            return false;
+        }
+
+        // 无需认证
+        return true;
+    }
+
+    // D6: Pure verification — reproduces original behavior for legacy path.
+    // Package-private for test access.
+    boolean authenticateWithLegacyPath(SIPRequest request, String password)
+            throws javax.sip.SipException, java.security.NoSuchAlgorithmException, java.text.ParseException {
+        if (ObjectUtils.isEmpty(password)) {
+            return true;
+        }
+        return new DigestServerAuthenticationHelper()
+                .doAuthenticatePlainTextPassword(request, password);
     }
 
     private Response getRegisterOkResponse(Request request) throws ParseException {
