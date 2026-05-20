@@ -6,3 +6,7 @@ spring:
       enabled: true
   profiles:
     active: 274-dev
+
+# 第三方平台接口签名认证（SM3+SM4）
+sy:
+  enable: true

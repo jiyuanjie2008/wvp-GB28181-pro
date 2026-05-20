@@ -124,7 +124,7 @@ services:
       context: ..  # 构建上下文的根路径
       dockerfile: ./docker/nginx/Dockerfile  # 相对于上下文路径的Dockerfile位置
     ports:
-      - "${WebHttp:-8080}:8080"
+      - "${WebHttp:-8090}:8080"
     depends_on:
       - polaris-wvp
     volumes:

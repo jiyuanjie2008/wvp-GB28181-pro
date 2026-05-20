@@ -120,12 +120,12 @@ user-settings:
     record-push-live: ${RecordPushLive:false}
     record-sip: ${RecordSip:false}
     stream-on-demand: true
-    interface-authentication: true
+    interface-authentication: false
     broadcast-for-platform: TCP-PASSIVE
     push-stream-after-ack: true
     send-to-platforms-when-id-lost: true
     interface-authentication-excludes:
-    #  - /api/**
+      - /api/**
     push-authority: true
     # allowed-origins:
     #   - http://localhost:8080
@@ -133,6 +133,10 @@ user-settings:
     #   - http://0.0.0.0:8080
     #   - ${NGINX_HOST}
     jwkFile: classpath:xxxxxxxxxxx.json
+# 第三方平台接口签名认证（SM3+SM4）
+sy:
+  enable: true
+
 logging:
   config: classpath:logback-spring.xml
 

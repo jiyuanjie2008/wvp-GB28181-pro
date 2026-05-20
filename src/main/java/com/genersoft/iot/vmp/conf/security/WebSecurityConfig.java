@@ -102,6 +102,7 @@ public class WebSecurityConfig {
         defaultExcludes.add("/index/hook/abl/**");
         defaultExcludes.add("/api/jt1078/playback/download");
         defaultExcludes.add("/api/jt1078/snap");
+        defaultExcludes.add("/api/sy/**");
 
         if (userSetting.getInterfaceAuthentication() && !userSetting.getInterfaceAuthenticationExcludes().isEmpty()) {
             defaultExcludes.addAll(userSetting.getInterfaceAuthenticationExcludes());

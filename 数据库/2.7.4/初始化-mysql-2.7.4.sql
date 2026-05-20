@@ -36,8 +36,12 @@ create table IF NOT EXISTS wvp_device
     position_capability                 integer COMMENT '定位能力标识',
     broadcast_push_after_ack            bool    default false COMMENT 'ACK后是否自动推流',
     server_id                           character varying(50) COMMENT '所属信令服务器ID',
+    sip_ha1                             character varying(64) default null COMMENT 'HA1摘要 = MD5(deviceId:realm:password)',
+    disabled                            bool    default false COMMENT '设备禁用标记',
+    activated                           bool    default true  COMMENT '激活标记',
     constraint uk_device_device unique (device_id)
 );
+create index idx_wvp_device_disabled on wvp_device (disabled);
 
 -- 记录各设备上报的报警信息
 drop table IF EXISTS wvp_device_alarm;
@@ -538,3 +542,14 @@ create table IF NOT EXISTS wvp_alarm (
                           alarm_type integer COMMENT '报警类别',
                           alarm_time bigint COMMENT '报警时间'
 );
+
+-- 幂等日志表（IAM 设备身份同步）
+drop table IF EXISTS wvp_idempotency_log;
+create table IF NOT EXISTS wvp_idempotency_log (
+    idempotency_key character varying(128) primary key COMMENT '幂等键',
+    operation       character varying(32) not null COMMENT '操作类型',
+    device_id       character varying(50) not null COMMENT '设备ID',
+    status          character varying(16) not null default 'success' COMMENT '处理状态',
+    created_at      datetime not null default CURRENT_TIMESTAMP COMMENT '创建时间'
+);
+create index idx_wvp_idempotency_log_created_at on wvp_idempotency_log (created_at);

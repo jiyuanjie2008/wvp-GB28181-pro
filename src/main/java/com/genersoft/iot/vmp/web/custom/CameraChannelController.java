@@ -83,7 +83,7 @@ public class CameraChannelController {
     @Autowired
     private IStreamPushService streamPushService;
 
-    @Value("${sy.ptz-control-time-interval}")
+    @Value("${sy.ptz-control-time-interval:300}")
     private int ptzControlTimeInterval = 300;
 
     @GetMapping(value = "/camera/list")
