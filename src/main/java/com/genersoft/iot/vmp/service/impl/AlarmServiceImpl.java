@@ -85,11 +85,12 @@ public class AlarmServiceImpl implements IAlarmService {
             String key = notify.getDeviceId() + notify.getChannelId();
             DeviceChannel deviceChannel = channelCache.get(key, k -> deviceChannelService.getOneForSource(notify.getDeviceId(), notify.getChannelId()));
             if (deviceChannel == null) {
-                continue;
+                log.warn("[报警] 未找到通道 {}/{}，仍保存报警记录", notify.getDeviceId(), notify.getChannelId());
+                alarm.setSnapPath(null);
+            } else {
+                alarm.setChannelId(deviceChannel.getId());
+                alarm.setSnapPath("snap/alarm_" + notify.getChannelId() + "_" + System.currentTimeMillis() + ".jpg");
             }
-            alarm.setChannelId(deviceChannel.getId());
-            // 分配一个快照路径，后续在去补充快照文件
-            alarm.setSnapPath("snap/alarm_" + notify.getChannelId() + "_" + System.currentTimeMillis() + ".jpg");
             alarmQueue.offer(alarm);
         }
     }
