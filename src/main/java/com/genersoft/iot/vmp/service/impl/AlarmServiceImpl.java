@@ -4,12 +4,15 @@ import com.genersoft.iot.vmp.common.StreamInfo;
 import com.genersoft.iot.vmp.conf.SipConfig;
 import com.genersoft.iot.vmp.conf.UserSetting;
 import com.genersoft.iot.vmp.gb28181.bean.CommonGBChannel;
+import com.genersoft.iot.vmp.gb28181.bean.Device;
 import com.genersoft.iot.vmp.gb28181.bean.DeviceAlarmNotify;
 import com.genersoft.iot.vmp.gb28181.bean.DeviceChannel;
 import com.genersoft.iot.vmp.gb28181.event.alarm.DeviceAlarmEvent;
 import com.genersoft.iot.vmp.gb28181.service.IDeviceChannelService;
+import com.genersoft.iot.vmp.gb28181.service.IDeviceService;
 import com.genersoft.iot.vmp.gb28181.service.IGbChannelPlayService;
 import com.genersoft.iot.vmp.gb28181.service.IGbChannelService;
+import com.genersoft.iot.vmp.gb28181.service.IPlayService;
 import com.genersoft.iot.vmp.service.IAlarmService;
 import com.genersoft.iot.vmp.service.bean.Alarm;
 import com.genersoft.iot.vmp.service.bean.AlarmType;
@@ -22,7 +25,6 @@ import com.github.pagehelper.PageInfo;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.io.FileUtils;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -51,6 +53,10 @@ public class AlarmServiceImpl implements IAlarmService {
     private final IGbChannelPlayService gbChannelPlayService;
 
     private final IGbChannelService gbChannelService;
+
+    private final IPlayService playService;
+
+    private final IDeviceService deviceService;
 
     // 使用Caffeine缓存设备通道信息，避免频繁查询数据库，提升性能
     private Cache<String, DeviceChannel> channelCache = null;
@@ -141,18 +147,25 @@ public class AlarmServiceImpl implements IAlarmService {
             log.warn("未找到报警关联的通道信息，alarmId：{}，channelId：{}", alarm.getId(), alarm.getChannelId());
             return;
         }
-        gbChannelPlayService.getSnap(channel, (code, msg, data) -> {
-            if (data == null) {
-                return;
-            }
-            File file = new File(alarm.getSnapPath());
-            if(file.exists()) {
-                file.delete();
-            }
-            try {
-                FileUtils.writeByteArrayToFile(file, data);
-            } catch (Exception e) {
-                log.warn("保存报警快照失败，alarmId：{}，channelId：{}", alarm.getId(), alarm.getChannelId(), e);
+        Device device = deviceService.getDevice(channel.getDataDeviceId());
+        if (device == null) {
+            log.warn("[报警快照] 未找到设备，alarmId：{}", alarm.getId());
+            return;
+        }
+        DeviceChannel deviceChannel = deviceChannelService.getOneForSourceById(channel.getGbId());
+        if (deviceChannel == null) {
+            log.warn("[报警快照] 未找到通道，alarmId：{}", alarm.getId());
+            return;
+        }
+        // 从 snapPath 中提取文件名 (如 "snap/alarm_xxx.jpg" -> "alarm_xxx.jpg")
+        String snapPath = alarm.getSnapPath();
+        String fileName = snapPath.contains("/")
+                ? snapPath.substring(snapPath.lastIndexOf('/') + 1)
+                : snapPath;
+        // 使用基于文件的 getSnap，ZLM 直接保存为指定文件名，与 DB 记录的 snapPath 一致
+        playService.getSnap(device.getDeviceId(), deviceChannel.getDeviceId(), fileName, (code, msg, data) -> {
+            if (code != 0) {
+                log.warn("[报警快照] 保存失败，alarmId：{}，原因：{}", alarm.getId(), msg);
             }
         });
     }

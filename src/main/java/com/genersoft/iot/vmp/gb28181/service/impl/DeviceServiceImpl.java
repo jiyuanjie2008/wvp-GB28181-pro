@@ -1450,6 +1450,11 @@ public class DeviceServiceImpl implements IDeviceService, CommandLineRunner {
     @Override
     public PageInfo<Device> getDevicesByCivilCode(int page, int count, String civilCode, String query, Boolean online) {
         PageHelper.startPage(page, count);
+        if (query != null) {
+            query = query.replaceAll("/", "//")
+                    .replaceAll("%", "/%")
+                    .replaceAll("_", "/_");
+        }
         List<Device> devices = deviceMapper.getDevicesByCivilCode(civilCode, query, online);
         return new PageInfo<>(devices);
     }
