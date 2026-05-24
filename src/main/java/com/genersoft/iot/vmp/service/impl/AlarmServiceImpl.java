@@ -157,8 +157,10 @@ public class AlarmServiceImpl implements IAlarmService {
             log.warn("[报警快照] 未找到通道，alarmId：{}", alarm.getId());
             return;
         }
-        // 从 snapPath 中提取文件名 (如 "snap/alarm_xxx.jpg" -> "alarm_xxx.jpg")
         String snapPath = alarm.getSnapPath();
+        if (snapPath == null || snapPath.isEmpty()) {
+            return;
+        }
         String fileName = snapPath.contains("/")
                 ? snapPath.substring(snapPath.lastIndexOf('/') + 1)
                 : snapPath;

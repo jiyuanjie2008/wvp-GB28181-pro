@@ -674,6 +674,14 @@ public class PlayServiceImpl implements IPlayService {
      * @param stream               ssrc
      */
     private void snapOnPlay(MediaServer mediaServerItemInuse, String deviceId, String channelId, String stream) {
+        // 防御检查：若上游 callback（如 getSnap 临时流借用）已主动 stop 流，跳过默认封面生成。
+        // 否则 ZLM /getSnap 在流不存在时会触发 on_stream_not_found，进而被 autoApplyPlay 自动重建，
+        // 形成"截图后流被重新拉起又无人观看"的泄漏链（依赖 ~20s 的 on_stream_none_reader 兜底）。
+        InviteInfo inviteInfo = inviteStreamService.getInviteInfoByStream(InviteSessionType.PLAY, stream);
+        if (inviteInfo == null || inviteInfo.getStreamInfo() == null) {
+            log.info("[默认封面] 流已不存活，跳过截图避免触发自动重建: {}/{} stream={}", deviceId, channelId, stream);
+            return;
+        }
         String path = "snap";
         String fileName = deviceId + "_" + channelId + ".jpg";
         // 请求截图
@@ -1643,15 +1651,34 @@ public class PlayServiceImpl implements IPlayService {
 
         MediaServer newMediaServerItem = getNewMediaServerItem(device);
         play(newMediaServerItem, deviceId, channelId, null, (code, msg, data)->{
-            if (code == InviteErrorCode.SUCCESS.getCode()) {
-                InviteInfo inviteInfoForPlay = inviteStreamService.getInviteInfoByDeviceAndChannel(InviteSessionType.PLAY, channel.getId());
-                if (inviteInfoForPlay != null && inviteInfoForPlay.getStreamInfo() != null) {
-                    getSnap(deviceId, channelId, fileName, errorCallback);
-                }else {
-                    errorCallback.run(InviteErrorCode.FAIL.getCode(), InviteErrorCode.FAIL.getMsg(), null);
+            // 标记本次为「截图临时拉起的流」，截图完成或失败后必须显式停流，避免泄漏
+            // 见 docs/case 与设计说明：依赖 ZLM on_stream_none_reader 兜底有 ~20s 窗口期，
+            // 且当 stream-on-demand=false 时永久泄漏，故必须在此显式 stop。
+            StreamInfo streamInfo = (data instanceof StreamInfo) ? (StreamInfo) data : null;
+            try {
+                if (code == InviteErrorCode.SUCCESS.getCode() && streamInfo != null && streamInfo.getMediaServer() != null) {
+                    String path = "snap";
+                    log.info("[请求截图-临时流]: {}", fileName);
+                    mediaServerService.getSnap(streamInfo.getMediaServer(), MediaStreamUtil.RTP_APP,
+                            streamInfo.getStream(), 15, 1, path, fileName);
+                    File snapFile = new File(path + File.separator + fileName);
+                    if (snapFile.exists()) {
+                        errorCallback.run(InviteErrorCode.SUCCESS.getCode(), InviteErrorCode.SUCCESS.getMsg(), snapFile.getAbsoluteFile());
+                    } else {
+                        errorCallback.run(InviteErrorCode.FAIL.getCode(), InviteErrorCode.FAIL.getMsg(), null);
+                    }
+                } else {
+                    errorCallback.run(InviteErrorCode.FAIL.getCode(),
+                            msg != null ? msg : InviteErrorCode.FAIL.getMsg(), null);
                 }
-            }else {
-                errorCallback.run(InviteErrorCode.FAIL.getCode(), InviteErrorCode.FAIL.getMsg(), null);
+            } finally {
+                try {
+                    String streamId = streamInfo != null ? streamInfo.getStream() : null;
+                    log.info("[截图] 停止临时流 {}/{} stream={}", deviceId, channelId, streamId);
+                    stop(InviteSessionType.PLAY, device, channel, streamId);
+                } catch (Exception e) {
+                    log.warn("[截图] 停止临时流失败 {}/{}: {}", deviceId, channelId, e.getMessage());
+                }
             }
         });
     }
@@ -1691,16 +1718,29 @@ public class PlayServiceImpl implements IPlayService {
         }
 
         play(device, deviceChannel, (code, msg, data)->{
-            if (code == InviteErrorCode.SUCCESS.getCode()) {
-                InviteInfo inviteInfoForPlay = inviteStreamService.getInviteInfoByDeviceAndChannel(InviteSessionType.PLAY, channel.getGbId());
-                if (inviteInfoForPlay != null && inviteInfoForPlay.getStreamInfo() != null) {
-                    byte[] snapByteArray = mediaServerService.getSnap(data.getMediaServer(), MediaStreamUtil.RTP_APP,  data.getStream(), 15, 1, null, null);
-                    errorCallback.run(InviteErrorCode.SUCCESS.getCode(), InviteErrorCode.SUCCESS.getMsg(), snapByteArray);
-                }else {
-                    errorCallback.run(InviteErrorCode.FAIL.getCode(), InviteErrorCode.FAIL.getMsg(), null);
+            // 标记本次为「截图临时拉起的流」，截图完成或失败后必须显式停流，避免泄漏
+            try {
+                if (code == InviteErrorCode.SUCCESS.getCode() && data != null && data.getMediaServer() != null) {
+                    log.info("[请求截图-临时流] 返回byte数组 {}/{}", device.getDeviceId(), deviceChannel.getDeviceId());
+                    byte[] snapByteArray = mediaServerService.getSnap(data.getMediaServer(), MediaStreamUtil.RTP_APP,
+                            data.getStream(), 15, 1, null, null);
+                    if (snapByteArray != null) {
+                        errorCallback.run(InviteErrorCode.SUCCESS.getCode(), InviteErrorCode.SUCCESS.getMsg(), snapByteArray);
+                    } else {
+                        errorCallback.run(InviteErrorCode.FAIL.getCode(), InviteErrorCode.FAIL.getMsg(), null);
+                    }
+                } else {
+                    errorCallback.run(InviteErrorCode.FAIL.getCode(),
+                            msg != null ? msg : InviteErrorCode.FAIL.getMsg(), null);
                 }
-            }else {
-                errorCallback.run(InviteErrorCode.FAIL.getCode(), InviteErrorCode.FAIL.getMsg(), null);
+            } finally {
+                try {
+                    String streamId = data != null ? data.getStream() : null;
+                    log.info("[截图] 停止临时流 {}/{} stream={}", device.getDeviceId(), deviceChannel.getDeviceId(), streamId);
+                    stop(InviteSessionType.PLAY, device, deviceChannel, streamId);
+                } catch (Exception e) {
+                    log.warn("[截图] 停止临时流失败 {}/{}: {}", device.getDeviceId(), deviceChannel.getDeviceId(), e.getMessage());
+                }
             }
         });
     }

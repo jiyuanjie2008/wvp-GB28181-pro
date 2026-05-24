@@ -14,14 +14,18 @@ import okhttp3.logging.HttpLoggingInterceptor;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Component;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.net.ConnectException;
 import java.net.SocketTimeoutException;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.AtomicMoveNotSupportedException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -168,6 +172,11 @@ public class ZLMRESTfulUtils {
     }
 
     public byte[] sendGetForImg(MediaServer mediaServer, String api, Map<String, Object> params, String targetPath, String fileName) {
+        return sendGetForImg(mediaServer, api, params, targetPath, fileName, null);
+    }
+
+    public byte[] sendGetForImg(MediaServer mediaServer, String api, Map<String, Object> params,
+                                String targetPath, String fileName, Integer readTimeoutSec) {
         String url = String.format("http://%s:%s/index/api/%s", mediaServer.getIp(), mediaServer.getHttpPort(), api);
         HttpUrl parseUrl = HttpUrl.parse(url);
         if (parseUrl == null) {
@@ -188,35 +197,62 @@ public class ZLMRESTfulUtils {
         if (log.isDebugEnabled()){
             log.debug(request.toString());
         }
-        byte[] result = null;
-        try {
-            OkHttpClient client = getClient();
-            Response response = client.newCall(request).execute();
-            if (response.isSuccessful()) {
-                if (targetPath != null) {
-                    File snapFolder = new File(targetPath);
-                    if (!snapFolder.exists()) {
-                        if (!snapFolder.mkdirs()) {
-                            log.warn("{}路径创建失败", snapFolder.getAbsolutePath());
-                        }
-                    }
-                    File snapFile = new File(targetPath + File.separator + fileName);
-                    FileOutputStream outStream = new FileOutputStream(snapFile);
-                    result = Objects.requireNonNull(response.body()).bytes();
-                    outStream.write(result);
-                    outStream.flush();
-                    outStream.close();
-                }
-            } else {
+
+        OkHttpClient httpClient = getClient();
+        if (readTimeoutSec != null) {
+            // 复用连接池，仅覆盖读超时（不污染单例 client）
+            httpClient = httpClient.newBuilder()
+                    .readTimeout(readTimeoutSec, TimeUnit.SECONDS)
+                    .build();
+        }
+
+        try (Response response = httpClient.newCall(request).execute()) {
+            if (!response.isSuccessful()) {
                 log.error("[ {} ]请求失败: {} {}", url, response.code(), response.message());
+                return null;
             }
+            ResponseBody body = response.body();
+            if (body == null) {
+                log.error("[ {} ]响应体为空", url);
+                return null;
+            }
+            // 用 Content-Type 区分成功(图片) 与 失败(ffmpeg 错误日志文本/默认占位等)
+            String contentType = response.header("Content-Type", "");
+            byte[] bytes = body.bytes();
+            if (contentType == null || !contentType.toLowerCase().startsWith("image/")) {
+                String preview = bytes.length == 0 ? "<empty>"
+                        : new String(bytes, 0, Math.min(bytes.length, 256), StandardCharsets.UTF_8);
+                log.warn("[ {} ]截图失败, content-type={}, body[0..256]={}", url, contentType, preview);
+                return null;
+            }
+
+            // 仅在调用方既给了目录又给了文件名时落盘，避免出现名为 "null" 的脏文件
+            if (targetPath != null && fileName != null) {
+                Path dir = Paths.get(targetPath);
+                if (!Files.exists(dir)) {
+                    try {
+                        Files.createDirectories(dir);
+                    } catch (IOException e) {
+                        log.warn("{} 路径创建失败: {}", dir.toAbsolutePath(), e.getMessage());
+                    }
+                }
+                Path target = dir.resolve(fileName);
+                Path tmp = dir.resolve(fileName + ".tmp");
+                Files.write(tmp, bytes);
+                try {
+                    Files.move(tmp, target, StandardCopyOption.ATOMIC_MOVE, StandardCopyOption.REPLACE_EXISTING);
+                } catch (AtomicMoveNotSupportedException e) {
+                    Files.move(tmp, target, StandardCopyOption.REPLACE_EXISTING);
+                }
+            }
+            return bytes;
         } catch (ConnectException e) {
-            log.error("连接ZLM失败: {}, {}", e.getCause().getMessage(), e.getMessage());
+            log.error("连接ZLM失败: {}, {}", e.getCause() == null ? "" : e.getCause().getMessage(), e.getMessage());
             log.info("请检查media配置并确认ZLM已启动...");
         } catch (IOException e) {
             log.error("[ {} ]请求失败: {}", url, e.getMessage());
         }
-        return result;
+        return null;
     }
 
     public ZLMResult<?> isMediaOnline(MediaServer mediaServer, String app, String stream, String schema){
@@ -656,12 +692,13 @@ public class ZLMRESTfulUtils {
     }
 
     public byte[] getSnap(MediaServer mediaServer, String streamUrl, int timeout_sec, int expire_sec, String targetPath, String fileName) {
-        Map<String, Object> param = new HashMap<>(3);
+        Map<String, Object> param = new HashMap<>(4);
         param.put("url", streamUrl);
         param.put("timeout_sec", timeout_sec);
         param.put("expire_sec", expire_sec);
         param.put("async", 1);
-        return sendGetForImg(mediaServer, "getSnap", param, targetPath, fileName);
+        // OkHttp readTimeout 必须 >= ZLM timeout_sec，留 5s 余量给握手与首帧
+        return sendGetForImg(mediaServer, "getSnap", param, targetPath, fileName, timeout_sec + 5);
     }
 
     public ZLMResult<?> pauseRtpCheck(MediaServer mediaServer, String streamId) {
