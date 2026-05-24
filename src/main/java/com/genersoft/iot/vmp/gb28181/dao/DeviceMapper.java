@@ -518,4 +518,21 @@ public interface DeviceMapper {
             "<foreach collection='deviceIds' item='item'  open='(' separator=',' close=')' > #{item}</foreach>" +
             " </script>"})
     List<Device> queryByDeviceIds(List<String> deviceIds);
+
+    @Select("<script>" +
+            "SELECT DISTINCT de.id, de.device_id, coalesce(de.custom_name, de.name) as name, " +
+            "de.manufacturer, de.model, de.on_line, de.ip, de.port, de.transport, " +
+            "de.create_time, de.update_time, " +
+            "(SELECT count(0) FROM wvp_device_channel dc2 WHERE dc2.data_type = 1 AND dc2.data_device_id = de.id) as channel_count " +
+            "FROM wvp_device de " +
+            "INNER JOIN wvp_device_channel dc ON dc.data_device_id = de.id AND dc.data_type = 1 AND dc.channel_type = 0 " +
+            "WHERE coalesce(dc.gb_civil_code, dc.civil_code) = #{civilCode} " +
+            "<if test='query != null'> AND (coalesce(de.custom_name, de.name) LIKE concat('%',#{query},'%') escape '/' OR de.device_id LIKE concat('%',#{query},'%') escape '/') </if> " +
+            "<if test='online != null and online == true'> AND de.on_line = true </if> " +
+            "<if test='online != null and online == false'> AND de.on_line = false </if> " +
+            "ORDER BY de.create_time desc" +
+            "</script>")
+    List<Device> getDevicesByCivilCode(@Param("civilCode") String civilCode,
+                                        @Param("query") String query,
+                                        @Param("online") Boolean online);
 }

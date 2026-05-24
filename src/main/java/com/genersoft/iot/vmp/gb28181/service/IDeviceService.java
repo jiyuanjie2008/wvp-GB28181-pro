@@ -204,4 +204,6 @@ public interface IDeviceService {
     List<TimeStatistics> getKeepaliveTimeStatistics(String deviceId, Integer count);
 
     List<TimeStatistics> getRegisterTimeStatistics(String deviceId, Integer count);
+
+    PageInfo<Device> getDevicesByCivilCode(int page, int count, String civilCode, String query, Boolean online);
 }

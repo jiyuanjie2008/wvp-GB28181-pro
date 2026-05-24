@@ -94,6 +94,21 @@ public class DeviceQuery {
 		return deviceService.getAll(page, count, query, status);
 	}
 
+	@Operation(summary = "按行政区划查询国标设备", security = @SecurityRequirement(name = JwtUtils.HEADER))
+	@Parameter(name = "page", description = "当前页", required = true)
+	@Parameter(name = "count", description = "每页查询数量", required = true)
+	@Parameter(name = "civilCode", description = "行政区划编码", required = true)
+	@Parameter(name = "query", description = "搜索", required = false)
+	@Parameter(name = "online", description = "是否在线", required = false)
+	@GetMapping("/devices/civilcode")
+	public PageInfo<Device> devicesByCivilCode(
+			@RequestParam int page,
+			@RequestParam int count,
+			@RequestParam String civilCode,
+			@RequestParam(required = false) String query,
+			@RequestParam(required = false) Boolean online) {
+		return deviceService.getDevicesByCivilCode(page, count, civilCode, query, online);
+	}
 
 	@GetMapping("/devices/{deviceId}/channels")
 	@Operation(summary = "分页查询通道", security = @SecurityRequirement(name = JwtUtils.HEADER))
