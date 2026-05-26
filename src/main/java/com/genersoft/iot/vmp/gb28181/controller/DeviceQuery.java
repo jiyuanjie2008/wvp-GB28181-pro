@@ -104,7 +104,7 @@ public class DeviceQuery {
 	public PageInfo<Device> devicesByCivilCode(
 			@RequestParam int page,
 			@RequestParam int count,
-			@RequestParam String civilCode,
+			@RequestParam(required = false) String civilCode,
 			@RequestParam(required = false) String query,
 			@RequestParam(required = false) Boolean online) {
 		return deviceService.getDevicesByCivilCode(page, count, civilCode, query, online);
