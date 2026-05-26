@@ -147,14 +147,21 @@ public class AlarmServiceImpl implements IAlarmService {
             log.warn("未找到报警关联的通道信息，alarmId：{}，channelId：{}", alarm.getId(), alarm.getChannelId());
             return;
         }
+        Long alarmId = alarm.getId();
         Device device = deviceService.getDevice(channel.getDataDeviceId());
         if (device == null) {
-            log.warn("[报警快照] 未找到设备，alarmId：{}", alarm.getId());
+            log.warn("[报警快照] 未找到设备，alarmId：{}", alarmId);
+            if (alarmId != null) {
+                alarmMapper.clearSnapPath(alarmId);
+            }
             return;
         }
         DeviceChannel deviceChannel = deviceChannelService.getOneForSourceById(channel.getGbId());
         if (deviceChannel == null) {
-            log.warn("[报警快照] 未找到通道，alarmId：{}", alarm.getId());
+            log.warn("[报警快照] 未找到通道，alarmId：{}", alarmId);
+            if (alarmId != null) {
+                alarmMapper.clearSnapPath(alarmId);
+            }
             return;
         }
         String snapPath = alarm.getSnapPath();
@@ -165,7 +172,6 @@ public class AlarmServiceImpl implements IAlarmService {
                 ? snapPath.substring(snapPath.lastIndexOf('/') + 1)
                 : snapPath;
         // 使用基于文件的 getSnap，ZLM 直接保存为指定文件名，与 DB 记录的 snapPath 一致
-        Long alarmId = alarm.getId();
         playService.getSnap(device.getDeviceId(), deviceChannel.getDeviceId(), fileName, (code, msg, data) -> {
             if (code != 0) {
                 log.warn("[报警快照] 保存失败，alarmId：{}，原因：{}", alarmId, msg);
