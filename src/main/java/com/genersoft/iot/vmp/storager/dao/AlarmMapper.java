@@ -40,6 +40,7 @@ public interface AlarmMapper {
             "</script>")
     void deleteAlarms(@Param("ids") List<Long> ids);
 
+    @Options(useGeneratedKeys = true, keyProperty = "handlerCatchDataList.id")
     @Insert("<script>" +
             "INSERT INTO wvp_alarm (channel_id, description, snap_path, record_path, longitude, latitude, alarm_type, alarm_time)" +
             " VALUES " +
@@ -48,6 +49,9 @@ public interface AlarmMapper {
             "</foreach>" +
             "</script>")
     void insertAlarms(@Param("handlerCatchDataList") List<Alarm> handlerCatchDataList);
+
+    @Update("UPDATE wvp_alarm SET snap_path = NULL WHERE id = #{id}")
+    int clearSnapPath(@Param("id") Long id);
 
     @Select("SELECT snap_path FROM wvp_alarm WHERE id = #{id}")
     String getSnapPathById(@Param("id") Long id);

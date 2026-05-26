@@ -165,9 +165,14 @@ public class AlarmServiceImpl implements IAlarmService {
                 ? snapPath.substring(snapPath.lastIndexOf('/') + 1)
                 : snapPath;
         // 使用基于文件的 getSnap，ZLM 直接保存为指定文件名，与 DB 记录的 snapPath 一致
+        Long alarmId = alarm.getId();
         playService.getSnap(device.getDeviceId(), deviceChannel.getDeviceId(), fileName, (code, msg, data) -> {
             if (code != 0) {
-                log.warn("[报警快照] 保存失败，alarmId：{}，原因：{}", alarm.getId(), msg);
+                log.warn("[报警快照] 保存失败，alarmId：{}，原因：{}", alarmId, msg);
+                // 清除数据库中无效的 snap_path，避免前端展示损坏的图片链接
+                if (alarmId != null) {
+                    alarmMapper.clearSnapPath(alarmId);
+                }
             }
         });
     }
