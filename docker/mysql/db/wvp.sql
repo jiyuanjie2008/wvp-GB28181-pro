@@ -765,5 +765,20 @@ call wvp_20250402();
 DROP PROCEDURE wvp_20250402;
 DELIMITER ;
 
+-- civilCode composite index for getDevicesByCivilCode query
+DELIMITER //
+CREATE PROCEDURE `wvp_20260526`()
+BEGIN
+    IF NOT EXISTS (SELECT column_name FROM information_schema.STATISTICS
+                   WHERE TABLE_SCHEMA = (SELECT DATABASE()) and table_name = 'wvp_device_channel' and INDEX_NAME = 'idx_dc_civil_filter')
+    THEN
+        create index idx_dc_civil_filter on wvp_device_channel (data_type, channel_type, gb_civil_code, civil_code);
+    END IF;
+
+END; //
+call wvp_20260526();
+DROP PROCEDURE wvp_20260526;
+DELIMITER ;
+
 
 

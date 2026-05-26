@@ -168,8 +168,9 @@ public class AlarmServiceImpl implements IAlarmService {
         if (snapPath == null || snapPath.isEmpty()) {
             return;
         }
-        String fileName = snapPath.contains("/")
-                ? snapPath.substring(snapPath.lastIndexOf('/') + 1)
+        String normalized = snapPath.replace('\\', '/');
+        String fileName = normalized.contains("/")
+                ? normalized.substring(normalized.lastIndexOf('/') + 1)
                 : snapPath;
         // 使用基于文件的 getSnap，ZLM 直接保存为指定文件名，与 DB 记录的 snapPath 一致
         playService.getSnap(device.getDeviceId(), deviceChannel.getDeviceId(), fileName, (code, msg, data) -> {

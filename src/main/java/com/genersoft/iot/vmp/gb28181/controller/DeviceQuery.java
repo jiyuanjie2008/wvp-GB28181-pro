@@ -107,6 +107,10 @@ public class DeviceQuery {
 			@RequestParam(required = false) String civilCode,
 			@RequestParam(required = false) String query,
 			@RequestParam(required = false) Boolean online) {
+		if (query != null && query.isEmpty()) query = null;
+		if (count > 500) count = 500;
+		if (count < 1) count = 1;
+		if (page < 1) page = 1;
 		return deviceService.getDevicesByCivilCode(page, count, civilCode, query, online);
 	}
 

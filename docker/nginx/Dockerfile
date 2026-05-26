@@ -15,9 +15,6 @@ RUN echo "registry=https://registry.npmmirror.com" > .npmrc && \
     npm install && \
     npm run build:prod
 
-# 可选：打印构建结果，确认文件生成位置
-RUN echo "=== 构建产物列表 ===" && ls -la /src/main/resources/static
-
 # 4. 复制运行时配置（config.js 设置后端 API 地址）
 COPY ./docker/nginx/config.js /src/main/resources/static/static/js/config.js
 

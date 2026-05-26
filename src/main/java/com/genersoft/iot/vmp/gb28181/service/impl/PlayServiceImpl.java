@@ -67,6 +67,9 @@ import java.util.Vector;
 @Service("playService")
 public class PlayServiceImpl implements IPlayService {
 
+    private static final int SNAP_TIMEOUT_SEC = 15;
+    private static final int SNAP_EXPIRE_SEC = 1;
+
     @Autowired
     private ISIPCommander cmder;
 
@@ -686,7 +689,7 @@ public class PlayServiceImpl implements IPlayService {
         String fileName = deviceId + "_" + channelId + ".jpg";
         // 请求截图
         log.info("[请求截图]: " + fileName);
-        mediaServerService.getSnap(mediaServerItemInuse, MediaStreamUtil.RTP_APP, stream, 15, 1, path, fileName);
+        mediaServerService.getSnap(mediaServerItemInuse, MediaStreamUtil.RTP_APP, stream, SNAP_TIMEOUT_SEC, SNAP_EXPIRE_SEC, path, fileName);
     }
 
     public StreamInfo onPublishHandlerForPlay(MediaServer mediaServerItem, MediaInfo mediaInfo, Device device, DeviceChannel channel) {
@@ -1638,7 +1641,7 @@ public class PlayServiceImpl implements IPlayService {
                 String path = "snap";
                 // 请求截图
                 log.info("[请求截图]: " + fileName);
-                mediaServerService.getSnap(mediaServer, MediaStreamUtil.RTP_APP,  inviteInfo.getStreamInfo().getStream(), 15, 1, path, fileName);
+                mediaServerService.getSnap(mediaServer, MediaStreamUtil.RTP_APP,  inviteInfo.getStreamInfo().getStream(), SNAP_TIMEOUT_SEC, SNAP_EXPIRE_SEC, path, fileName);
                 File snapFile = new File(path + File.separator + fileName);
                 if (snapFile.exists()) {
                     errorCallback.run(InviteErrorCode.SUCCESS.getCode(), InviteErrorCode.SUCCESS.getMsg(), snapFile.getAbsoluteFile());
@@ -1660,7 +1663,7 @@ public class PlayServiceImpl implements IPlayService {
                     String path = "snap";
                     log.info("[请求截图-临时流]: {}", fileName);
                     mediaServerService.getSnap(streamInfo.getMediaServer(), MediaStreamUtil.RTP_APP,
-                            streamInfo.getStream(), 15, 1, path, fileName);
+                            streamInfo.getStream(), SNAP_TIMEOUT_SEC, SNAP_EXPIRE_SEC, path, fileName);
                     File snapFile = new File(path + File.separator + fileName);
                     if (snapFile.exists()) {
                         errorCallback.run(InviteErrorCode.SUCCESS.getCode(), InviteErrorCode.SUCCESS.getMsg(), snapFile.getAbsoluteFile());
@@ -1672,13 +1675,7 @@ public class PlayServiceImpl implements IPlayService {
                             msg != null ? msg : InviteErrorCode.FAIL.getMsg(), null);
                 }
             } finally {
-                try {
-                    String streamId = streamInfo != null ? streamInfo.getStream() : null;
-                    log.info("[截图] 停止临时流 {}/{} stream={}", deviceId, channelId, streamId);
-                    stop(InviteSessionType.PLAY, device, channel, streamId);
-                } catch (Exception e) {
-                    log.warn("[截图] 停止临时流失败 {}/{}: {}", deviceId, channelId, e.getMessage());
-                }
+                stopSnapStream(device, channel, streamInfo);
             }
         });
     }
@@ -1707,7 +1704,7 @@ public class PlayServiceImpl implements IPlayService {
                 String path = "snap";
                 // 请求截图
                 log.info("[请求截图]: 返回byte数组" );
-                byte[] snapByteArray = mediaServerService.getSnap(mediaServer, MediaStreamUtil.RTP_APP,  inviteInfo.getStreamInfo().getStream(), 15, 1, path, null);
+                byte[] snapByteArray = mediaServerService.getSnap(mediaServer, MediaStreamUtil.RTP_APP,  inviteInfo.getStreamInfo().getStream(), SNAP_TIMEOUT_SEC, SNAP_EXPIRE_SEC, path, null);
                 if (snapByteArray != null) {
                     errorCallback.run(InviteErrorCode.SUCCESS.getCode(), InviteErrorCode.SUCCESS.getMsg(), snapByteArray);
                 }else {
@@ -1723,7 +1720,7 @@ public class PlayServiceImpl implements IPlayService {
                 if (code == InviteErrorCode.SUCCESS.getCode() && data != null && data.getMediaServer() != null) {
                     log.info("[请求截图-临时流] 返回byte数组 {}/{}", device.getDeviceId(), deviceChannel.getDeviceId());
                     byte[] snapByteArray = mediaServerService.getSnap(data.getMediaServer(), MediaStreamUtil.RTP_APP,
-                            data.getStream(), 15, 1, null, null);
+                            data.getStream(), SNAP_TIMEOUT_SEC, SNAP_EXPIRE_SEC, null, null);
                     if (snapByteArray != null) {
                         errorCallback.run(InviteErrorCode.SUCCESS.getCode(), InviteErrorCode.SUCCESS.getMsg(), snapByteArray);
                     } else {
@@ -1734,20 +1731,20 @@ public class PlayServiceImpl implements IPlayService {
                             msg != null ? msg : InviteErrorCode.FAIL.getMsg(), null);
                 }
             } finally {
-                try {
-                    String streamId = data != null ? data.getStream() : null;
-                    log.info("[截图] 停止临时流 {}/{} stream={}", device.getDeviceId(), deviceChannel.getDeviceId(), streamId);
-                    stop(InviteSessionType.PLAY, device, deviceChannel, streamId);
-                } catch (Exception e) {
-                    log.warn("[截图] 停止临时流失败 {}/{}: {}", device.getDeviceId(), deviceChannel.getDeviceId(), e.getMessage());
-                }
+                stopSnapStream(device, deviceChannel, data);
             }
         });
     }
 
-
-
-    @Override
+    private void stopSnapStream(Device device, DeviceChannel channel, StreamInfo streamInfo) {
+        try {
+            String streamId = streamInfo != null ? streamInfo.getStream() : null;
+            log.info("[截图] 停止临时流 {}/{} stream={}", device.getDeviceId(), channel.getDeviceId(), streamId);
+            stop(InviteSessionType.PLAY, device, channel, streamId);
+        } catch (Exception e) {
+            log.warn("[截图] 停止临时流失败 {}/{}: {}", device.getDeviceId(), channel.getDeviceId(), e.getMessage());
+        }
+    }    @Override
     public void stop(InviteSessionType type, Device device, DeviceChannel channel, String stream) {
         if (!userSetting.getServerId().equals(device.getServerId())) {
             redisRpcPlayService.stop(device.getServerId(), type,  channel.getId(), stream);

@@ -217,9 +217,13 @@ public class ZLMRESTfulUtils {
                 return null;
             }
             // 用 Content-Type 区分成功(图片) 与 失败(ffmpeg 错误日志文本/默认占位等)
+            // 部分 ZLM 版本返回 application/octet-stream，同时接受
             String contentType = response.header("Content-Type", "");
             byte[] bytes = body.bytes();
-            if (contentType == null || !contentType.toLowerCase().startsWith("image/")) {
+            boolean isImage = contentType != null &&
+                    (contentType.toLowerCase().startsWith("image/") ||
+                     contentType.toLowerCase().startsWith("application/octet-stream"));
+            if (!isImage) {
                 String preview = bytes.length == 0 ? "<empty>"
                         : new String(bytes, 0, Math.min(bytes.length, 256), StandardCharsets.UTF_8);
                 log.warn("[ {} ]截图失败, content-type={}, body[0..256]={}", url, contentType, preview);
@@ -230,19 +234,17 @@ public class ZLMRESTfulUtils {
             if (targetPath != null && fileName != null) {
                 Path dir = Paths.get(targetPath);
                 if (!Files.exists(dir)) {
-                    try {
-                        Files.createDirectories(dir);
-                    } catch (IOException e) {
-                        log.warn("{} 路径创建失败: {}", dir.toAbsolutePath(), e.getMessage());
-                    }
+                    Files.createDirectories(dir);
                 }
                 Path target = dir.resolve(fileName);
                 Path tmp = dir.resolve(fileName + ".tmp");
-                Files.write(tmp, bytes);
                 try {
+                    Files.write(tmp, bytes);
                     Files.move(tmp, target, StandardCopyOption.ATOMIC_MOVE, StandardCopyOption.REPLACE_EXISTING);
                 } catch (AtomicMoveNotSupportedException e) {
                     Files.move(tmp, target, StandardCopyOption.REPLACE_EXISTING);
+                } finally {
+                    Files.deleteIfExists(tmp);
                 }
             }
             return bytes;
