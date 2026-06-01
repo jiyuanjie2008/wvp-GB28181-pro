@@ -149,6 +149,8 @@ public class AlarmNotifyMessageHandler extends SIPRequestProcessorParent impleme
 
                 if (redisCatchStorage.deviceIsOnline(sipMsgInfo.getDevice().getDeviceId())) {
                     deviceAlarmList.add(deviceAlarmNotify);
+                }else {
+                    log.warn("[Alarm] 设备离线，丢弃报警：{}/{}", sipMsgInfo.getDevice().getDeviceId(), deviceAlarmNotify.getChannelId());
                 }
             } catch (Exception e) {
                 log.error("未处理的异常 ", e);

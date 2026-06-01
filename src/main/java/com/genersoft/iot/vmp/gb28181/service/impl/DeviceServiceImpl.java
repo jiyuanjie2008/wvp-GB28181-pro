@@ -223,7 +223,7 @@ public class DeviceServiceImpl implements IDeviceService, CommandLineRunner {
                     }
                 }else if (SubscribeTaskForAlarm.name.equals(taskInfo.getName())) {
                     device.setSubscribeCycleForAlarm((int)taskInfo.getExpireTime());
-                    SubscribeTask subscribeTask = SubscribeTaskForAlarm.getInstance(device, this::mobilPositionSubscribeExpire, taskInfo.getTransactionInfo());
+                    SubscribeTask subscribeTask = SubscribeTaskForAlarm.getInstance(device, this::alarmSubscribeExpire, taskInfo.getTransactionInfo());
                     if (subscribeTask != null) {
                         subscribeTaskRunner.addSubscribe(subscribeTask);
                     }

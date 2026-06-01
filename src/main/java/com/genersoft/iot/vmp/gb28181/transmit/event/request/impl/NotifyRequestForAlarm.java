@@ -124,9 +124,10 @@ public class NotifyRequestForAlarm extends SIPRequestProcessorParent {
 					}
 				}
 
-				// 回复200 OK
 				if (redisCatchStorage.deviceIsOnline(deviceId)) {
 					deviceAlarmList.add(deviceAlarmNotify);
+				}else {
+					log.warn("[NotifyAlarm] 设备离线，丢弃报警：{}/{}", deviceId, deviceAlarmNotify.getChannelId());
 				}
 
 			} catch (DocumentException e) {
