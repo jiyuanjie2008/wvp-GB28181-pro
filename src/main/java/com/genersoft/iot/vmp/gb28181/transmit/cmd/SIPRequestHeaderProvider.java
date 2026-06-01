@@ -116,6 +116,9 @@ public class SIPRequestHeaderProvider {
 		request.addHeader(subjectHeader);
 		ContentTypeHeader contentTypeHeader = SipFactory.getInstance().createHeaderFactory().createContentTypeHeader("APPLICATION", "SDP");
 		request.setContent(content, contentTypeHeader);
+		// SIP Session Timer (RFC 4028) - override GoSunCN SDK default short timeout that causes ~18s disconnect
+		request.addHeader(headerFactory.createHeader("Session-Expires", "3600"));
+		request.addHeader(headerFactory.createHeader("Supported", "timer"));
 		return request;
 	}
 
