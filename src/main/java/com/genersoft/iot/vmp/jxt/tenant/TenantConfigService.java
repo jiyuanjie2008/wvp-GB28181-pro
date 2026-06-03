@@ -178,7 +178,13 @@ public class TenantConfigService {
         if (response.getCount() == 0) {
             throw new IllegalStateException("Tenant code not found in ETCD: " + tenantCode);
         }
-        return response.getKvs().get(0).getValue().toString(StandardCharsets.UTF_8);
+        String rawValue = response.getKvs().get(0).getValue().toString(StandardCharsets.UTF_8);
+        // The index value may be a plain ID or a JSON object like {"code":"default","id":1,"name":"默认租户"}
+        if (rawValue.startsWith("{")) {
+            com.alibaba.fastjson2.JSONObject obj = JSON.parseObject(rawValue);
+            return String.valueOf(obj.getIntValue("id"));
+        }
+        return rawValue;
     }
 
     private List<FtpCredential> loadFtpCredentials(KV kvClient, String tenantId) throws Exception {
