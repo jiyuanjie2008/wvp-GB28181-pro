@@ -140,3 +140,11 @@ sy:
 logging:
   config: classpath:logback-spring.xml
 
+# JXT tenant and ETCD config
+jxt:
+  tenant:
+    code: "${TENANT_CODE:}"
+  etcd:
+    endpoints: "${ETCD_ENDPOINTS:http://etcd:2379}"
+    namespace: "${ETCD_NAMESPACE:jxt/}"
+

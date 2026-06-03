@@ -77,3 +77,11 @@ user-settings:
     # 推流直播是否录制
     record-push-live: true
     auto-apply-play: true
+
+# JXT tenant and ETCD config
+jxt:
+  tenant:
+    code: "${TENANT_CODE:}"
+  etcd:
+    endpoints: "${ETCD_ENDPOINTS:http://127.0.0.1:2379}"
+    namespace: "${ETCD_NAMESPACE:jxt/}"
