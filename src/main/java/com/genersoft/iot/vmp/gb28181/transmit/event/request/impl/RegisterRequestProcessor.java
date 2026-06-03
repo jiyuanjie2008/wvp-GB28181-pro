@@ -77,6 +77,9 @@ public class RegisterRequestProcessor extends SIPRequestProcessorParent implemen
     @Autowired
     private DeviceAuthStrategyChain strategyChain;
 
+    @Autowired
+    private com.genersoft.iot.vmp.jxt.tenant.TenantConfigService tenantConfigService;
+
     @Value("${jxt.identity.enabled:true}")
     private boolean identityEnabled;
 
@@ -140,6 +143,10 @@ public class RegisterRequestProcessor extends SIPRequestProcessorParent implemen
                         sipSender.transmitRequest(request.getLocalAddress().getHostAddress(), registerOkResponse);
                         device.setRegisterTimeStamp(System.currentTimeMillis());
                         deviceService.online(device);
+                        // After SIP 200 OK is sent and device is online, deliver FTP config.
+                        // Safe: this is the RENEWAL path — device was already authenticated on first registration.
+                        // Device object is fully populated at this point (all fields set before this line).
+                        tenantConfigService.deliverFtpConfigAsync(device);
                     } else {
                         deviceService.offline(device);
                     }
@@ -268,6 +275,10 @@ public class RegisterRequestProcessor extends SIPRequestProcessorParent implemen
                 device.setSipTransactionInfo(sipTransactionInfo);
                 deviceService.online(device);
                 eventPublisher.deviceOnlineEventPublish(device);
+                // After SIP 200 OK is sent and device is online, deliver FTP config.
+                // Safe: this path is only reached after successful SIP digest auth (registerFlag=true).
+                // sipTransactionInfo is set at line above; Thread.start() ensures happens-before visibility.
+                tenantConfigService.deliverFtpConfigAsync(device);
             } else {
                 log.info("[注销成功] deviceId: {}->{}", deviceId, requestAddress);
                 deviceService.offline(device);
