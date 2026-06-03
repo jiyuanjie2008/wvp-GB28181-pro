@@ -196,6 +196,14 @@ public interface ISIPCommander {
 	void deviceBasicConfigCmd(Device device, BasicParam basicParam, ErrorCallback<String> callback) throws InvalidArgumentException, SipException, ParseException;
 
 	/**
+	 * FTP server config delivery (ServerCfgType/ftpServerCfgType)
+	 */
+	void ftpServerConfigCmd(Device device, String channelId, String ipv4Address, int ftpPort,
+							String userId, String userPasswd,
+							SipSubscribe.Event okEvent, SipSubscribe.Event errorEvent)
+			throws InvalidArgumentException, SipException, ParseException;
+
+	/**
 	 * 查询设备状态
 	 *
 	 * @param device 视频设备
