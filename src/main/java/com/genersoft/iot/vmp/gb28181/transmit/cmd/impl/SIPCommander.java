@@ -886,6 +886,36 @@ public class SIPCommander implements ISIPCommander {
         });
     }
 
+    @Override
+    public void ftpServerConfigCmd(Device device, String channelId, String ipv4Address, int ftpPort,
+                                   String userId, String userPasswd,
+                                   SipSubscribe.Event okEvent, SipSubscribe.Event errorEvent)
+            throws InvalidArgumentException, SipException, ParseException {
+
+        int sn = (int) ((Math.random() * 9 + 1) * 100000);
+        String charset = device.getCharset();
+
+        StringBuffer cmdXml = new StringBuffer(300);
+        cmdXml.append("<?xml version=\"1.0\" encoding=\"" + charset + "\"?>\r\n");
+        cmdXml.append("<Control>\r\n");
+        cmdXml.append("<CmdType>ServerCfgType</CmdType>\r\n");
+        cmdXml.append("<SN>" + sn + "</SN>\r\n");
+        cmdXml.append("<DeviceID>" + channelId + "</DeviceID>\r\n");
+        cmdXml.append("<ServerType>ftpServerCfgType</ServerType>\r\n");
+        cmdXml.append("<FtpServerCfgType>\r\n");
+        cmdXml.append("<Ipv4Address>" + ipv4Address + "</Ipv4Address>\r\n");
+        cmdXml.append("<FTPPort>" + ftpPort + "</FTPPort>\r\n");
+        cmdXml.append("<UserId>" + userId + "</UserId>\r\n");
+        cmdXml.append("<UserPasswd>" + userPasswd + "</UserPasswd>\r\n");
+        cmdXml.append("</FtpServerCfgType>\r\n");
+        cmdXml.append("</Control>\r\n");
+
+        Request request = headerProvider.createMessageRequest(device, cmdXml.toString(),
+                null, SipUtils.getNewFromTag(), null,
+                sipSender.getNewCallIdHeader(sipLayer.getLocalIp(device.getLocalIp()), device.getTransport()));
+        sipSender.transmitRequest(sipLayer.getLocalIp(device.getLocalIp()), request, errorEvent, okEvent);
+    }
+
     /**
      * 查询设备状态
      *
