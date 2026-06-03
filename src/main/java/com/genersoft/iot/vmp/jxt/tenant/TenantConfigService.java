@@ -7,6 +7,7 @@ import com.genersoft.iot.vmp.gb28181.transmit.cmd.ISIPCommander;
 import com.genersoft.iot.vmp.jxt.tenant.config.EtcdProperties;
 import com.genersoft.iot.vmp.jxt.tenant.config.TenantProperties;
 import com.genersoft.iot.vmp.jxt.tenant.dto.FtpCredential;
+import com.genersoft.iot.vmp.gb28181.event.device.DeviceOfflineEvent;
 import com.genersoft.iot.vmp.jxt.tenant.dto.StorageSiteInfo;
 import io.etcd.jetcd.ByteSequence;
 import io.etcd.jetcd.Client;
@@ -20,6 +21,7 @@ import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
 import java.nio.charset.StandardCharsets;
@@ -80,6 +82,15 @@ public class TenantConfigService {
     public void destroy() {
         if (etcdClient != null) {
             etcdClient.close();
+        }
+    }
+
+    @EventListener
+    public void onDeviceOffline(DeviceOfflineEvent event) {
+        if (event.getDeviceIds() != null) {
+            for (String deviceId : event.getDeviceIds()) {
+                deliveredConfigHash.remove(deviceId);
+            }
         }
     }
 
