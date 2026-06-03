@@ -14,6 +14,7 @@ import io.etcd.jetcd.KV;
 import io.etcd.jetcd.Watch;
 import io.etcd.jetcd.kv.GetResponse;
 import io.etcd.jetcd.options.GetOption;
+import io.etcd.jetcd.options.WatchOption;
 import io.etcd.jetcd.watch.WatchEvent;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
@@ -123,9 +124,11 @@ public class TenantConfigService {
         // If the revision is compacted (error), fall back to full reload.
         long watchRevision = this.lastRevision + 1;
 
+        WatchOption watchOpts = WatchOption.newBuilder().withRevision(watchRevision).build();
+
         // Watch FTP credentials prefix
         ByteSequence ftpPrefix = ByteSequence.from("tenants/" + tenantId + "/ftp/", StandardCharsets.UTF_8);
-        watchClient.watch(ftpPrefix, response -> {
+        watchClient.watch(ftpPrefix, watchOpts, response -> {
             for (WatchEvent event : response.getEvents()) {
                 log.info("[租户配置] FTP 凭证变更: type={}", event.getEventType());
             }
@@ -134,7 +137,7 @@ public class TenantConfigService {
 
         // Watch storage sites prefix
         ByteSequence sitePrefix = ByteSequence.from("common/storage-site/", StandardCharsets.UTF_8);
-        watchClient.watch(sitePrefix, response -> {
+        watchClient.watch(sitePrefix, watchOpts, response -> {
             for (WatchEvent event : response.getEvents()) {
                 log.info("[租户配置] 存储站点变更: type={}", event.getEventType());
             }
