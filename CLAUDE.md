@@ -117,3 +117,117 @@ Key config properties in `application-{profile}.yml`:
 - `sip.port` / `sip.domain` / `sip.id` — SIP server identity
 - `user-settings.stream-on-demand` — Auto-play on stream-not-found
 - `user-settings.use-source-ipAsStream-ip` — Replace stream URL host with requesting client's IP
+
+## ARM32 Native Library Reverse Engineering
+
+The ZX/GY_GA/TL body-worn camera terminals use `libnative-lib.so` (ARM32 ELF, ~16MB) containing the SIP stack and JNI bridge. When debugging C++ routing issues (e.g., why a SIP MESSAGE isn't reaching the correct JNI callback), use this workflow:
+
+### Prerequisites
+
+- **Python capstone** (`pip install capstone`) for ARM32 disassembly
+- **JADX** (at `/d/jadx-gui-1.5.5-with-jre-win/`) for DEX decompilation — use headless mode for single-class extraction
+
+### Step 1: Verify .so identity across APKs
+
+Different APKs may share the same native library. Always verify with MD5 before assuming code differs:
+
+```python
+import hashlib, zipfile
+with zipfile.ZipFile('apk_path', 'r') as z:
+    data = z.read('lib/armeabi-v7a/libnative-lib.so')
+    print(hashlib.md5(data).hexdigest(), len(data))
+```
+
+### Step 2: Build PLT symbol resolution table
+
+ARM32 PLT stubs are 12 bytes each starting at `.plt + 20`. Map PLT addresses to symbol names via `.rel.plt`:
+
+```python
+# Parse ELF headers to find .rel.plt, .dynsym, .dynstr, .plt sections
+# Each .rel.plt entry (8 bytes): r_offset(4) + r_info(4)
+# r_info >> 8 = symbol index into .dynsym
+# .dynsym entry (16 bytes): st_name(4) offset into .dynstr
+# PLT stub addr = .plt_base + 20 + (rel_entry_index * 12)
+```
+
+Save as JSON: `{hex(plt_addr): symbol_name}` for lookup during disassembly.
+
+### Step 3: Resolve PC-relative string constants
+
+ARM32 `LDR Rx, [PC, #imm]` loads a 32-bit value from a literal pool. In ARM mode, PC = instruction_address + 8. To resolve string references:
+
+```python
+import struct
+def resolve_pc_str(data, ldr_addr, offset):
+    pc = ldr_addr + 8  # ARM mode
+    literal_val = struct.unpack_from('<I', data, pc + offset)[0]  # but check if it's LDR+ADD pattern
+    # Common pattern: LDR r0, [pc, #X] then ADD r0, pc, r0
+    # Final address = add_insn_addr + 8 + loaded_value
+    return read_cstring(data, final_addr)
+```
+
+### Step 4: Disassemble with capstone (ARM mode, not Thumb)
+
+```python
+from capstone import *
+md = Cs(CS_ARCH_ARM, CS_MODE_ARM)
+md.detail = True
+for insn in md.disasm(code_bytes, func_addr):
+    if insn.mnemonic == 'bl':
+        target = int(insn.op_str.lstrip('#'), 16)
+        if target in plt_map:
+            insn.op_str += f' <{plt_map[target]}>'
+```
+
+**Important**: This .so uses ARM mode (not Thumb). Confirmed by 4-byte-aligned instructions starting with PUSH `{fp, lr}` (opcode `0xe92d4830`).
+
+### Step 5: DEX bytecode analysis for Java layer
+
+When JADX fails to decompile a method (e.g., "Method dump skipped, 326 instruction units"), parse the DEX directly:
+
+```python
+# Parse DEX class_data_item to enumerate all methods
+# Each method's code_item at code_off contains:
+#   - registers_size, ins_size, outs_size, tries_size, insns_size
+#   - Exception table (try-catch blocks) with type-indexed handlers
+#   - Instruction bytecode (insns_size * 2 bytes)
+# Key opcodes: invoke-virtual(0x6e), invoke-static(0x71), const-string(0x1a), goto/16(0x29)
+# IMPORTANT: mask opcode with & 0xFF — the high byte contains register args, not the opcode
+```
+
+### Known C++ routing in libnative-lib.so
+
+```
+gb28181_msg_rx (0x0014ff38):
+  XML root element → handler dispatch
+  "Control"  → gb28181_control_rx
+  "Query"    → gb28181_query_rx
+  "Notify"   → gb28181_notify_rx
+  "Response" → break
+
+gb28181_control_rx (0x0014fafc, 736 bytes):
+  strcasecmp(cmdt, "DeviceControl") → gb28181_device_control_req → updateState_controlDev
+  strcasecmp(cmdt, "DeviceConfig")  → gb28181_device_config_req
+  else branch (all other CmdTypes):
+    1. Check ctx_type == 5 (SIP_CTX_XML) — if not, return
+    2. sip_find_sdp_headline to extract XML body
+    3. strstr(xml_body, "<?xml") — must find XML declaration
+    4. updateState_controlServerCfg(1, xml_ptr) → fromJNIControlSerCfgBackFun → onReceiveFTPServiceBack
+```
+
+### Key JNI callbacks in Java layer
+
+| C++ function | JNI callback | Java handler | Purpose |
+|---|---|---|---|
+| `updateState_controlDev` | `fromJNIControlDevBackFun` | `onReceiveControlDeviceBack` | Device control (PTZ, time sync, etc.) |
+| `updateState_controlServerCfg` | `fromJNIControlSerCfgBackFun` | `onReceiveFTPServiceBack` | FTP/picture server config |
+
+### Terminal APK file locations
+
+```
+d:/jxt/1.9.1_793_202603261758_ZX.apk      # ZX terminal (FTP NOT working)
+d:/jxt/1.9.1421_827_202605211142_GY_GA.apk  # GY_GA terminal (FTP working)
+d:/jxt/1.8.37_712_202606021138_TL.apk       # TL terminal (FTP working, different .so)
+```
+
+Source code (ZX decompiled): `d:/jxt/zfy/zx/app/src/main/java/com/dcw/biz/platform/gb28181/Gb28181Local.java`

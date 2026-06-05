@@ -245,12 +245,13 @@ public class TenantConfigService {
         if (!isZxTerminal(device)) {
             return;
         }
-        // Dedup: skip if config hasn't changed since last delivery to this device
-        String currentHash = this.configHash;
-        String deviceId = device.getDeviceId();
-        if (currentHash.equals(deliveredConfigHash.get(deviceId))) {
+        // Terminal C++ TCP path passes NULL szMsg to gb28181_control_rx else branch,
+        // causing strstr(NULL,"<?xml") → SIGSEGV crash. Only deliver via UDP.
+        if ("TCP".equalsIgnoreCase(device.getTransport())) {
+            log.warn("[FTP配置下发] 跳过TCP设备(终端会崩溃), 设备: {}", device.getDeviceId());
             return;
         }
+        String deviceId = device.getDeviceId();
         Thread.ofVirtual().name("ftp-config-" + deviceId).start(() -> {
             try {
                 deliverySemaphore.acquire();
@@ -259,24 +260,21 @@ public class TenantConfigService {
                     List<StorageSiteInfo> currentSites = this.storageSites;
                     List<FtpCredential> currentCreds = this.ftpCredentials;
                     if (currentSites.isEmpty() || currentCreds.isEmpty()) {
-                        return;
-                    }
-
-                    // Re-check hash after acquiring semaphore (may have changed)
-                    String hashNow = this.configHash;
-                    if (hashNow.equals(deliveredConfigHash.get(deviceId))) {
+                        log.warn("[FTP配置下发] 跳过, 配置不完整, 设备: {}", deviceId);
                         return;
                     }
 
                     StorageSiteInfo site = selectSite(deviceId, currentSites);
                     FtpCredential cred = currentCreds.get(0);
 
+                    // TEMP: send username as plaintext password to test terminal handling
+                    String password = cred.getUsername();
                     sipCommander.ftpServerConfigCmd(
                             device, deviceId,
                             site.getIpv4Address(), site.getFtpPort(),
-                            cred.getUsername(), cred.getPasswordHash(),
+                            cred.getUsername(), password,
                             okEvent -> {
-                                deliveredConfigHash.put(deviceId, hashNow);
+                                deliveredConfigHash.put(deviceId, configHash);
                                 log.info("[FTP配置下发] 成功, 设备: {}, 站点: {}",
                                         deviceId, site.getSiteId());
                             },
@@ -292,17 +290,14 @@ public class TenantConfigService {
         });
     }
 
-    // ZX body-worn cameras have device IDs matching this pattern.
-    // Adjust the pattern based on actual device ID conventions in production.
+    // ZX/GY_GA body-worn cameras report manufacturer as "sz-zfy".
+    // On first registration manufacturer may be null (catalog not yet synced).
     private boolean isZxTerminal(Device device) {
         String manufacturer = device.getManufacturer();
-        if (manufacturer != null && manufacturer.contains("ZX")) {
+        if (manufacturer == null || manufacturer.isBlank()) {
             return true;
         }
-        // Fallback: ZX terminals may not have manufacturer info on first registration.
-        // Use device ID prefix or other heuristic as needed.
-        // For now, allow all devices when manufacturer is unknown.
-        return manufacturer == null || manufacturer.isBlank();
+        return manufacturer.contains("zfy") || manufacturer.contains("ZX");
     }
 
     private StorageSiteInfo selectSite(String deviceId, List<StorageSiteInfo> sites) {

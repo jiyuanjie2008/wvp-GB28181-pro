@@ -23,7 +23,7 @@ Each tenant runs a dedicated WVP-GB28181-Pro instance. When a GB28181 terminal (
 | Data granularity | Per-tenant (not per-device) | All devices under a tenant share the same FTP credentials |
 | Password format | bcrypt hash | Terminal stores as-is; file-storage-service adds hash-to-hash comparison |
 | Load balancing | Device ID hash | Same device always maps to same FTP server; files not scattered |
-| Dynamic config update | Restart WVP | FTP config rarely changes; WVP already uses static config pattern |
+| Dynamic config update | ETCD Watch | Config changes propagate in real-time without restart; Watch on `tenants/{id}/ftp/` and `common/storage-site/` prefixes |
 | Picture/S3 config | Deferred | Not needed in this phase |
 
 ### 1.3 System Context
@@ -38,7 +38,7 @@ Each tenant runs a dedicated WVP-GB28181-Pro instance. When a GB28181 terminal (
                          │  Storage    │
                          │  site info  │
                          └──────┬──────┘
-                                │ WVP reads at startup
+                                │ WVP reads at startup + Watch
                                 ▼
                          ┌──────────────────────┐
                          │  WVP-GB28181-Pro      │
@@ -119,11 +119,15 @@ public class StorageSiteInfo {
 
 // Tenant FTP credential (from ETCD tenants/{id}/ftp/{username})
 public class FtpCredential {
+    private String tenantId;       // Tenant ID (unused in logic, for traceability)
     private String username;       // FTP login username
     private String passwordHash;   // bcrypt hash, sent as-is to terminal
+    private String description;    // Description (e.g., "执法记录仪FTP")
+    private String status;         // "active" or "inactive"; only active credentials are loaded
 }
 
-// Combined config for SIP MESSAGE delivery
+// Combined config for SIP MESSAGE delivery (optional — TenantConfigService can also
+// pass fields directly to SIPCommander without assembling this DTO first)
 public class FtpServerConfig {
     private String ipv4Address;    // From StorageSiteInfo
     private int ftpPort;           // From StorageSiteInfo
@@ -185,15 +189,17 @@ Terminal sets `FTPService.setIsReceive(true)` after parsing, which wakes up the 
 `TenantConfigService` (`@PostConstruct`):
 
 ```
-1. Connect to ETCD using jetcd client
+1. Connect to ETCD using jetcd client (persistent, kept open for Watch)
 2. Read {namespace}tenants/_index/by-code/{tenantCode} → tenantId
 3. Prefix query {namespace}tenants/{tenantId}/ftp/ → List<FtpCredential>
    - Filter status=active only
 4. Prefix query {namespace}common/storage-site/ → List<StorageSiteInfo>
    - Filter status=active only
 5. Validate: at least one FTP credential and one storage site must exist
-6. Cache in memory (Spring Bean)
-7. Close ETCD connection
+6. Cache in memory (volatile fields, unmodifiable lists)
+7. Compute config hash for deduplication
+8. Start ETCD Watch on FTP credentials and storage site prefixes (from initial load revision + 1)
+9. Keep ETCD connection open; close on @PreDestroy
 ```
 
 ### 4.2 Failure Handling
@@ -208,7 +214,9 @@ Terminal sets `FTPService.setIsReceive(true)` after parsing, which wakes up the 
 ### 4.3 ETCD Dependency
 
 - jetcd (io.etcd:jetcd-core) added to pom.xml
-- One-time read at startup, no watch, no persistent connection
+- Persistent ETCD connection for Watch on FTP credentials and storage site prefixes
+- Initial load at startup, then Watch for config changes
+- `@PreDestroy` closes ETCD client on shutdown
 - ETCD credentials: none (internal network)
 
 ---
@@ -219,7 +227,7 @@ Terminal sets `FTPService.setIsReceive(true)` after parsing, which wakes up the 
 
 ```java
 StorageSiteInfo selectSite(String deviceId, List<StorageSiteInfo> sites) {
-    int index = Math.abs(deviceId.hashCode()) % sites.size();
+    int index = (deviceId.hashCode() & Integer.MAX_VALUE) % sites.size();
     return sites.get(index);
 }
 ```
@@ -228,7 +236,7 @@ StorageSiteInfo selectSite(String deviceId, List<StorageSiteInfo> sites) {
 
 - Same device ID always maps to the same storage site
 - Files from the same device are not scattered across multiple servers
-- When sites change (WVP restart with updated ETCD data), remapping is possible but acceptable
+- When sites change (via ETCD Watch), remapping is possible but acceptable — devices get the new site assignment on next registration
 
 ---
 
@@ -260,9 +268,14 @@ ZX Terminal                     WVP                             ETCD
 
 ### 6.2 Integration Point
 
-- Hook into existing device registration success handler (same point as `RegisterResponseProcessor`)
-- Call `SIPCommander.ftpServerConfigCmd()` asynchronously (Virtual Thread)
+- Hook into **both** registration success paths in `RegisterRequestProcessor`:
+  - **Renewal path** (same Call-ID, most common): after `deviceService.online()` and SIP 200 OK sent
+  - **Re-registration / new device path**: after `deviceService.online()` and `eventPublisher.deviceOnlineEventPublish()`
+- Both hook points are after successful authentication — FTP config is never sent to unauthenticated devices
+- Device type filter: only deliver to ZX terminals (`isZxTerminal()` check). Non-ZX devices (IPCs, NVRs) are skipped to avoid sending unrecognized ServerCfgType messages
+- Call `SIPCommander.ftpServerConfigCmd()` asynchronously (Virtual Thread with bounded Semaphore)
 - Do not block the SIP REGISTER 200 OK response
+- **Deduplication**: per-device config hash tracking prevents redundant delivery on every 60-second renewal. Only sends when config actually changes or on first registration
 
 ### 6.3 SipSubscribe Pattern
 
@@ -287,11 +300,12 @@ tenant-service creates FTP config
             → file-storage-service compares hash directly with stored hash
 ```
 
-### 7.2 file-storage-service Change (out of WVP scope)
+### 7.2 file-storage-service Change (required dependency)
 
 - Add new authentication method: accept bcrypt hash directly and compare with stored hash
+- **Why this is necessary:** Standard `bcrypt.CompareHashAndPassword(stored_hash, plaintext)` expects the second argument to be plaintext. The terminal sends the bcrypt hash as its FTP password. Calling `bcrypt.CompareHashAndPassword(stored_hash, hash)` always returns false because bcrypt is comparing a hash against a hash.
+- **Fix:** Add a direct string comparison path: if the incoming password looks like a bcrypt hash (`$2a$...`), compare it directly with the stored hash. Otherwise, fall through to the standard bcrypt comparison.
 - Existing plaintext → bcrypt → compare method remains as fallback
-- Both methods are tried: if direct hash comparison matches, authenticate; otherwise try plaintext → bcrypt
 
 ---
 
@@ -317,11 +331,11 @@ tenant-service creates FTP config
 | `application-docker.yml` | Add same config with env var defaults |
 | `ISIPCommander.java` | Add `ftpServerConfigCmd()` method declaration |
 | `SIPCommander.java` | Implement `ftpServerConfigCmd()` |
-| Device registration handler | Add async call to FTP config delivery on register success |
+| `RegisterRequestProcessor.java` | Add async FTP config delivery to both renewal and re-registration success paths |
 
 ### 8.3 Existing Code to Reuse
 
-The existing `ftpServerConfigCmd` implementation in `SIPCommander.java` (from `2026-04-28-ftp-config-delivery.md` plan) can be reused as-is. The XML construction and SIP sending logic are identical. What changes is the **data source** (ETCD instead of Redis/HTTP) and the **trigger** (SIP REGISTER instead of REST API).
+The `deviceBasicConfigCmd` method in `SIPCommander.java` (lines 845-887) provides the pattern for XML construction and SIP MESSAGE sending. The `ftpServerConfigCmd` method must be created from scratch — the prior plan (`2026-04-28-ftp-config-delivery.md`) was never implemented. The XML construction follows the same StringBuffer pattern as `deviceBasicConfigCmd`, but uses `SipSubscribe.Event` callbacks instead of `MessageEvent` since the terminal only responds with SIP 200 OK.
 
 ---
 
@@ -331,7 +345,7 @@ The existing `ftpServerConfigCmd` implementation in `SIPCommander.java` (from `2
 |-----------|-------------------------|---------------------|
 | Data source | Redis (written by security-management) | ETCD (tenant-service + storage-service) |
 | Granularity | Per-device config | Per-tenant config |
-| Version tracking | desired/delivered with version numbers | None (simplified) |
+| Version tracking | desired/delivered with version numbers | Config hash dedup (per-device tracking to avoid redundant sends) |
 | Backoff | Error count + 5min backoff window | None (simple retry on next registration) |
 | Admin API | Forced refresh endpoint | Not included in this phase |
 | FTP server | Single, specified by security-management | Multiple, hash-based selection |
@@ -340,16 +354,28 @@ The existing `ftpServerConfigCmd` implementation in `SIPCommander.java` (from `2
 
 ---
 
+## 9.5 Security Considerations
+
+- **Log redaction**: Delivery callbacks only log `deviceId` and `siteId`. Never log `userId` or `passwordHash`. SIP debug logging must be configured to suppress MESSAGE bodies for `ServerCfgType` commands to prevent credential exposure in log files.
+- **Authentication gate**: FTP config delivery hooks are placed after successful SIP digest authentication in `RegisterRequestProcessor`. Unauthenticated devices never receive FTP credentials.
+- **Device type filtering**: Only ZX terminals receive FTP config. Non-ZX devices (IPCs, NVRs, platforms) are filtered out via `isZxTerminal()` check to prevent sending unrecognized vendor extensions.
+
+---
+
 ## 10. Out of Scope
 
 - Picture/S3 server config delivery (future phase)
-- ETCD Watch for dynamic config updates (restart WVP instead)
 - Per-device version tracking and desired/delivered model
 - Admin forced-refresh API
 - Metrics and tracing (add later if needed)
 - tenant-service changes (FTP config schema already exists)
-- storage-service ETCD self-registration (separate task)
-- file-storage-service bcrypt hash authentication (separate task)
+
+## 10.1 Cross-Service Dependencies (Required Before Ship)
+
+These tasks are in scope for the overall feature but live in other services:
+
+- **file-storage-service ETCD self-registration** — Publish `common/storage-site/{siteId}` to ETCD on startup. The WVP FTP config delivery depends on this data existing in ETCD.
+- **file-storage-service hash-to-hash FTP auth** — Add authentication method that accepts bcrypt hash directly and compares with stored hash. Standard `bcrypt.CompareHashAndPassword(stored_hash, plaintext)` won't work when the terminal sends a hash.
 
 ---
 
@@ -380,3 +406,24 @@ The existing `ftpServerConfigCmd` implementation in `SIPCommander.java` (from `2
 - No storage sites → skip delivery, log WARN
 - Device offline after register → SIP MESSAGE timeout, log WARN
 - Multiple FTP credentials → select first active one
+
+---
+
+## GSTACK REVIEW REPORT
+
+| Review | Trigger | Why | Runs | Status | Findings |
+|--------|---------|-----|------|--------|----------|
+| Eng Review | `/plan-eng-review` | Architecture & tests (required) | 2 | ISSUES | 10 issues, 2 critical gaps |
+| Outside Voice | Claude subagent | Independent 2nd opinion | 1 | ISSUES | 4 new findings (password flow, renewal path, concurrency, race condition) |
+| CEO Review | `/plan-ceo-review` | Scope & strategy | 0 | — | — |
+| Design Review | `/plan-design-review` | UI/UX gaps | 0 | — | — |
+
+**CROSS-MODEL:** Claude review + outside voice (Claude subagent) agreed on 6/10 issues. Second outside voice (Codex/GPT-5.5 via OpenRouter) found 5 additional issues: device type filtering (D12), renewal deduplication (D13), ETCD Watch revision gap (D14), log security (D15), and auth gate verification (D11, false positive).
+
+**UNRESOLVED:** 0 — all 10 decisions resolved with user input.
+
+**CRITICAL GAPS (2):**
+1. FTP authentication chain broken — `bcrypt.CompareHashAndPassword(hash, hash)` always fails. Requires hash-to-hash comparator in file-storage-service.
+2. Storage site ETCD data doesn't exist — no service writes `common/storage-site/{siteId}` to ETCD. Requires file-storage-service ETCD self-registration.
+
+**VERDICT:** NOT CLEARED — 6 P1 tasks must be resolved before ship. See implementation plan for task details.

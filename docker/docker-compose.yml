@@ -93,6 +93,10 @@ services:
       ZLM_HOOK_HOST: polaris-wvp
       ZLM_HOST: polaris-media
       ZLM_SERCERT: su6TiedN2rVAmBbIDX0aa0QTiBJLBdcf
+      # JXT tenant config
+      TENANT_CODE: "${TENANT_CODE:-default}"
+      ETCD_ENDPOINTS: "http://etcd:2379"
+      ETCD_NAMESPACE: "jxt/"
 
       MediaHttp: ${WebHttp:-8080}
       #MediaHttps: ${WebHttps:-8081}

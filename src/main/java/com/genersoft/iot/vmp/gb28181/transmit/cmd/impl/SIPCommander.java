@@ -39,6 +39,7 @@ import javax.sip.ResponseEvent;
 import javax.sip.SipException;
 import javax.sip.SipFactory;
 import javax.sip.header.CallIdHeader;
+import javax.sip.header.ContentTypeHeader;
 import javax.sip.message.Request;
 import java.text.ParseException;
 import java.util.List;
@@ -913,6 +914,7 @@ public class SIPCommander implements ISIPCommander {
         Request request = headerProvider.createMessageRequest(device, cmdXml.toString(),
                 null, SipUtils.getNewFromTag(), null,
                 sipSender.getNewCallIdHeader(sipLayer.getLocalIp(device.getLocalIp()), device.getTransport()));
+        log.info("[FTP配置下发] 完整SIP MESSAGE:\n{}", request);
         sipSender.transmitRequest(sipLayer.getLocalIp(device.getLocalIp()), request, errorEvent, okEvent);
     }
 
