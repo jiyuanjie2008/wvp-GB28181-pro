@@ -42,3 +42,4 @@ certificates
 
 # Temp files
 tmp_events.txt
+.devin/
