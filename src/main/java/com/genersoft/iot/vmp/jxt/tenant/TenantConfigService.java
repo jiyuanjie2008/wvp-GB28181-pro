@@ -251,7 +251,12 @@ public class TenantConfigService {
             log.warn("[FTP配置下发] 跳过TCP设备(终端会崩溃), 设备: {}", device.getDeviceId());
             return;
         }
+        // Dedup: skip if config hasn't changed since last successful delivery to this device
+        String currentHash = this.configHash;
         String deviceId = device.getDeviceId();
+        if (currentHash.equals(deliveredConfigHash.get(deviceId))) {
+            return;
+        }
         Thread.ofVirtual().name("ftp-config-" + deviceId).start(() -> {
             try {
                 deliverySemaphore.acquire();
@@ -267,14 +272,12 @@ public class TenantConfigService {
                     StorageSiteInfo site = selectSite(deviceId, currentSites);
                     FtpCredential cred = currentCreds.get(0);
 
-                    // TEMP: send username as plaintext password to test terminal handling
-                    String password = cred.getUsername();
                     sipCommander.ftpServerConfigCmd(
                             device, deviceId,
                             site.getIpv4Address(), site.getFtpPort(),
-                            cred.getUsername(), password,
+                            cred.getUsername(), cred.getPasswordHash(),
                             okEvent -> {
-                                deliveredConfigHash.put(deviceId, configHash);
+                                deliveredConfigHash.put(deviceId, currentHash);
                                 log.info("[FTP配置下发] 成功, 设备: {}, 站点: {}",
                                         deviceId, site.getSiteId());
                             },
