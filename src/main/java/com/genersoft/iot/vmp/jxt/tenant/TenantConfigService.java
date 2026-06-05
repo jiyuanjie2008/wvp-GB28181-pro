@@ -2,12 +2,11 @@ package com.genersoft.iot.vmp.jxt.tenant;
 
 import com.alibaba.fastjson2.JSON;
 import com.genersoft.iot.vmp.gb28181.bean.Device;
-import com.genersoft.iot.vmp.gb28181.event.SipSubscribe;
+import com.genersoft.iot.vmp.gb28181.event.device.DeviceOfflineEvent;
 import com.genersoft.iot.vmp.gb28181.transmit.cmd.ISIPCommander;
 import com.genersoft.iot.vmp.jxt.tenant.config.EtcdProperties;
 import com.genersoft.iot.vmp.jxt.tenant.config.TenantProperties;
 import com.genersoft.iot.vmp.jxt.tenant.dto.FtpCredential;
-import com.genersoft.iot.vmp.gb28181.event.device.DeviceOfflineEvent;
 import com.genersoft.iot.vmp.jxt.tenant.dto.StorageSiteInfo;
 import io.etcd.jetcd.ByteSequence;
 import io.etcd.jetcd.Client;
@@ -17,6 +16,7 @@ import io.etcd.jetcd.kv.GetResponse;
 import io.etcd.jetcd.options.GetOption;
 import io.etcd.jetcd.options.WatchOption;
 import io.etcd.jetcd.watch.WatchEvent;
+import io.etcd.jetcd.watch.WatchResponse;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
 import lombok.extern.slf4j.Slf4j;
@@ -51,12 +51,14 @@ public class TenantConfigService {
 
     // Config hash for deduplication — tracks last-delivered config per device
     private volatile String configHash = "";
+    private static final int MAX_DELIVERED_HASH_ENTRIES = 10_000;
     private final ConcurrentHashMap<String, String> deliveredConfigHash = new ConcurrentHashMap<>();
 
     // Limit concurrent FTP config deliveries to protect SIP stack
     private final Semaphore deliverySemaphore = new Semaphore(50);
 
     private Client etcdClient;
+    private final List<AutoCloseable> activeWatchers = new ArrayList<>();
     private String tenantId;
     private long lastRevision; // ETCD revision from initial load, used for gap-free Watch
 
@@ -80,6 +82,15 @@ public class TenantConfigService {
 
     @PreDestroy
     public void destroy() {
+        // Close watchers first to cancel watch subscriptions
+        for (AutoCloseable watcher : activeWatchers) {
+            try {
+                watcher.close();
+            } catch (Exception e) {
+                log.warn("[租户配置] 关闭 Watcher 失败", e);
+            }
+        }
+        activeWatchers.clear();
         if (etcdClient != null) {
             etcdClient.close();
         }
@@ -87,10 +98,15 @@ public class TenantConfigService {
 
     @EventListener
     public void onDeviceOffline(DeviceOfflineEvent event) {
-        if (event.getDeviceIds() != null) {
+        if (event.getDeviceIds() != null && !event.getDeviceIds().isEmpty()) {
             for (String deviceId : event.getDeviceIds()) {
                 deliveredConfigHash.remove(deviceId);
             }
+        } else if (deliveredConfigHash.size() > MAX_DELIVERED_HASH_ENTRIES) {
+            // Safety net: event without device IDs + cache oversized → full clear
+            log.info("[租户配置] 设备离线事件无设备列表且去重缓存过大({}), 执行清理",
+                    deliveredConfigHash.size());
+            deliveredConfigHash.clear();
         }
     }
 
@@ -139,21 +155,51 @@ public class TenantConfigService {
 
         // Watch FTP credentials prefix
         ByteSequence ftpPrefix = ByteSequence.from("tenants/" + tenantId + "/ftp/", StandardCharsets.UTF_8);
-        watchClient.watch(ftpPrefix, watchOpts, response -> {
-            for (WatchEvent event : response.getEvents()) {
-                log.info("[租户配置] FTP 凭证变更: type={}", event.getEventType());
+        var ftpWatcher = watchClient.watch(ftpPrefix, watchOpts, new Watch.Listener() {
+            @Override
+            public void onNext(WatchResponse response) {
+                for (WatchEvent event : response.getEvents()) {
+                    log.info("[租户配置] FTP 凭证变更: type={}", event.getEventType());
+                }
+                refreshFtpCredentials();
             }
-            refreshFtpCredentials();
+
+            @Override
+            public void onError(Throwable throwable) {
+                log.error("[租户配置] FTP Watch 错误, 执行全量重载", throwable);
+                refreshFtpCredentials();
+            }
+
+            @Override
+            public void onCompleted() {
+                log.warn("[租户配置] FTP Watch 已关闭, 后续配置变更将不会自动刷新");
+            }
         });
+        activeWatchers.add(ftpWatcher);
 
         // Watch storage sites prefix
         ByteSequence sitePrefix = ByteSequence.from("common/storage-site/", StandardCharsets.UTF_8);
-        watchClient.watch(sitePrefix, watchOpts, response -> {
-            for (WatchEvent event : response.getEvents()) {
-                log.info("[租户配置] 存储站点变更: type={}", event.getEventType());
+        var siteWatcher = watchClient.watch(sitePrefix, watchOpts, new Watch.Listener() {
+            @Override
+            public void onNext(WatchResponse response) {
+                for (WatchEvent event : response.getEvents()) {
+                    log.info("[租户配置] 存储站点变更: type={}", event.getEventType());
+                }
+                refreshStorageSites();
             }
-            refreshStorageSites();
+
+            @Override
+            public void onError(Throwable throwable) {
+                log.error("[租户配置] 存储 Watch 错误, 执行全量重载", throwable);
+                refreshStorageSites();
+            }
+
+            @Override
+            public void onCompleted() {
+                log.warn("[租户配置] 存储 Watch 已关闭, 后续配置变更将不会自动刷新");
+            }
         });
+        activeWatchers.add(siteWatcher);
 
         log.info("[租户配置] ETCD Watch 已启动 (revision={})", watchRevision);
     }
@@ -277,6 +323,11 @@ public class TenantConfigService {
                             site.getIpv4Address(), site.getFtpPort(),
                             cred.getUsername(), cred.getPasswordHash(),
                             okEvent -> {
+                                if (deliveredConfigHash.size() > MAX_DELIVERED_HASH_ENTRIES) {
+                                    log.info("[FTP配置下发] 去重缓存超过 {} 条, 执行清理",
+                                            MAX_DELIVERED_HASH_ENTRIES);
+                                    deliveredConfigHash.clear();
+                                }
                                 deliveredConfigHash.put(deviceId, currentHash);
                                 log.info("[FTP配置下发] 成功, 设备: {}, 站点: {}",
                                         deviceId, site.getSiteId());
@@ -294,11 +345,13 @@ public class TenantConfigService {
     }
 
     // ZX/GY_GA body-worn cameras report manufacturer as "sz-zfy".
-    // On first registration manufacturer may be null (catalog not yet synced).
+    // Returns false when manufacturer is unknown (null/blank) to prevent
+    // FTP credential exposure to unclassified devices. Will be replaced
+    // with DeviceType check once equipment management syncs device type to WVP.
     private boolean isZxTerminal(Device device) {
         String manufacturer = device.getManufacturer();
         if (manufacturer == null || manufacturer.isBlank()) {
-            return true;
+            return false;
         }
         return manufacturer.contains("zfy") || manufacturer.contains("ZX");
     }

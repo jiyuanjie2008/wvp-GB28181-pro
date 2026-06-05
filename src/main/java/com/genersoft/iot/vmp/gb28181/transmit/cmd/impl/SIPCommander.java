@@ -903,10 +903,10 @@ public class SIPCommander implements ISIPCommander {
         cmdXml.append("<DeviceID>" + channelId + "</DeviceID>\r\n");
         cmdXml.append("<ServerType>ftpServerCfgType</ServerType>\r\n");
         cmdXml.append("<FtpServerCfgType>\r\n");
-        cmdXml.append("<Ipv4Address>" + ipv4Address + "</Ipv4Address>\r\n");
+        cmdXml.append("<Ipv4Address>" + xmlEscape(ipv4Address) + "</Ipv4Address>\r\n");
         cmdXml.append("<FTPPort>" + ftpPort + "</FTPPort>\r\n");
-        cmdXml.append("<UserId>" + userId + "</UserId>\r\n");
-        cmdXml.append("<UserPasswd>" + userPasswd + "</UserPasswd>\r\n");
+        cmdXml.append("<UserId>" + xmlEscape(userId) + "</UserId>\r\n");
+        cmdXml.append("<UserPasswd>" + xmlEscape(userPasswd) + "</UserPasswd>\r\n");
         cmdXml.append("</FtpServerCfgType>\r\n");
         cmdXml.append("</Control>\r\n");
 
@@ -1469,5 +1469,18 @@ public class SIPCommander implements ISIPCommander {
         sipSender.transmitRequest(sipLayer.getLocalIp(device.getLocalIp()),request);
 
 
+    }
+
+    /**
+     * Escape special characters for safe XML text content.
+     * Prevents XML injection from externally-sourced values (ETCD config, device fields).
+     */
+    private static String xmlEscape(String value) {
+        if (value == null) return "";
+        return value.replace("&", "&amp;")
+                     .replace("<", "&lt;")
+                     .replace(">", "&gt;")
+                     .replace("\"", "&quot;")
+                     .replace("'", "&apos;");
     }
 }

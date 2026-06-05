@@ -1,6 +1,7 @@
 package com.genersoft.iot.vmp.jxt.tenant;
 
 import com.genersoft.iot.vmp.gb28181.bean.Device;
+import com.genersoft.iot.vmp.gb28181.event.SipSubscribe;
 import com.genersoft.iot.vmp.gb28181.transmit.cmd.ISIPCommander;
 import com.genersoft.iot.vmp.jxt.tenant.config.EtcdProperties;
 import com.genersoft.iot.vmp.jxt.tenant.config.TenantProperties;
@@ -83,10 +84,9 @@ class TenantConfigServiceTest {
         // Capture the ok callback so we can invoke it to trigger hash recording
         final CountDownLatch latch = new CountDownLatch(1);
         doAnswer(inv -> {
-            // okEvent callback is argument 6
-            Runnable okEvent = inv.getArgument(6, Runnable.class);
-            // SipSubscribe.Event is a functional interface, just invoke it
-            okEvent.getClass(); // ensure it's not null
+            // okEvent callback is argument 6 (SipSubscribe.Event, NOT Runnable)
+            SipSubscribe.Event okEvent = inv.getArgument(6, SipSubscribe.Event.class);
+            okEvent.response(null); // invoke the callback to record hash
             latch.countDown();
             return null;
         }).when(sipCommander).ftpServerConfigCmd(
@@ -99,16 +99,13 @@ class TenantConfigServiceTest {
 
         // Wait for virtual thread to execute
         boolean completed = latch.await(5, TimeUnit.SECONDS);
+        assertTrue(completed, "Virtual thread should call sipCommander within timeout");
 
-        if (completed) {
-            verify(sipCommander).ftpServerConfigCmd(
-                    eq(device), eq("34020000001320000001"),
-                    eq("10.0.0.5"), eq(2121),
-                    eq("ftpUser"), eq("hashedPw"),
-                    any(), any());
-        }
-        // If not completed within timeout (virtual thread scheduling), the verification
-        // below will catch that sipCommander was not called.
+        verify(sipCommander).ftpServerConfigCmd(
+                eq(device), eq("34020000001320000001"),
+                eq("10.0.0.5"), eq(2121),
+                eq("ftpUser"), eq("hashedPw"),
+                any(), any());
     }
 
     @Test
