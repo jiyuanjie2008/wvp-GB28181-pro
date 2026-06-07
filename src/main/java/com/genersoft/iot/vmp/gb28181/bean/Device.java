@@ -222,6 +222,9 @@ public class Device {
 	@Schema(description = "所属服务Id")
 	private String serverId;
 
+	@Schema(description = "设备类型 (BWC, VEHICLE, FIXED_CAMERA, DRONE)")
+	private String deviceType;
+
     public boolean checkWgs84() {
         return geoCoordSys.equalsIgnoreCase("WGS84");
     }

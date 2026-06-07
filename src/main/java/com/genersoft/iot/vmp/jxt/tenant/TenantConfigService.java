@@ -285,10 +285,9 @@ public class TenantConfigService {
         if (!isFtpConfigAvailable()) {
             return;
         }
-        // Device type filter: only send FTP config to ZX terminals (body-worn cameras)
-        // Non-ZX devices (IPCs, NVRs, platforms) will receive unrecognized ServerCfgType
-        // and may log errors or rate-limit WVP. Skip them.
-        if (!isZxTerminal(device)) {
+        // Device type filter: only send FTP config to BWC (body-worn camera) devices.
+        // Other device types should not receive FTP config.
+        if (!isBwcDevice(device)) {
             return;
         }
         // Terminal C++ TCP path passes NULL szMsg to gb28181_control_rx else branch,
@@ -344,16 +343,8 @@ public class TenantConfigService {
         });
     }
 
-    // ZX/GY_GA body-worn cameras report manufacturer as "sz-zfy".
-    // Returns false when manufacturer is unknown (null/blank) to prevent
-    // FTP credential exposure to unclassified devices. Will be replaced
-    // with DeviceType check once equipment management syncs device type to WVP.
-    private boolean isZxTerminal(Device device) {
-        String manufacturer = device.getManufacturer();
-        if (manufacturer == null || manufacturer.isBlank()) {
-            return false;
-        }
-        return manufacturer.contains("zfy") || manufacturer.contains("ZX");
+    private boolean isBwcDevice(Device device) {
+        return "BWC".equals(device.getDeviceType());
     }
 
     private StorageSiteInfo selectSite(String deviceId, List<StorageSiteInfo> sites) {

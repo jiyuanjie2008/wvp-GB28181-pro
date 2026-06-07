@@ -43,4 +43,7 @@ public class IamSyncPayloadSpecific {
 
     @JsonProperty("heartbeatCount")
     private Integer heartbeatCount;
+
+    @JsonProperty("deviceType")
+    private String deviceType;
 }

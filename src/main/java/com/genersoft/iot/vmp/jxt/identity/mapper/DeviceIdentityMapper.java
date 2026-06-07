@@ -10,12 +10,12 @@ public interface DeviceIdentityMapper {
             "device_id, custom_name, sip_ha1, charset, media_server_id, " +
             "ssrc_check, geo_coord_sys, as_message_channel, broadcast_push_after_ack, " +
             "heart_beat_interval, heart_beat_count, disabled, activated, password, expires, " +
-            "create_time, update_time, on_line, stream_mode, sdp_ip, server_id" +
+            "create_time, update_time, on_line, stream_mode, sdp_ip, server_id, device_type" +
             ") VALUES (" +
             "#{deviceId}, #{name}, #{sipHa1}, #{charset}, #{mediaServerId}, " +
             "#{ssrcCheck}, #{geoCoordSys}, #{asMessageChannel}, #{broadcastPushAfterAck}, " +
             "#{heartBeatInterval}, #{heartBeatCount}, #{disabled}, #{activated}, #{password}, #{expires}, " +
-            "#{createTime}, #{updateTime}, #{onLine}, #{streamMode}, #{sdpIp}, #{serverId}" +
+            "#{createTime}, #{updateTime}, #{onLine}, #{streamMode}, #{sdpIp}, #{serverId}, #{deviceType}" +
             ")")
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
     int insertDevice(Device device);
@@ -35,6 +35,7 @@ public interface DeviceIdentityMapper {
             "<if test='activated != null'>, activated=#{activated}</if>",
             "<if test='streamMode != null'>, stream_mode=#{streamMode}</if>",
             "<if test='sdpIp != null'>, sdp_ip=#{sdpIp}</if>",
+            "<if test='deviceType != null'>, device_type=#{deviceType}</if>",
             " WHERE device_id=#{deviceId}",
             "</script>"})
     int updateDevice(Device device);

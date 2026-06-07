@@ -13,11 +13,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Set;
 
 @Slf4j
 @Service
 public class DeviceIdentityTxService {
     private static final DateTimeFormatter DTF = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+    private static final Set<String> VALID_DEVICE_TYPES = Set.of("BWC", "VEHICLE", "FIXED_CAMERA", "DRONE");
 
     @Autowired
     private DeviceIdentityMapper identityMapper;
@@ -71,6 +73,11 @@ public class DeviceIdentityTxService {
         device.setCreateTime(now);
         device.setUpdateTime(now);
         device.setServerId("auto");
+        device.setDeviceType(payload.getDeviceType());
+        if (payload.getDeviceType() != null && !VALID_DEVICE_TYPES.contains(payload.getDeviceType())) {
+            log.warn("IAM sync: unexpected deviceType={} for device={}, expected one of {}",
+                    payload.getDeviceType(), deviceId, VALID_DEVICE_TYPES);
+        }
         if (payload.getSdpIp() != null) {
             device.setSdpIp(payload.getSdpIp());
         }
@@ -90,6 +97,13 @@ public class DeviceIdentityTxService {
         if (payload.getHeartbeatInterval() != null) device.setHeartBeatInterval(payload.getHeartbeatInterval());
         if (payload.getHeartbeatCount() != null) device.setHeartBeatCount(payload.getHeartbeatCount());
         if (payload.getSdpIp() != null) device.setSdpIp(payload.getSdpIp());
+        if (payload.getDeviceType() != null) {
+            device.setDeviceType(payload.getDeviceType());
+            if (!VALID_DEVICE_TYPES.contains(payload.getDeviceType())) {
+                log.warn("IAM sync update: unexpected deviceType={} for device={}",
+                        payload.getDeviceType(), device.getDeviceId());
+            }
+        }
         device.setUpdateTime(LocalDateTime.now().format(DTF));
     }
 }
