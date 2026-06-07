@@ -2,14 +2,19 @@ package com.genersoft.iot.vmp.jxt.identity.controller;
 
 import com.genersoft.iot.vmp.conf.SipConfig;
 import com.genersoft.iot.vmp.jxt.identity.dto.IamSyncRequest;
+import com.genersoft.iot.vmp.jxt.identity.mapper.DeviceIdentityMapper;
 import com.genersoft.iot.vmp.jxt.identity.service.DeviceIdentityService;
 import com.genersoft.iot.vmp.vmanager.bean.WVPResult;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 @Slf4j
@@ -26,6 +31,9 @@ public class DeviceIdentityController {
 
     @Autowired
     private SipConfig sipConfig;
+
+    @Autowired
+    private DeviceIdentityMapper identityMapper;
 
     @PostMapping(value = "/device", consumes = "application/json", produces = "application/json")
     public WVPResult<DeviceIdentityData> register(@RequestBody(required = false) IamSyncRequest request) {
@@ -80,4 +88,59 @@ public class DeviceIdentityController {
     }
 
     public record DeviceIdentityData(String deviceId, Boolean created) {}
+
+    private static final Set<String> VALID_DEVICE_TYPES = Set.of("BWC", "VEHICLE", "FIXED_CAMERA", "DRONE");
+
+    @PostMapping(value = "/device/batch-device-types", consumes = "application/json", produces = "application/json")
+    public WVPResult<BatchDeviceTypeResult> batchDeviceTypes(@RequestBody(required = false) BatchDeviceTypeRequest request) {
+        if (request == null) {
+            return WVPResult.fail(13010, "Missing request body");
+        }
+        if (request.getSchemaVersion() != 1) {
+            return WVPResult.fail(13011, "Unsupported schema_version: expected 1, got " + request.getSchemaVersion());
+        }
+        if (request.getEntries() == null || request.getEntries().isEmpty()) {
+            return WVPResult.fail(13012, "Missing or empty entries");
+        }
+
+        int updated = 0;
+        int notFound = 0;
+        for (BatchDeviceTypeRequest.DeviceTypeEntry entry : request.getEntries()) {
+            if (entry.getTargetDeviceId() == null || !DEVICE_ID_PATTERN.matcher(entry.getTargetDeviceId()).matches()) {
+                log.warn("Batch deviceType: invalid deviceId={}", entry.getTargetDeviceId());
+                notFound++;
+                continue;
+            }
+            if (entry.getDeviceType() == null || !VALID_DEVICE_TYPES.contains(entry.getDeviceType())) {
+                log.warn("Batch deviceType: invalid deviceType={} for device={}", entry.getDeviceType(), entry.getTargetDeviceId());
+                notFound++;
+                continue;
+            }
+            int rows = identityMapper.updateDeviceType(entry.getTargetDeviceId(), entry.getDeviceType());
+            if (rows > 0) {
+                updated++;
+            } else {
+                notFound++;
+            }
+        }
+
+        log.info("Batch deviceType sync: updated={}, notFound={}", updated, notFound);
+        return WVPResult.success(new BatchDeviceTypeResult(updated, notFound));
+    }
+
+    @Data
+    public static class BatchDeviceTypeRequest {
+        @JsonProperty("schema_version")
+        private int schemaVersion;
+        private List<DeviceTypeEntry> entries;
+
+        @Data
+        public static class DeviceTypeEntry {
+            @JsonProperty("target_deviceId")
+            private String targetDeviceId;
+            private String deviceType;
+        }
+    }
+
+    public record BatchDeviceTypeResult(int updated, int notFound) {}
 }

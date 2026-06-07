@@ -53,4 +53,7 @@ public interface DeviceIdentityMapper {
 
     @Delete("DELETE FROM wvp_idempotency_log WHERE created_at < DATE_SUB(NOW(), INTERVAL #{days} DAY)")
     int cleanOldEntries(@Param("days") int days);
+
+    @Update("UPDATE wvp_device SET device_type=#{deviceType} WHERE device_id=#{deviceId}")
+    int updateDeviceType(@Param("deviceId") String deviceId, @Param("deviceType") String deviceType);
 }
