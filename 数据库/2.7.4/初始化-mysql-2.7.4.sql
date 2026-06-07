@@ -36,6 +36,7 @@ create table IF NOT EXISTS wvp_device
     position_capability                 integer COMMENT '定位能力标识',
     broadcast_push_after_ack            bool    default false COMMENT 'ACK后是否自动推流',
     server_id                           character varying(50) COMMENT '所属信令服务器ID',
+    device_type                         character varying(32) DEFAULT NULL COMMENT 'IAM sync device type (BWC, VEHICLE, FIXED_CAMERA, DRONE)',
     sip_ha1                             character varying(64) default null COMMENT 'HA1摘要 = MD5(deviceId:realm:password)',
     disabled                            bool    default false COMMENT '设备禁用标记',
     activated                           bool    default true  COMMENT '激活标记',
