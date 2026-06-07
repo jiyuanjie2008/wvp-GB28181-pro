@@ -230,14 +230,14 @@ public class Device {
     }
 
 	public Integer getHeartBeatCount() {
-		if (heartBeatCount == null) {
+		if (heartBeatInterval == null) {
 			return 3;
 		}
 		return heartBeatCount;
 	}
 
 	public Integer getHeartBeatInterval() {
-		if (heartBeatCount == null) {
+		if (heartBeatInterval == null) {
 			return 60;
 		}
 		return heartBeatInterval;
