@@ -2,7 +2,6 @@ package com.genersoft.iot.vmp.jxt.identity.controller;
 
 import com.genersoft.iot.vmp.conf.SipConfig;
 import com.genersoft.iot.vmp.jxt.identity.dto.IamSyncRequest;
-import com.genersoft.iot.vmp.jxt.identity.mapper.DeviceIdentityMapper;
 import com.genersoft.iot.vmp.jxt.identity.service.DeviceIdentityService;
 import com.genersoft.iot.vmp.vmanager.bean.WVPResult;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -14,7 +13,7 @@ import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Set;
+
 import java.util.regex.Pattern;
 
 @Slf4j
@@ -31,9 +30,6 @@ public class DeviceIdentityController {
 
     @Autowired
     private SipConfig sipConfig;
-
-    @Autowired
-    private DeviceIdentityMapper identityMapper;
 
     @PostMapping(value = "/device", consumes = "application/json", produces = "application/json")
     public WVPResult<DeviceIdentityData> register(@RequestBody(required = false) IamSyncRequest request) {
@@ -89,10 +85,8 @@ public class DeviceIdentityController {
 
     public record DeviceIdentityData(String deviceId, Boolean created) {}
 
-    private static final Set<String> VALID_DEVICE_TYPES = Set.of("BWC", "VEHICLE", "FIXED_CAMERA", "DRONE");
-
-    @PostMapping(value = "/device/batch-device-types", consumes = "application/json", produces = "application/json")
-    public WVPResult<BatchDeviceTypeResult> batchDeviceTypes(@RequestBody(required = false) BatchDeviceTypeRequest request) {
+    @PostMapping(value = "/device/batch-register", consumes = "application/json", produces = "application/json")
+    public WVPResult<BatchRegisterResult> batchRegister(@RequestBody(required = false) BatchRegisterRequest request) {
         if (request == null) {
             return WVPResult.fail(13010, "Missing request body");
         }
@@ -103,44 +97,35 @@ public class DeviceIdentityController {
             return WVPResult.fail(13012, "Missing or empty entries");
         }
 
+        int created = 0;
         int updated = 0;
-        int notFound = 0;
-        for (BatchDeviceTypeRequest.DeviceTypeEntry entry : request.getEntries()) {
-            if (entry.getTargetDeviceId() == null || !DEVICE_ID_PATTERN.matcher(entry.getTargetDeviceId()).matches()) {
-                log.warn("Batch deviceType: invalid deviceId={}", entry.getTargetDeviceId());
-                notFound++;
-                continue;
-            }
-            if (entry.getDeviceType() == null || !VALID_DEVICE_TYPES.contains(entry.getDeviceType())) {
-                log.warn("Batch deviceType: invalid deviceType={} for device={}", entry.getDeviceType(), entry.getTargetDeviceId());
-                notFound++;
-                continue;
-            }
-            int rows = identityMapper.updateDeviceType(entry.getTargetDeviceId(), entry.getDeviceType());
-            if (rows > 0) {
-                updated++;
-            } else {
-                notFound++;
+        int failed = 0;
+        for (IamSyncRequest entry : request.getEntries()) {
+            try {
+                DeviceIdentityService.DeviceIdentityResult result = identityService.register(entry);
+                if (result.code() != 0) {
+                    failed++;
+                } else if (result.created()) {
+                    created++;
+                } else {
+                    updated++;
+                }
+            } catch (Exception e) {
+                log.warn("Batch register: failed for device={}, error={}", entry.getTargetDeviceId(), e.getMessage());
+                failed++;
             }
         }
 
-        log.info("Batch deviceType sync: updated={}, notFound={}", updated, notFound);
-        return WVPResult.success(new BatchDeviceTypeResult(updated, notFound));
+        log.info("Batch register: created={}, updated={}, failed={}", created, updated, failed);
+        return WVPResult.success(new BatchRegisterResult(created, updated, failed));
     }
 
     @Data
-    public static class BatchDeviceTypeRequest {
+    public static class BatchRegisterRequest {
         @JsonProperty("schema_version")
         private int schemaVersion;
-        private List<DeviceTypeEntry> entries;
-
-        @Data
-        public static class DeviceTypeEntry {
-            @JsonProperty("target_deviceId")
-            private String targetDeviceId;
-            private String deviceType;
-        }
+        private List<IamSyncRequest> entries;
     }
 
-    public record BatchDeviceTypeResult(int updated, int notFound) {}
+    public record BatchRegisterResult(int created, int updated, int failed) {}
 }
