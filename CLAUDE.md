@@ -118,6 +118,16 @@ Key config properties in `application-{profile}.yml`:
 - `user-settings.stream-on-demand` — Auto-play on stream-not-found
 - `user-settings.use-source-ipAsStream-ip` — Replace stream URL host with requesting client's IP
 
+### Redis HA (Sentinel)
+
+The Docker profile connects to the shared Redis via **Sentinel** (not a single host): `spring.data.redis.sentinel.master=mymaster`, `sentinel.nodes=jxt-redis-sentinel-1/2/3:26379` (compose env `REDIS_SENTINEL_MASTER` / `REDIS_SENTINEL_NODES`), data password `REDIS_PASSWORD`, db index `REDIS_DATABASE` (default 1). The authoritative config is `docker/wvp/wvp/application-docker.yml` (bind-mounted, loaded via `--spring.config.location=/opt/ylcx/wvp/application.yml`); editing it only needs `docker compose up -d polaris-wvp` (no image rebuild).
+
+Failover behavior — Spring Data Redis / Lettuce Sentinel has **no native periodic topology refresh** (that is a Redis Cluster-only feature), so:
+- **Master crash / unreachable** (the real HA case): WVP **auto-follows** the new master. Lettuce's ConnectionWatchdog retries the dead master, refreshes topology, reconnects to the promoted master in ~10s. Verified.
+- **Manual / demotion-style failover** (`sentinel failover`, where the old master stays alive but becomes a read-only replica): WVP does **not** auto-follow — the TCP connection never breaks, so Lettuce keeps using the now-read-only node and writes throw `io.lettuce.core.RedisReadOnlyException`. **Restart WVP** (`docker restart docker-polaris-wvp-1`) to re-query Sentinel and reconnect to the current master.
+
+Depends on the `infrastructure` Sentinel overlay (`docker-compose.sentinel.yml`) and a writable Redis conf there (Sentinel `CONFIG REWRITE` must be able to persist topology — the conf is seed-mounted to a writable `/data/redis.conf`, not `:ro`).
+
 ## ARM32 Native Library Reverse Engineering
 
 The ZX/GY_GA/TL body-worn camera terminals use `libnative-lib.so` (ARM32 ELF, ~16MB) containing the SIP stack and JNI bridge. When debugging C++ routing issues (e.g., why a SIP MESSAGE isn't reaching the correct JNI callback), use this workflow:
