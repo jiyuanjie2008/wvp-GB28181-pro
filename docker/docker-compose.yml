@@ -104,9 +104,9 @@ services:
       MediaRtsp: ${MediaRtsp:-5540}
       MediaRtp: ${MediaRtp:-10000}
 
-      REDIS_HOST: jxt-redis
-      REDIS_PORT: 6379
       REDIS_PASSWORD: jxt-redis-2026
+      REDIS_SENTINEL_MASTER: mymaster
+      REDIS_SENTINEL_NODES: jxt-redis-sentinel-1:26379,jxt-redis-sentinel-2:26379,jxt-redis-sentinel-3:26379
 
       DATABASE_HOST: polaris-mysql
       DATABASE_PORT: 3306

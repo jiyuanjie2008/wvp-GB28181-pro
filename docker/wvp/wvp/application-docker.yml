@@ -13,13 +13,14 @@ spring:
             max-file-size: 10MB
             max-request-size: 100MB
     data:
-      # REDIS数据库配置
+      # REDIS 配置：Sentinel 模式（HA）。通过 sentinel 发现 master，故障切换自动跟随。
       redis:
-          host: ${REDIS_HOST:127.0.0.1}
-          port: ${REDIS_PORT:6379}
           database: ${REDIS_DATABASE:1}
           password: ${REDIS_PASSWORD:}
           timeout: 10000
+          sentinel:
+            master: ${REDIS_SENTINEL_MASTER:mymaster}
+            nodes: ${REDIS_SENTINEL_NODES:jxt-redis-sentinel-1:26379,jxt-redis-sentinel-2:26379,jxt-redis-sentinel-3:26379}
          ## [可选] 一个pool最多可分配多少个jedis实例
          #poolMaxTotal: 1000
          ## [可选] 一个pool最多有多少个状态为idle(空闲)的jedis实例
