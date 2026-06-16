@@ -43,6 +43,7 @@ public class CameraChannelService implements CommandLineRunner {
     private final String REDIS_MEMBER_STATUS_MESSAGE = "VM_MSG_MEMBER_STATUS_CHANNEL";
     private final String MOBILE_CHANNEL_PREFIX = "nationalStandardMobileTerminal_";
     private final String DELAY_TASK_KEY = "DELAY_TASK_KEY_";
+    private static final String SY_SIGNING_RETRY_KEY = "SY_SIGNING_RETRY";
 
     @Autowired
     private CommonGBChannelMapper channelMapper;
@@ -74,14 +75,16 @@ public class CameraChannelService implements CommandLineRunner {
     @Override
     public void run(String... args) {
         // 启动时从 ETCD 加载签名配置(取代原 Redis 读取)。失败则 30 秒重试直到成功。
-        String taskKey = UUID.randomUUID().toString();
+        retryLoadSigningConfig();
+    }
+
+    private void retryLoadSigningConfig() {
         signingConfigService.loadFromEtcd();
         if (!signingConfigService.isLoaded()) {
             log.info("[SY-读取Token]失败，30秒后重试");
-            dynamicTask.startDelay(taskKey, () -> {
-                this.run(args);
-            }, 30000);
+            dynamicTask.startDelay(SY_SIGNING_RETRY_KEY, this::retryLoadSigningConfig, 30000);
         } else {
+            dynamicTask.stop(SY_SIGNING_RETRY_KEY);
             log.info("[SY-读取Token] 成功");
         }
     }

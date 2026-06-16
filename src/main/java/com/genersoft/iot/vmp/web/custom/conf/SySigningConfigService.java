@@ -18,10 +18,10 @@ import org.springframework.stereotype.Component;
 
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * 从 ETCD 单一 Key (jxt/common/wvp-signing) 加载 WVP sy 对接的签名凭据
@@ -51,10 +51,7 @@ public class SySigningConfigService {
     private final List<AutoCloseable> activeWatchers = new CopyOnWriteArrayList<>();
 
     /** 加载是否成功(任何一次成功后置 true;DELETE 时保留 true 以沿用最后已知良好值)。 */
-    private final AtomicBoolean loaded = new AtomicBoolean(false);
-
-    /** adminToken 是否已生成(只在首次成功 apply 时生成,后续轮换不覆盖)。 */
-    private volatile boolean adminTokenGenerated = false;
+    private volatile boolean loaded = false;
 
     private volatile long lastRevision;
 
@@ -105,7 +102,7 @@ public class SySigningConfigService {
 
     /** 是否已成功加载过签名配置(供 CameraChannelService 的启动重试循环判定)。 */
     public boolean isLoaded() {
-        return loaded.get();
+        return loaded;
     }
 
     private void startWatch() {
@@ -146,7 +143,7 @@ public class SySigningConfigService {
         log.info("[SY签名配置] ETCD Watch 已启动 (key={}, revision={})", SIGNING_KEY, watchRevision);
     }
 
-    /** 解析 JSON 并写入 SyTokenManager;无效则跳过(保留旧值)。 */
+    /** 解析 JSON 并原子替换 SyTokenManager 快照;无效则跳过(保留旧值)。 */
     private boolean applyConfigValue(String value) {
         try {
             JSONObject obj = JSON.parseObject(value);
@@ -159,19 +156,24 @@ public class SySigningConfigService {
                 log.warn("[SY签名配置] ETCD 值不完整, 跳过 (appKey/secret/sm4Key 任一为空)");
                 return false;
             }
-            synchronized (SyTokenManager.INSTANCE) {
-                SyTokenManager.INSTANCE.appMap.clear();
-                SyTokenManager.INSTANCE.appMap.put(appKey, appSecret);
-                SyTokenManager.INSTANCE.sm4Key = sm4Key;
-                SyTokenManager.INSTANCE.expires = (expiresMin != null ? expiresMin : 30L);
-                if (!adminTokenGenerated) {
-                    SyTokenManager.INSTANCE.adminToken = UUID.randomUUID().toString().replace("-", "");
-                    adminTokenGenerated = true;
-                }
-            }
-            loaded.set(true);
+
+            // 构建不可变快照: adminToken 只在首次生成,后续轮换沿用
+            SySigningSnapshot prev = SyTokenManager.INSTANCE.current;
+            String adminToken = (prev != null && prev.adminToken() != null)
+                    ? prev.adminToken()
+                    : UUID.randomUUID().toString().replace("-", "");
+
+            SySigningSnapshot snapshot = new SySigningSnapshot(
+                    Map.of(appKey, appSecret),
+                    sm4Key,
+                    expiresMin != null ? expiresMin : 30L,
+                    adminToken
+            );
+            SyTokenManager.INSTANCE.current = snapshot;
+            loaded = true;
+
             log.info("[SY签名配置] 配置已生效 (appKey={}, source=ETCD, {})",
-                    appKey, adminTokenGenerated ? "adminToken=本地随机" : "");
+                    appKey, (prev == null || prev.adminToken() == null) ? "adminToken=本地随机" : "");
             return true;
         } catch (Exception e) {
             log.warn("[SY签名配置] 解析 ETCD 值失败, 保留旧值: {}", e.getMessage());

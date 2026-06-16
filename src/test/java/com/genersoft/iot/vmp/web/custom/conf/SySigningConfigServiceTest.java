@@ -12,6 +12,7 @@ class SySigningConfigServiceTest {
 
     @BeforeEach
     void setUp() {
+        SyTokenManager.INSTANCE.current = null;
         service = new SySigningConfigService();
     }
 
@@ -22,9 +23,11 @@ class SySigningConfigServiceTest {
         boolean result = ReflectionTestUtils.invokeMethod(service, "applyConfigValue", json);
 
         assertTrue(result, "valid config should be applied");
-        assertEquals("test-key-1234", SyTokenManager.INSTANCE.appMap.get("test-key-1234"));
-        assertEquals("32hexsm4key12345678abcdef", SyTokenManager.INSTANCE.sm4Key);
-        assertEquals(30L, SyTokenManager.INSTANCE.expires);
+        SySigningSnapshot snap = SyTokenManager.INSTANCE.current;
+        assertNotNull(snap);
+        assertEquals("test-secret-64chars...", snap.appMap().get("test-key-1234"));
+        assertEquals("32hexsm4key12345678abcdef", snap.sm4Key());
+        assertEquals(30L, snap.expires());
     }
 
     @Test
@@ -32,15 +35,13 @@ class SySigningConfigServiceTest {
         String json1 = "{\"appKey\":\"key1\",\"appSecret\":\"secret1\",\"sm4Key\":\"32hexsm4key12345678abcdef\",\"expiresMin\":30}";
         String json2 = "{\"appKey\":\"key2\",\"appSecret\":\"secret2\",\"sm4Key\":\"32hexsm4key12345678abcdef\",\"expiresMin\":30}";
 
-        String adminTokenBefore = SyTokenManager.INSTANCE.adminToken;
-
         ReflectionTestUtils.invokeMethod(service, "applyConfigValue", json1);
-        String tokenAfterFirst = SyTokenManager.INSTANCE.adminToken;
-        assertNotNull(tokenAfterFirst, "adminToken should be generated on first apply");
-        assertNotEquals("", tokenAfterFirst);
+        String adminTokenAfterFirst = SyTokenManager.INSTANCE.current.adminToken();
+        assertNotNull(adminTokenAfterFirst, "adminToken should be generated on first apply");
+        assertNotEquals("", adminTokenAfterFirst);
 
         ReflectionTestUtils.invokeMethod(service, "applyConfigValue", json2);
-        assertEquals(tokenAfterFirst, SyTokenManager.INSTANCE.adminToken,
+        assertEquals(adminTokenAfterFirst, SyTokenManager.INSTANCE.current.adminToken(),
                 "adminToken should NOT change on rotation");
     }
 
@@ -52,6 +53,7 @@ class SySigningConfigServiceTest {
         boolean result = ReflectionTestUtils.invokeMethod(service, "applyConfigValue", json);
 
         assertFalse(result, "incomplete config should not be applied");
+        assertNull(SyTokenManager.INSTANCE.current, "snapshot should remain null on failed apply");
     }
 
     @Test
@@ -61,6 +63,7 @@ class SySigningConfigServiceTest {
         boolean result = ReflectionTestUtils.invokeMethod(service, "applyConfigValue", json);
 
         assertFalse(result, "empty fields should not be applied");
+        assertNull(SyTokenManager.INSTANCE.current, "snapshot should remain null on failed apply");
     }
 
     @Test
@@ -68,6 +71,7 @@ class SySigningConfigServiceTest {
         boolean result = ReflectionTestUtils.invokeMethod(service, "applyConfigValue", "not-json");
 
         assertFalse(result, "invalid JSON should not be applied");
+        assertNull(SyTokenManager.INSTANCE.current, "snapshot should remain null on failed apply");
     }
 
     @Test
@@ -76,12 +80,17 @@ class SySigningConfigServiceTest {
         String json2 = "{\"appKey\":\"key-rotated\",\"appSecret\":\"secret2\",\"sm4Key\":\"32hexsm4key12345678abcdef\",\"expiresMin\":30}";
 
         ReflectionTestUtils.invokeMethod(service, "applyConfigValue", json1);
-        assertNotNull(SyTokenManager.INSTANCE.appMap.get("key-original"));
-        assertNull(SyTokenManager.INSTANCE.appMap.get("key-rotated"));
+        SySigningSnapshot snap1 = SyTokenManager.INSTANCE.current;
+        assertNotNull(snap1.appMap().get("key-original"));
+        assertNull(snap1.appMap().get("key-rotated"));
 
         ReflectionTestUtils.invokeMethod(service, "applyConfigValue", json2);
-        assertNull(SyTokenManager.INSTANCE.appMap.get("key-original"), "old key should be removed on rotation");
-        assertNotNull(SyTokenManager.INSTANCE.appMap.get("key-rotated"), "new key should be present");
+        SySigningSnapshot snap2 = SyTokenManager.INSTANCE.current;
+        assertNull(snap2.appMap().get("key-original"), "old key should be removed on rotation");
+        assertNotNull(snap2.appMap().get("key-rotated"), "new key should be present");
+
+        // snap1 应不受 snap2 影响（不可变快照）
+        assertNotNull(snap1.appMap().get("key-original"), "old snapshot should be preserved");
     }
 
     @Test
@@ -104,6 +113,6 @@ class SySigningConfigServiceTest {
 
         ReflectionTestUtils.invokeMethod(service, "applyConfigValue", json);
 
-        assertEquals(30L, SyTokenManager.INSTANCE.expires, "default expiresMin should be 30 when not provided");
+        assertEquals(30L, SyTokenManager.INSTANCE.current.expires(), "default expiresMin should be 30 when not provided");
     }
 }

@@ -27,8 +27,12 @@ import java.util.TreeSet;
 
 /**
  * sign token 过滤器
+ *
+ * <p>每个请求开始时通过 {@code SyTokenManager.INSTANCE.current} 抓取一次
+ * {@link SySigningSnapshot} 快照，后续所有验签操作均使用该本地快照。
+ * 这保证一个请求内的 appSecret / sm4Key / expires / adminToken 来自同一版本，
+ * 不会读到轮换中的不一致状态。
  */
-
 @Slf4j
 @Component
 @ConditionalOnProperty(value = "sy.enable", havingValue = "true")
@@ -52,6 +56,17 @@ public class SignAuthenticationFilter extends OncePerRequestFilter {
         // 设置响应内容类型
         response.setContentType("application/json;charset=UTF-8");
 
+        // 抓取一次性快照——保证整个请求看到一致的配置版本
+        SySigningSnapshot snapshot = SyTokenManager.INSTANCE.current;
+        if (snapshot == null) {
+            log.info("[SY-接口验签] 签名配置尚未加载, 请求地址: {} ", requestURI);
+            response.setStatus(Response.OK);
+            PrintWriter out = response.getWriter();
+            out.println(getErrorResult(1, "参数非法"));
+            out.close();
+            return;
+        }
+
         try {
             String sign = request.getParameter("sign");
             String appKey = request.getParameter("appKey");
@@ -66,9 +81,9 @@ public class SignAuthenticationFilter extends OncePerRequestFilter {
                 out.close();
                 return;
             }
-            
+
             // 添加空值检查
-            if (SyTokenManager.INSTANCE.appMap == null || SyTokenManager.INSTANCE.appMap.get(appKey) == null) {
+            if (snapshot.appMap() == null || snapshot.appMap().get(appKey) == null) {
                 log.info("[SY-接口验签] appKey {} 对应的 secret 不存在, 请求地址: {} ", appKey, requestURI);
                 response.setStatus(Response.OK);
                 PrintWriter out = response.getWriter();
@@ -97,7 +112,7 @@ public class SignAuthenticationFilter extends OncePerRequestFilter {
             // 如果是post请求的json消息，拼接body字符串
             if (request.getContentLength() > 0
                     && request.getMethod().equalsIgnoreCase("POST")
-                    && request.getContentType() != null 
+                    && request.getContentType() != null
                     && request.getContentType().equalsIgnoreCase(MediaType.APPLICATION_JSON_VALUE)) {
                 // 读取body内容 - 使用自定义缓存机制
                 String requestBody = request.getCachedBody();
@@ -108,9 +123,9 @@ public class SignAuthenticationFilter extends OncePerRequestFilter {
                     log.warn("[SY-接口验签] 请求体内容为空");
                 }
             }
-            
+
             // 添加空值检查
-            String secret = SyTokenManager.INSTANCE.appMap.get(appKey);
+            String secret = snapshot.appMap().get(appKey);
             if (secret == null) {
                 log.info("[SY-接口验签] 无法获取appKey {} 对应的 secret, 请求地址: {} ", appKey, requestURI);
                 response.setStatus(Response.OK);
@@ -119,7 +134,7 @@ public class SignAuthenticationFilter extends OncePerRequestFilter {
                 out.close();
                 return;
             }
-            
+
             beforeSign.append(secret);
             // 生成签名
             String buildSign = SmUtil.sm3(beforeSign.toString());
@@ -137,7 +152,7 @@ public class SignAuthenticationFilter extends OncePerRequestFilter {
             long timestamp = Long.parseLong(timestampStr);
             long currentTimeMillis = System.currentTimeMillis();
             // 添加空值检查
-            if (SyTokenManager.INSTANCE.expires == null) {
+            if (snapshot.expires() == null) {
                 log.info("[SY-接口验签] expires配置为空, 请求地址: {} ", requestURI);
                 response.setStatus(Response.OK);
                 PrintWriter out = response.getWriter();
@@ -145,8 +160,8 @@ public class SignAuthenticationFilter extends OncePerRequestFilter {
                 out.close();
                 return;
             }
-            if (currentTimeMillis > SyTokenManager.INSTANCE.expires * 60 * 1000 + timestamp ) {
-                log.info("[SY-接口验签] 时间戳已经过期, 请求时间戳：{}， 当前时间： {}, 过期时间： {}, 请求地址: {} ", timestamp, currentTimeMillis, timestamp + SyTokenManager.INSTANCE.expires * 60 * 1000, requestURI);
+            if (currentTimeMillis > snapshot.expires() * 60 * 1000 + timestamp ) {
+                log.info("[SY-接口验签] 时间戳已经过期, 请求时间戳：{}， 当前时间： {}, 过期时间： {}, 请求地址: {} ", timestamp, currentTimeMillis, timestamp + snapshot.expires() * 60 * 1000, requestURI);
                 response.setStatus(Response.OK);
                 PrintWriter out = response.getWriter();
                 out.println(getErrorResult(3, "接口己过期"));
@@ -155,7 +170,7 @@ public class SignAuthenticationFilter extends OncePerRequestFilter {
             }
             // accessToken校验
             // 添加空值检查
-            if (SyTokenManager.INSTANCE.adminToken == null) {
+            if (snapshot.adminToken() == null) {
                 log.info("[SY-接口验签] adminToken配置为空, 请求地址: {} ", requestURI);
                 response.setStatus(Response.OK);
                 PrintWriter out = response.getWriter();
@@ -163,13 +178,13 @@ public class SignAuthenticationFilter extends OncePerRequestFilter {
                 out.close();
                 return;
             }
-            if (accessToken.equals(SyTokenManager.INSTANCE.adminToken)) {
+            if (accessToken.equals(snapshot.adminToken())) {
                 log.info("[SY-接口验签] adminToken已经默认放行, 请求地址: {} ", requestURI);
                 chain.doFilter(request, response);
                 return;
             }else {
                 // 添加空值检查
-                if (SyTokenManager.INSTANCE.sm4Key == null) {
+                if (snapshot.sm4Key() == null) {
                     log.info("[SY-接口验签] sm4Key配置为空, 请求地址: {} ", requestURI);
                     response.setStatus(Response.OK);
                     PrintWriter out = response.getWriter();
@@ -178,7 +193,7 @@ public class SignAuthenticationFilter extends OncePerRequestFilter {
                     return;
                 }
                 // 对token进行解密
-                SM4 sm4 = SmUtil.sm4(HexUtil.decodeHex(SyTokenManager.INSTANCE.sm4Key));
+                SM4 sm4 = SmUtil.sm4(HexUtil.decodeHex(snapshot.sm4Key()));
                 String decryptStr = sm4.decryptStr(accessToken, CharsetUtil.CHARSET_UTF_8);
                 if (decryptStr == null) {
                     log.info("[SY-接口验签] accessToken解密失败, 请求地址: {} ", requestURI);

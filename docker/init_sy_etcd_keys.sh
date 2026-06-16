@@ -32,6 +32,9 @@
 #   bash init_sy_etcd_keys.sh --cacert /etc/etcd/ca.crt \
 #                            --cert   /etc/etcd/client.crt \
 #                            --key    /etc/etcd/client.key
+#
+#   # 8) 自定义 etcd 业务 key 路径
+#   bash init_sy_etcd_keys.sh --etcd-key jxt/common/wvp-signing
 # =============================================================================
 set -euo pipefail
 
@@ -65,7 +68,7 @@ mask_secret() {
 while [[ $# -gt 0 ]]; do
   case $1 in
     --endpoints)            ENDPOINTS="$2"; shift 2 ;;
-    --key)                  ETCD_KEY="$2"; shift 2 ;;
+    --etcd-key)             ETCD_KEY="$2"; shift 2 ;;
     --docker)               DOCKER_CONTAINER="$2"; shift 2 ;;
     --if-absent)            IF_ABSENT=1; shift ;;
     --dry-run)              DRY_RUN=1; shift ;;
@@ -165,8 +168,14 @@ if [[ "$CHECK" == "$JSON" ]]; then
   echo "[OK] 写入校验通过,值与生成一致。"
 else
   echo "[FAIL] 写入校验失败,读回值与生成不一致:"
-  echo "  期望: $JSON"
-  echo "  实际: $CHECK"
+  if [[ $SHOW_SECRETS -eq 1 ]]; then
+    echo "  期望: $JSON"
+    echo "  实际: $CHECK"
+  else
+    echo "  期望: $(echo "$JSON" | sed -E 's/("(appSecret|sm4Key)":")[^"]+"/\1********/g')"
+    echo "  实际: $(echo "$CHECK" | sed -E 's/("(appSecret|sm4Key)":")[^"]+"/\1********/g')"
+    echo "  需要查看完整密钥请加 --show-secrets"
+  fi
   exit 1
 fi
 
