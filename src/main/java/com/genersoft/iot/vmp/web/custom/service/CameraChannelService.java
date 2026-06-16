@@ -19,7 +19,7 @@ import com.genersoft.iot.vmp.service.bean.ErrorCallback;
 import com.genersoft.iot.vmp.utils.Coordtransform;
 import com.genersoft.iot.vmp.vmanager.bean.ErrorCode;
 import com.genersoft.iot.vmp.web.custom.bean.*;
-import com.genersoft.iot.vmp.web.custom.conf.SyTokenManager;
+import com.genersoft.iot.vmp.web.custom.conf.SySigningConfigService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.github.xiaoymin.knife4j.core.util.Assert;
@@ -68,50 +68,22 @@ public class CameraChannelService implements CommandLineRunner {
     @Autowired
     private DynamicTask dynamicTask;
 
+    @Autowired
+    private SySigningConfigService signingConfigService;
+
     @Override
     public void run(String... args) {
-        // 启动时获取全局token
+        // 启动时从 ETCD 加载签名配置(取代原 Redis 读取)。失败则 30 秒重试直到成功。
         String taskKey = UUID.randomUUID().toString();
-        if (!refreshToken()) {
+        signingConfigService.loadFromEtcd();
+        if (!signingConfigService.isLoaded()) {
             log.info("[SY-读取Token]失败，30秒后重试");
-            dynamicTask.startDelay(taskKey, ()->{
+            dynamicTask.startDelay(taskKey, () -> {
                 this.run(args);
             }, 30000);
-        }else {
+        } else {
             log.info("[SY-读取Token] 成功");
         }
-    }
-
-    private boolean refreshToken() {
-        String adminToken = redisTemplateForString.opsForValue().get("SYSTEM_ACCESS_TOKEN");
-        if (adminToken == null) {
-            log.warn("[SY读取TOKEN] SYSTEM_ACCESS_TOKEN 读取失败");
-            return false;
-        }
-        SyTokenManager.INSTANCE.adminToken = adminToken;
-
-        String sm4Key = redisTemplateForString.opsForValue().get("SYSTEM_SM4_KEY");
-        if (sm4Key == null) {
-            log.warn("[SY读取TOKEN] SYSTEM_SM4_KEY 读取失败");
-            return false;
-        }
-        SyTokenManager.INSTANCE.sm4Key = sm4Key;
-
-        JSONObject appJson = (JSONObject)redisTemplate.opsForValue().get("SYSTEM_APPKEY");
-        if (appJson == null) {
-            log.warn("[SY读取TOKEN] SYSTEM_APPKEY 读取失败");
-            return false;
-        }
-        SyTokenManager.INSTANCE.appMap.put(appJson.getString("appKey"), appJson.getString("appSecret"));
-
-        JSONObject timeJson = (JSONObject)redisTemplate.opsForValue().get("sys_INTERFACE_VALID_TIME");
-        if (timeJson == null) {
-            log.warn("[SY读取TOKEN] sys_INTERFACE_VALID_TIME 读取失败");
-            return false;
-        }
-        SyTokenManager.INSTANCE.expires = timeJson.getLong("systemValue");
-
-        return true;
     }
 
     // 监听通道变化，如果是移动设备则发送redis消息
