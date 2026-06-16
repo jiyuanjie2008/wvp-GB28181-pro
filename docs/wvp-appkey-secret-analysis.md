@@ -141,7 +141,7 @@ docker exec jxt-etcd etcdctl --endpoints=http://127.0.0.1:2379 \
 
 ## 8. 从 Redis 迁移到 etcd 的来龙去脉
 
-- **旧方案**:WVP 从 Redis 读 `SYSTEM_APPKEY`/`SYSTEM_SM4_KEY`/`SYSTEM_ACCESS_TOKEN`/`sys_INTERFACE_VALID_TIME`(脚本 `docker/init_sy_redis_keys.sh` 写入);security-management 从 `settings.yml` 读另一份。
+- **旧方案**:WVP 从 Redis 读 `SYSTEM_APPKEY`/`SYSTEM_SM4_KEY`/`SYSTEM_ACCESS_TOKEN`/`sys_INTERFACE_VALID_TIME`(旧脚本 `init_sy_redis_keys.sh` 写入,已删除);security-management 从 `settings.yml` 读另一份。
 - **失效**:Sentinel HA 改造后,WVP 改读共享 Redis,但 4 个 Key 未重新写入 → WVP 启动后每 30s 报 `SYSTEM_ACCESS_TOKEN 读取失败`,`SignAuthenticationFilter` 对所有 `/api/sy/*` 返回 `code:1`,IAM→WVP 设备同步断链。
 - **迁移**:把凭据集中到 etcd 单一 Key,两端读取 + Watch。Redis 读取代码已从 WVP 移除;security-management 的 `settings.yml` 的 `wvp:` 段保留为**本地开发兜底**(值与 etcd 相同,无冲突)。
 
