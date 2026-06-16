@@ -1,7 +1,7 @@
 package com.genersoft.iot.vmp.web.custom.conf;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public enum SyTokenManager {
     INSTANCE;
@@ -9,7 +9,7 @@ public enum SyTokenManager {
     /**
      * 普通用户 app Key 和 secret
      */
-    public final Map<String, String> appMap = new HashMap<>();
+    public final Map<String, String> appMap = new ConcurrentHashMap<>();
 
 
     /**

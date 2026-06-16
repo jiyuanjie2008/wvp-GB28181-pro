@@ -17,8 +17,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -48,7 +48,7 @@ public class SySigningConfigService {
     private EtcdProperties etcdProperties;
 
     private Client etcdClient;
-    private final List<AutoCloseable> activeWatchers = new ArrayList<>();
+    private final List<AutoCloseable> activeWatchers = new CopyOnWriteArrayList<>();
 
     /** 加载是否成功(任何一次成功后置 true;DELETE 时保留 true 以沿用最后已知良好值)。 */
     private final AtomicBoolean loaded = new AtomicBoolean(false);

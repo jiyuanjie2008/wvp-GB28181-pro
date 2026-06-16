@@ -40,6 +40,7 @@ ENDPOINTS="127.0.0.1:2379"
 DOCKER_CONTAINER=""
 IF_ABSENT=0
 DRY_RUN=0
+SHOW_SECRETS=0
 ETCD_USER=""
 ETCD_PASS=""
 EXPIRES_MIN=30
@@ -48,6 +49,17 @@ TLS_FLAGS=()
 usage() {
   sed -n '2,40p' "$0"
   exit "${1:-0}"
+}
+
+# mask_secret <value>: prints first 8 chars of a secret, masking the rest.
+# Full value is only shown when --show-secrets is passed.
+mask_secret() {
+  local val="$1"
+  if [[ $SHOW_SECRETS -eq 1 ]]; then
+    echo "$val"
+  else
+    echo "${val:0:8}********"
+  fi
 }
 
 while [[ $# -gt 0 ]]; do
@@ -61,6 +73,7 @@ while [[ $# -gt 0 ]]; do
     --pass)                 ETCD_PASS="$2"; shift 2 ;;
     --expires-min)          EXPIRES_MIN="$2"; shift 2 ;;
     --cacert|--cert|--key)  TLS_FLAGS+=("$1" "$2"); shift 2 ;;
+    --show-secrets)         SHOW_SECRETS=1; shift ;;
     -h|--help)              usage 0 ;;
     *) echo "未知参数: $1"; echo; usage 1 ;;
   esac
@@ -120,9 +133,9 @@ JSON="$(printf '{"appKey":"%s","appSecret":"%s","sm4Key":"%s","expiresMin":%s}' 
   "$APP_KEY" "$APP_SECRET" "$SM4_KEY" "$EXPIRES_MIN")"
 
 echo "已生成新密钥:"
-echo "  appKey     = $APP_KEY  (32 hex, 客户端标识, 明文出现在请求 URL)"
-echo "  appSecret  = $APP_SECRET  (64 hex, SM3 签名密钥, 切勿外泄)"
-echo "  sm4Key     = $SM4_KEY  (32 hex, SM4-ECB 密钥, 切勿外泄)"
+echo "  appKey     = $(mask_secret "$APP_KEY")  (32 hex, 客户端标识, 明文出现在请求 URL)"
+echo "  appSecret  = $(mask_secret "$APP_SECRET")  (64 hex, SM3 签名密钥, 切勿外泄)"
+echo "  sm4Key     = $(mask_secret "$SM4_KEY")  (32 hex, SM4-ECB 密钥, 切勿外泄)"
 echo "  expiresMin = $EXPIRES_MIN  (时间戳/token 过期窗口, 分钟)"
 echo
 echo "将写入 etcd:  key=$ETCD_KEY   endpoints=$ENDPOINTS"
@@ -130,9 +143,15 @@ echo
 
 if [[ $DRY_RUN -eq 1 ]]; then
   echo "[干跑] 未写入。JSON 值:"
-  echo "$JSON"
+  if [[ $SHOW_SECRETS -eq 1 ]]; then
+    echo "$JSON"
+  else
+    # 只显示 JSON 结构,敏感字段脱敏
+    echo "$JSON" | sed -E 's/("(appSecret|sm4Key)":")[^"]+"/\1********/g'
+  fi
   echo
   echo "⚠ 干跑模式下两端不会更新。去掉 --dry-run 实际写入。"
+  echo "   需要查看完整密钥请加 --show-secrets"
   exit 0
 fi
 
