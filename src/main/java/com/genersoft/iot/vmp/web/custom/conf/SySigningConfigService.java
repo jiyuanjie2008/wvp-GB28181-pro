@@ -156,6 +156,12 @@ public class SySigningConfigService {
                 log.warn("[SY签名配置] ETCD 值不完整, 跳过 (appKey/secret/sm4Key 任一为空)");
                 return false;
             }
+            // 与 security-management(Go) NewSignClient 对齐: expiresMin 缺失或非正一律按默认 30 分钟。
+            // 否则一个畸形的非正值(如 -5)会让 SignAuthenticationFilter 把所有请求判为过期(code 3)。
+            long resolvedExpiresMin = (expiresMin != null && expiresMin > 0) ? expiresMin : 30L;
+            if (expiresMin != null && expiresMin <= 0) {
+                log.warn("[SY签名配置] expiresMin={} 非正, 已回退为默认 30 分钟", expiresMin);
+            }
 
             // 构建不可变快照: adminToken 只在首次生成,后续轮换沿用
             SySigningSnapshot prev = SyTokenManager.INSTANCE.current;
@@ -166,7 +172,7 @@ public class SySigningConfigService {
             SySigningSnapshot snapshot = new SySigningSnapshot(
                     Map.of(appKey, appSecret),
                     sm4Key,
-                    expiresMin != null ? expiresMin : 30L,
+                    resolvedExpiresMin,
                     adminToken
             );
             SyTokenManager.INSTANCE.current = snapshot;

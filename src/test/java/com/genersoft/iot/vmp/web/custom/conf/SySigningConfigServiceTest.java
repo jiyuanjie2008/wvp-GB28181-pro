@@ -115,4 +115,24 @@ class SySigningConfigServiceTest {
 
         assertEquals(30L, SyTokenManager.INSTANCE.current.expires(), "default expiresMin should be 30 when not provided");
     }
+
+    @Test
+    void testApplyConfigValue_negativeExpiresMin_clampedToDefault() {
+        // 与 security-management Go 端 NewSignClient 对齐: 非正 expiresMin 回退为 30,
+        // 否则 SignAuthenticationFilter 会把所有请求判为过期(code 3)。
+        String json = "{\"appKey\":\"test-key\",\"appSecret\":\"test-secret\",\"sm4Key\":\"32hexsm4key12345678abcdef\",\"expiresMin\":-5}";
+
+        ReflectionTestUtils.invokeMethod(service, "applyConfigValue", json);
+
+        assertEquals(30L, SyTokenManager.INSTANCE.current.expires(), "negative expiresMin should be clamped to 30");
+    }
+
+    @Test
+    void testApplyConfigValue_zeroExpiresMin_clampedToDefault() {
+        String json = "{\"appKey\":\"test-key\",\"appSecret\":\"test-secret\",\"sm4Key\":\"32hexsm4key12345678abcdef\",\"expiresMin\":0}";
+
+        ReflectionTestUtils.invokeMethod(service, "applyConfigValue", json);
+
+        assertEquals(30L, SyTokenManager.INSTANCE.current.expires(), "zero expiresMin should be clamped to 30");
+    }
 }
