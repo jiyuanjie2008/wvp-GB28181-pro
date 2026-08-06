@@ -312,7 +312,7 @@ export default {
           this.$refs.devicePlayer.openDialog('media', itemData.gbId, {
             streamInfo: data,
             hasAudio: itemData.hasAudio
-          })
+          }, itemData.deviceId || this.deviceId)
           setTimeout(() => {
             this.initData()
           }, 1000)

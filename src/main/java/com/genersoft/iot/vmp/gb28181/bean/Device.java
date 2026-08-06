@@ -1,6 +1,7 @@
 package com.genersoft.iot.vmp.gb28181.bean;
 
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
@@ -104,6 +105,7 @@ public class Device {
 	 * 心跳间隔
 	 */
 	@Schema(description = "心跳间隔")
+	@JsonProperty("heartbeatInterval")
 	private Integer heartBeatInterval;
 
 
@@ -111,6 +113,7 @@ public class Device {
 	 * 心跳超时次数
 	 */
 	@Schema(description = "心跳超时次数")
+	@JsonProperty("heartbeatCount")
 	private Integer heartBeatCount;
 
 

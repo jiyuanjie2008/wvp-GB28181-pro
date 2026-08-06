@@ -509,7 +509,8 @@ public class PlayServiceImpl implements IPlayService {
         sendRtpInfo.setOnlyAudio(true);
         sendRtpInfo.setPt(8);
         sendRtpInfo.setStatus(1);
-        sendRtpInfo.setTcpActive(false);
+        // 【实验：TCP被动对讲】tcpActive=true 表示设备为TCP主动方、服务端(ZLM)被动监听，结构与已跑通的TCP广播一致
+        sendRtpInfo.setTcpActive(true);
         sendRtpInfo.setUsePs(false);
         sendRtpInfo.setReceiveStream(stream + "_talk");
 
@@ -533,18 +534,10 @@ public class PlayServiceImpl implements IPlayService {
             }
         }, userSetting.getPlayTimeout());
 
+        // UDP主动推流模式：无需开启TCP被动监听，收到设备200 OK后再向设备的应答地址推流
         try {
-            Integer localPort = mediaServerService.startSendRtpPassive(mediaServerItem, sendRtpInfo, userSetting.getPlayTimeout() * 1000);
-            if (localPort == null || localPort <= 0) {
-                timeoutCallback.run();
-                mediaServerService.releaseSsrc(mediaServerItem.getId(), sendRtpInfo.getSsrcToRelease());
-                sessionManager.removeByStream(sendRtpInfo.getApp(), sendRtpInfo.getStream());
-                return;
-            }
-            sendRtpInfo.setPort(localPort);
             // 增加鉴权信息
             receiveRtpServerService.addAuthenticateInfoForGb28181Talk(mediaServerItem, sendRtpInfo.getStream());
-
         }catch (ControllerException e) {
             mediaServerService.releaseSsrc(mediaServerItem.getId(), sendRtpInfo.getSsrcToRelease());
             log.info("[语音对讲]失败 deviceId: {}, channelId: {}", device.getDeviceId(), channel.getDeviceId());
@@ -581,6 +574,13 @@ public class PlayServiceImpl implements IPlayService {
                                 response, InviteSessionType.TALK);
 
                         sessionManager.put(ssrcTransaction);
+
+                        // 【实验：TCP被动对讲】ZLM 监听本地端口，设备(a=setup:active)连入后沿该 TCP 连接下发对讲音频。
+                        // 结构与已跑通的 TCP 广播一致（设备 active / 服务端 passive），用于实测 s=Talk 下行能否出声。
+                        sendRtpServerService.update(sendRtpInfo);
+                        log.info("[语音对讲] TCP被动推流(实验): 监听本地端口 {} 等待设备连接, stream: {}/{}, SSRC: {}",
+                                sendRtpInfo.getLocalPort(), sendRtpInfo.getApp(), sendRtpInfo.getStream(), sendRtpInfo.getSsrc());
+                        mediaServerService.startSendRtpPassive(mediaServerItem, sendRtpInfo, null);
                     } else {
                         log.error("[语音对讲]收到的消息错误，response不是SIPResponse");
                     }
@@ -1295,25 +1295,35 @@ public class PlayServiceImpl implements IPlayService {
             }
         }
 
+        // 先创建语音广播缓存并启动“等待INVITE”超时定时器，再发送通知。
+        // MESSAGE 的 200 OK 与设备的 INVITE 是两个独立的 SIP 事务：设备可能先于、迟于或独立于 200 OK 发来 INVITE。
+        // 因此不再把会话生命周期绑定到 MESSAGE 回复时机——只要 INVITE 到达时缓存存在即可正常发流；
+        // 若最终无 INVITE，则由下面的定时器统一清理（InviteRequestProcessor 收到 INVITE 时会取消该定时器）。
+        AudioBroadcastCatch audioBroadcastCatch = new AudioBroadcastCatch(device.getDeviceId(), deviceChannel.getId(), mediaServerItem, app, stream, event, AudioBroadcastCatchStatus.Ready, isFromPlatform);
+        audioBroadcastManager.update(audioBroadcastCatch);
+        // 等待invite消息， 超时则结束
+        String key = VideoManagerConstants.BROADCAST_WAITE_INVITE +  device.getDeviceId();
+        if (!SipUtils.isFrontEnd(device.getDeviceId())) {
+            key += audioBroadcastCatch.getChannelId();
+        }
+        dynamicTask.startDelay(key, ()->{
+            log.info("[语音广播]等待invite消息超时：{}/{}", device.getDeviceId(), deviceChannel.getDeviceId());
+            event.call("语音广播等待设备INVITE超时");
+            stopAudioBroadcast(device, deviceChannel);
+        }, 10*1000);
+
         // 发送通知
         cmder.audioBroadcastCmd(device, deviceChannel.getDeviceId(), eventResultForOk -> {
-            // 发送成功
-            AudioBroadcastCatch audioBroadcastCatch = new AudioBroadcastCatch(device.getDeviceId(), deviceChannel.getId(), mediaServerItem, app, stream, event, AudioBroadcastCatchStatus.Ready, isFromPlatform);
-            audioBroadcastManager.update(audioBroadcastCatch);
-            // 等待invite消息， 超时则结束
-            String key = VideoManagerConstants.BROADCAST_WAITE_INVITE +  device.getDeviceId();
-            if (!SipUtils.isFrontEnd(device.getDeviceId())) {
-                key += audioBroadcastCatch.getChannelId();
+            // MESSAGE 收到 200 OK：仅更新状态，继续等待设备 INVITE（缓存与定时器已在发送前建立）
+            AudioBroadcastCatch catchForOk = audioBroadcastManager.get(deviceChannel.getId());
+            if (catchForOk != null) {
+                catchForOk.setStatus(AudioBroadcastCatchStatus.WaiteInvite);
+                audioBroadcastManager.update(catchForOk);
             }
-            dynamicTask.startDelay(key, ()->{
-                log.info("[语音广播]等待invite消息超时：{}/{}", device.getDeviceId(), deviceChannel.getDeviceId());
-                stopAudioBroadcast(device, deviceChannel);
-            }, 10*1000);
         }, eventResultForError -> {
-            // 发送失败
-            log.error("语音广播发送失败： {}:{}", deviceChannel.getDeviceId(), eventResultForError.msg);
-            event.call("语音广播发送失败");
-            stopAudioBroadcast(device, deviceChannel);
+            // MESSAGE 未收到 200 OK（超时或错误响应）：不立即拆除会话。
+            // 部分慢设备回复 200 OK 较慢甚至不回复，但仍会发来 INVITE；统一交由“等待INVITE”定时器兜底清理。
+            log.warn("[语音广播]发送通知未收到回复（仍继续等待设备INVITE）： {}:{}", deviceChannel.getDeviceId(), eventResultForError.msg);
         });
         return true;
     }

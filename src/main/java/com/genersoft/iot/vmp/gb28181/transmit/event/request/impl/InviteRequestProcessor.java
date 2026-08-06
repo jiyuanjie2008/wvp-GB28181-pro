@@ -38,6 +38,7 @@ import javax.sip.InvalidArgumentException;
 import javax.sip.RequestEvent;
 import javax.sip.SipException;
 import javax.sip.header.CallIdHeader;
+import javax.sip.header.ViaHeader;
 import javax.sip.message.Response;
 import java.security.SecureRandom;
 import java.text.ParseException;
@@ -511,11 +512,16 @@ public class InviteRequestProcessor extends SIPRequestProcessorParent implements
             int port = -1;
             boolean mediaTransmissionTCP = false;
             Boolean tcpActive = null;
+            // 设备 INVITE 的首选音频负载类型（m=audio 行第一个负载），用于跟随设备首选编码应答
+            String preferredPayload = null;
             for (int i = 0; i < mediaDescriptions.size(); i++) {
                 MediaDescription mediaDescription = (MediaDescription) mediaDescriptions.get(i);
                 Media media = mediaDescription.getMedia();
 
                 Vector mediaFormats = media.getMediaFormats(false);
+                if (mediaFormats != null && !mediaFormats.isEmpty()) {
+                    preferredPayload = String.valueOf(mediaFormats.get(0));
+                }
 //                    if (mediaFormats.contains("8")) {
                 port = media.getMediaPort();
                 String protocol = media.getProtocol();
@@ -547,6 +553,26 @@ public class InviteRequestProcessor extends SIPRequestProcessorParent implements
                 return;
             }
             String addressStr = sdp.getOrigin().getAddress();
+            // 语音喊话：RTP 目标必须是"媒体服务器(ZLM)出站可达"的设备地址。
+            // 在 WVP 容器化(Docker bridge)且设备与服务器同 LAN 的部署下：
+            //   - SDP o=/c= 行、Via received、传输层 peer 源地址、甚至设备注册 IP，都会是
+            //     Docker 网桥网关(如 172.18.0.1)——该地址无 conntrack 映射，RTP(全新 UDP 流)无法到达设备；
+            //   - 设备真实 LAN IP 只保留在 Via sent-by host 中(设备自报，如 192.168.0.62)，
+            //     从容器出站经 masquerade 可达。
+            // 因此优先取 Via sent-by host 作为 RTP 目标；解析失败或为空再回退到 SDP o= 地址。
+            // 注：此处只用其地址；媒体端口仍取自 SDP m= 行的 port。
+            // 提醒：若 WVP 部署在公网、设备在运营商 NAT 之后(sent-by 为不可路由私网地址)，
+            //       则相反应使用 Via received，届时需按部署拓扑改为可配置。
+            try {
+                ViaHeader viaHeader = (ViaHeader) request.getHeader(ViaHeader.NAME);
+                String viaHost = viaHeader != null ? viaHeader.getHost() : null;
+                if (viaHost != null && !viaHost.isEmpty() && !viaHost.equals(addressStr)) {
+                    log.info("[语音喊话] SDP o= 行地址({})与Via sent-by({})不一致，使用Via sent-by作为RTP目标", addressStr, viaHost);
+                    addressStr = viaHost;
+                }
+            } catch (Exception e) {
+                log.warn("[语音喊话] 解析Via sent-by失败，使用SDP o=地址", e);
+            }
             log.info("设备{}请求语音流，地址：{}:{}，ssrc：{}, {}", inviteInfo.getRequesterId(), addressStr, port, gb28181Sdp.getSsrc(),
                     mediaTransmissionTCP ? (tcpActive ? "TCP主动" : "TCP被动") : "UDP");
 
@@ -586,8 +612,17 @@ public class InviteRequestProcessor extends SIPRequestProcessorParent implements
             sendRtpItem.setStatus(1);
             sendRtpItem.setApp(broadcastCatch.getApp());
             sendRtpItem.setStream(broadcastCatch.getStream());
-            sendRtpItem.setPt(8);
-            sendRtpItem.setUsePs(false);
+            // 跟随设备 INVITE 首选编码：首位为 96(PS/90000) 时使用 PS 封装应答(pt=96)，
+            // 否则维持裸 PCMA(pt=8)。遵循 GB28181 "s=Play 模式须回 PS" 的约定，避免设备 PS 解封路径收到裸 PCMA 而无声。
+            if ("96".equals(preferredPayload)) {
+                sendRtpItem.setPt(96);
+                sendRtpItem.setUsePs(true);
+                log.info("[语音喊话] 设备首选编码为 PS/96，使用 PS 封装应答");
+            } else {
+                sendRtpItem.setPt(8);
+                sendRtpItem.setUsePs(false);
+                log.info("[语音喊话] 设备首选编码为 {}，使用裸 PCMA/8 应答", preferredPayload);
+            }
             sendRtpItem.setRtcp(false);
             sendRtpItem.setOnlyAudio(true);
             sendRtpItem.setTcp(mediaTransmissionTCP);
@@ -628,13 +663,15 @@ public class InviteRequestProcessor extends SIPRequestProcessorParent implements
             content.append("c=IN IP4 " + mediaServerItem.getSdpIp() + "\r\n");
             content.append("t=0 0\r\n");
 
-            if (mediaTransmissionTCP) {
-                content.append("m=audio " + sendRtpItem.getLocalPort() + " TCP/RTP/AVP 8\r\n");
+            // 按实际选定的编码生成应答 SDP（跟随设备首选）：PS 封装回 pt=96/PS，否则回 pt=8/PCMA
+            int payloadType = sendRtpItem.getPt();
+            String transportProtocol = mediaTransmissionTCP ? "TCP/RTP/AVP" : "RTP/AVP";
+            content.append("m=audio " + sendRtpItem.getLocalPort() + " " + transportProtocol + " " + payloadType + "\r\n");
+            if (sendRtpItem.isUsePs()) {
+                content.append("a=rtpmap:" + payloadType + " PS/90000\r\n");
             } else {
-                content.append("m=audio " + sendRtpItem.getLocalPort() + " RTP/AVP 8\r\n");
+                content.append("a=rtpmap:" + payloadType + " PCMA/8000/1\r\n");
             }
-
-            content.append("a=rtpmap:8 PCMA/8000/1\r\n");
 
             content.append("a=sendonly\r\n");
             if (sendRtpItem.isTcp()) {

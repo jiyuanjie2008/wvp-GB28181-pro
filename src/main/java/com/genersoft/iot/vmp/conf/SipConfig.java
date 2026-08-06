@@ -2,6 +2,7 @@ package com.genersoft.iot.vmp.conf;
 
 
 import lombok.Data;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
@@ -34,5 +35,6 @@ public class SipConfig {
 
 	private boolean alarm = true;
 
+	@Value("${sip.timeout:1000}")
 	private long timeout = 1000;
 }

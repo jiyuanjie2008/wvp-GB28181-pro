@@ -214,12 +214,17 @@ public class UserController {
     }
 
     @PostMapping("/userInfo")
-    @Operation(summary = "管理员修改普通用户密码")
+    @Operation(summary = "获取当前用户信息")
     public LoginUser getUserInfo() {
         // 获取当前登录用户id
         LoginUser userInfo = SecurityUtils.getUserInfo();
 
         if (userInfo == null) {
+            // 接口鉴权关闭时，取默认管理员用户
+            User user = userService.getUserByUsername("admin");
+            if (user != null) {
+                return new LoginUser(user, LocalDateTime.now());
+            }
             throw new ControllerException(ErrorCode.ERROR100);
         }
         User user = userService.getUser(userInfo.getUsername(), userInfo.getPassword());

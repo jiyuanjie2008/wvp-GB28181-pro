@@ -529,10 +529,16 @@ public class SIPCommander implements ISIPCommander {
         content.append("c=IN IP4 " + mediaServerItem.getSdpIp() + "\r\n");
         content.append("t=0 0\r\n");
 
-        content.append("m=audio " + sendRtpItem.getPort() + " TCP/RTP/AVP 8\r\n");
-        content.append("a=setup:passive\r\n");
-        content.append("a=connection:new\r\n");
-        content.append("a=sendrecv\r\n");
+        if (sendRtpItem.isTcp()) {
+            // TCP被动：服务端(ZLM)监听自己的 localPort，设备(a=setup:active)主动连入后沿连接下发音频
+            content.append("m=audio " + sendRtpItem.getLocalPort() + " TCP/RTP/AVP 8\r\n");
+            content.append("a=setup:passive\r\n");
+            content.append("a=connection:new\r\n");
+            content.append("a=sendrecv\r\n");
+        } else {
+            content.append("m=audio " + sendRtpItem.getLocalPort() + " RTP/AVP 8\r\n");
+            content.append("a=sendrecv\r\n");
+        }
         content.append("a=rtpmap:8 PCMA/8000\r\n");
 
         content.append("y=" + sendRtpItem.getSsrc() + "\r\n");//ssrc

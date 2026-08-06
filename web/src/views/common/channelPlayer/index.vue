@@ -394,6 +394,7 @@ export default {
       },
       showVideoDialog: false,
       channelId: null,
+      deviceId: null,
       streamId: '',
       ptzMethod: 'preset',
       ptzPresetId: '',
@@ -459,12 +460,13 @@ export default {
       this.videoUrl = this.getUrlByStreamInfo()
       console.log(this.videoUrl)
     },
-    openDialog: function(tab, channelId, param) {
+    openDialog: function(tab, channelId, param, deviceId) {
       if (this.showVideoDialog) {
         return
       }
       this.tabActiveName = tab
       this.channelId = channelId
+      this.deviceId = deviceId || null
       this.streamId = ''
       this.mediaServerId = ''
       this.app = ''
@@ -593,7 +595,7 @@ export default {
         // 默认状态， 开始
         this.broadcastStatus = 0
         // 发起语音对讲
-        this.$store.dispatch('play/broadcastStart', [ this.channelId, this.broadcastMode])
+        this.$store.dispatch('play/broadcastStart', [this.deviceId, this.channelId, this.broadcastMode])
           .then(data => {
             const streamInfo = data.streamInfo
             if (document.location.protocol.includes('https')) {

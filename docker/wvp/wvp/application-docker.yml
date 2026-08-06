@@ -72,7 +72,9 @@ sip:
     # 是否存储alarm信息
     alarm: true
     # 命令发送等待回复的超时时间, 单位:毫秒
-    timeout: 1000
+    # 注意：部分设备(如TonMXAndroid)对Broadcast通知的200 OK回复较慢(~4秒)，
+    # 过短会导致语音喊话广播会话被提前拆除、设备INVITE被拒，需适当增大
+    timeout: 5000
 
 # 默认服务器配置
 media:
