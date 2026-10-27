@@ -10,65 +10,78 @@
 	<conversionRule conversionWord="wex" converterClass="org.springframework.boot.logging.logback.WhitespaceThrowableProxyConverter"/>
 	<conversionRule conversionWord="wEx" converterClass="org.springframework.boot.logging.logback.ExtendedWhitespaceThrowableProxyConverter"/>
 
+	<!-- 20261027 假死专项根治:全部 appender 包 AsyncAppender(neverBlock=true)。
+	     根因=sip-log=true 风暴时数千虚拟线程挤同步 FileAppender 写锁(bind-mount 慢盘),
+	     写速<产速 → 锁队列爆炸 → SIP+HTTP 双假死(取证:wvp/perf/wedgedumps/)。
+	     neverBlock=true:队列满时丢弃日志事件,绝不阻塞业务线程(风暴代价=部分日志丢失,非假死)。
+	     注:异步模式下 %L(行号)显示为 ?,换取生产者零阻塞。 -->
+
 	<!-- 控制台输出 -->
-	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+	<appender name="STDOUT-SYNC" class="ch.qos.logback.core.ConsoleAppender">
 		<encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
-			<!--格式化输出：%d表示日期，%thread表示线程名，%-5level：级别从左显示5个字符宽度%msg：日志消息，%n是换行符 -->
 			<pattern>${log.pattern}</pattern>
 			<charset>UTF-8</charset>
 		</encoder>
 		<filter class="ch.qos.logback.classic.filter.ThresholdFilter" >
-			<!--与ThresholdFilter的区别,允许onmatch-->
-			<!--设置日志级别 接收info级别的日志-->
 			<level>DEBUG</level>
 		</filter>
 	</appender>
+	<appender name="STDOUT" class="ch.qos.logback.classic.AsyncAppender">
+		<queueSize>8192</queueSize>
+		<neverBlock>true</neverBlock>
+		<appender-ref ref="STDOUT-SYNC" />
+	</appender>
 
 	<!-- WebSocket -->
-	<appender name="websocket" class="com.genersoft.iot.vmp.conf.webLog.WebSocketAppender">
+	<appender name="websocket-SYNC" class="com.genersoft.iot.vmp.conf.webLog.WebSocketAppender">
 		<encoder>
 			<pattern>${log.pattern}</pattern>
 			<charset>UTF-8</charset>
 		</encoder>
 	</appender>
+	<appender name="websocket" class="ch.qos.logback.classic.AsyncAppender">
+		<queueSize>8192</queueSize>
+		<neverBlock>true</neverBlock>
+		<appender-ref ref="websocket-SYNC" />
+	</appender>
 
-	<!-- 按照每天生成日志文件 DEBUG以上级别的日志,仅用于测试环境,正式环境为info级别以上的日志-->
-	<appender name="RollingFile" class="ch.qos.logback.core.rolling.RollingFileAppender">
-
-		<!-- 文件路径 -->
+	<!-- 按照每天生成日志文件 -->
+	<appender name="RollingFile-SYNC" class="ch.qos.logback.core.rolling.RollingFileAppender">
 		<rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
-			<!--历史日志文件输出的文件名 -->
 			<FileNamePattern>${LOG_HOME}/wvp-%d{yyyy-MM-dd}.%i.log</FileNamePattern>
-			<!--日志文件保留天数 -->
 			<MaxHistory>30</MaxHistory>
 			<maxFileSize>20MB</maxFileSize>
 		</rollingPolicy>
 		<encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
-			<!--格式化输出：%d表示日期，%thread表示线程名，%-5level：级别从左显示5个字符宽度%msg：日志消息，%n是换行符 -->
 			<pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50}:%L - %msg%n</pattern>
 			<charset>UTF-8</charset>
 		</encoder>
 		<filter class="ch.qos.logback.classic.filter.ThresholdFilter">
-			<!--与ThresholdFilter的区别,允许onmatch-->
-			<!--设置日志级别 接收info级别的日志-->
 			<level>DEBUG</level>
 		</filter>
 	</appender>
+	<appender name="RollingFile" class="ch.qos.logback.classic.AsyncAppender">
+		<queueSize>8192</queueSize>
+		<neverBlock>true</neverBlock>
+		<appender-ref ref="RollingFile-SYNC" />
+	</appender>
 
 	<!-- 生成 SIP日志追加 -->
-	<appender name="SipRollingFile" class="ch.qos.logback.core.rolling.RollingFileAppender">
+	<appender name="SipRollingFile-SYNC" class="ch.qos.logback.core.rolling.RollingFileAppender">
 		<rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
-			<!--历史日志文件输出的文件名 -->
 			<FileNamePattern>${LOG_HOME}/sip-%d{yyyy-MM-dd}.%i.log</FileNamePattern>
-			<!--日志文件保留天数 -->
 			<MaxHistory>30</MaxHistory>
 			<maxFileSize>50MB</maxFileSize>
 		</rollingPolicy>
 		<encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
-			<!--格式化输出：%d表示日期，%thread表示线程名，%-5level：级别从左显示5个字符宽度%msg：日志消息，%n是换行符 -->
 			<pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50}:%L - %msg%n</pattern>
 			<charset>UTF-8</charset>
 		</encoder>
+	</appender>
+	<appender name="SipRollingFile" class="ch.qos.logback.classic.AsyncAppender">
+		<queueSize>8192</queueSize>
+		<neverBlock>true</neverBlock>
+		<appender-ref ref="SipRollingFile-SYNC" />
 	</appender>
 
 

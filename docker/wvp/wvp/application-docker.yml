@@ -81,7 +81,9 @@ media:
   id: polaris
   # [必须修改] ZLM 内网IP与端口
   ip: ${ZLM_HOST:127.0.0.1}
-  http-port: 80
+  # ZLM 容器内 [http] 实际端口(2026-10-22 起容器内外对齐 6080;旧值 80 是"容器内80+compose 6080:80"时代的遗留,
+  # 会导致 WVP 探活 http://polaris-media:80 恒失败 → ZLM 恒离线 → 点播报"未获取到流地址")
+  http-port: 6080
   # [可选] 返回流地址时的ip，置空使用 media.ip
   stream-ip: ${Stream_IP}
   # [可选] wvp在国标信令中使用的ip，此ip为摄像机可以访问到的ip， 置空使用 media.ip
@@ -90,9 +92,10 @@ media:
   hook-ip: ${ZLM_HOOK_HOST}
   # [可选] sslport
   http-ssl-port: 0
-  flv-port: ${MediaHttp:}
+  # FLV/WS-FLV 由 ZLM 自身 [http] 端口提供(非 nginx 的 MediaHttp/WebHttp=8090),与 http-port 对齐
+  flv-port: 6080
   flv-ssl-port: ${MediaHttps:}
-  ws-flv-port: ${MediaHttp:}
+  ws-flv-port: 6080
   ws-flv-ssl-port: ${MediaHttps:}
   rtp-proxy-port: ${MediaRtp:}
   rtmp-port: ${MediaRtmp:}
@@ -106,7 +109,7 @@ media:
   # 启用多端口模式, 多端口模式使用端口区分每路流，兼容性更好。 单端口使用流的ssrc区分， 点播超时建议使用多端口测试
   rtp:
     # [可选] 是否启用多端口模式, 开启后会在portRange范围内选择端口用于媒体流传输
-    enable: true
+    enable: false  # 20261027 S6 A/B:单端口模式(10003 SSRC 分拣),对照多端口 50 路双峰(2s/15s)
     # [可选] 
     port-range: 31000,31500
     # [可选] 
@@ -116,7 +119,7 @@ media:
   record-day: 7
   record-assist-port: 0
 user-settings:
-    sip-log: true
+    sip-log: true  # 20261027 假死专项终验:配合 logback 全链路 AsyncAppender(neverBlock=true)根治;此前同步写锁会假死
     auto-apply-play: true
     play-timeout: 30000
     wait-track: false

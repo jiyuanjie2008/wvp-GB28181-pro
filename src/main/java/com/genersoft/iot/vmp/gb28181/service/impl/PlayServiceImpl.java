@@ -1781,6 +1781,12 @@ public class PlayServiceImpl implements IPlayService {
             if (inviteInfo.getType() == InviteSessionType.PLAY) {
                 deviceChannelService.stopPlay(channel.getId());
             }
+            // 释放SSRC(20261027 压测定案修复:停播路径此前不还号,池只出不进,9999 次点播后全拒)
+            if (inviteInfo.getStreamInfo() != null && inviteInfo.getSsrcInfo() != null
+                    && inviteInfo.getSsrcInfo().getSsrcToRelease() != null) {
+                ssrcFactory.releaseSsrc(inviteInfo.getStreamInfo().getMediaServer().getId(),
+                        inviteInfo.getSsrcInfo().getSsrcToRelease());
+            }
             if (inviteInfo.getStreamInfo() != null) {
                 receiveRtpServerService.closeRTPServer(inviteInfo.getStreamInfo().getMediaServer(), MediaStreamUtil.RTP_APP, stream);
             }
@@ -1812,6 +1818,12 @@ public class PlayServiceImpl implements IPlayService {
 
         if (inviteInfo.getType() == InviteSessionType.PLAY) {
             deviceChannelService.stopPlay(channel.getId());
+        }
+        // 释放SSRC(20261027 压测定案修复:停播路径此前不还号,池只出不进,9999 次点播后全拒)
+        if (inviteInfo.getStreamInfo() != null && inviteInfo.getSsrcInfo() != null
+                && inviteInfo.getSsrcInfo().getSsrcToRelease() != null) {
+            ssrcFactory.releaseSsrc(inviteInfo.getStreamInfo().getMediaServer().getId(),
+                    inviteInfo.getSsrcInfo().getSsrcToRelease());
         }
         if (inviteInfo.getStreamInfo() != null) {
             receiveRtpServerService.closeRTPServer(inviteInfo.getStreamInfo().getMediaServer(), MediaStreamUtil.RTP_APP, inviteInfo.getStream());
