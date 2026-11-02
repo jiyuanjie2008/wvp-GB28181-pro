@@ -379,6 +379,8 @@ public class PlayServiceImpl implements IPlayService {
 
         String streamId = String.format("%s_%s", device.getDeviceId(), channel.getDeviceId());
 
+        // 20261102 P0 修复配套: 回调先于 ssrcInfo 赋值执行定义,超时还号须经此 holder 取本次分配
+        final SSRCInfo[] ssrcInfoRef = new SSRCInfo[1];
         SSRCInfo ssrcInfo = receiveRtpServerService.openGbRTPServerForPlay(mediaServer, device, channel, ssrc,
                 record != null ? record : userSetting.getRecordSip(),
                 (code, msg, result) -> {
@@ -423,8 +425,19 @@ public class PlayServiceImpl implements IPlayService {
                         sessionManager.removeByStream(MediaStreamUtil.RTP_APP, streamId);
                     }
                 }
+                // 20261102 P0 修复(S4c 孤儿会话泄漏): 超时路径清 invite/事务却不还号,停播波随后
+                // 按 invite 查已为空,SSRC 永久滞留池(1000 档 84 号实证/11-02 复现轮差 40)。
+                // 此处即本次分配的唯一还号点;迟到注册(~+3s)与池复用的碰撞窗内 none_reader ~18s 自清。
+                SSRCInfo timeoutSsrcInfo = ssrcInfoRef[0];
+                String timeoutSsrcToRelease = timeoutSsrcInfo != null ? timeoutSsrcInfo.getSsrcToRelease() : null;
+                if (timeoutSsrcToRelease != null) {
+                    ssrcFactory.releaseSsrc(mediaServer.getId(), timeoutSsrcToRelease);
+                    timeoutSsrcInfo.setAllocatedSsrc(null);
+                    log.info("[点播超时] 已释放SSRC: {}/{} ssrc={}", device.getDeviceId(), channel.getDeviceId(), timeoutSsrcToRelease);
+                }
             }
         });
+        ssrcInfoRef[0] = ssrcInfo;
         if (ssrcInfo == null || ssrcInfo.getPort() <= 0) {
             log.info("[点播端口/SSRC]获取失败，设备编号：{}, 通道编号：{},ssrcInfo；{}", device.getDeviceId(), channel.getDeviceId(), ssrcInfo);
             callback.run(InviteErrorCode.ERROR_FOR_RESOURCE_EXHAUSTION.getCode(), "获取端口或者ssrc失败", null);
@@ -1765,6 +1778,14 @@ public class PlayServiceImpl implements IPlayService {
                 if (type == InviteSessionType.PLAY) {
                     deviceChannelService.stopPlay(channel.getId());
                 }
+                // 20261102 P0 修复(S4c 孤儿会话泄漏): 失败点播 30s 超时路径已删 invite 记录并还号,
+                // 但流若迟到注册会重建 SsrcTransaction,本分支此前直接返回——事务记录永久滞留
+                // (1000 档 VMP_SSRC_INVITE_SESSION_INFO HLEN=84 实证)。此处只清残留事务,不重复还号。
+                SsrcTransaction residualTransaction = sessionManager.getSsrcTransactionByStream(MediaStreamUtil.RTP_APP, stream);
+                if (residualTransaction != null) {
+                    sessionManager.removeByStream(MediaStreamUtil.RTP_APP, stream);
+                    log.info("[停止点播] invite 已失,清理残留事务: {}/{} ssrc={}", device.getDeviceId(), channel.getDeviceId(), residualTransaction.getSsrc());
+                }
                 return;
             }
             inviteStreamService.removeInviteInfo(inviteInfo);
@@ -1782,10 +1803,18 @@ public class PlayServiceImpl implements IPlayService {
                 deviceChannelService.stopPlay(channel.getId());
             }
             // 释放SSRC(20261027 压测定案修复:停播路径此前不还号,池只出不进,9999 次点播后全拒)
-            if (inviteInfo.getStreamInfo() != null && inviteInfo.getSsrcInfo() != null
-                    && inviteInfo.getSsrcInfo().getSsrcToRelease() != null) {
-                ssrcFactory.releaseSsrc(inviteInfo.getStreamInfo().getMediaServer().getId(),
-                        inviteInfo.getSsrcInfo().getSsrcToRelease());
+            // 20261102 P0 修复(S4c 孤儿泄漏姊妹分支): 失败点播 StreamInfo==null(从未成功),
+            // 原条件短路跳过还号——invite 仍在=超时路径未执行,此处为其唯一还号点,无双重还号。
+            if (inviteInfo.getSsrcInfo() != null && inviteInfo.getSsrcInfo().getSsrcToRelease() != null) {
+                String stopMediaServerId = inviteInfo.getStreamInfo() != null
+                        ? inviteInfo.getStreamInfo().getMediaServer().getId() : null;
+                if (stopMediaServerId == null) {
+                    MediaServer stopMediaServer = getNewMediaServerItem(device);
+                    stopMediaServerId = stopMediaServer != null ? stopMediaServer.getId() : null;
+                }
+                if (stopMediaServerId != null) {
+                    ssrcFactory.releaseSsrc(stopMediaServerId, inviteInfo.getSsrcInfo().getSsrcToRelease());
+                }
             }
             if (inviteInfo.getStreamInfo() != null) {
                 receiveRtpServerService.closeRTPServer(inviteInfo.getStreamInfo().getMediaServer(), MediaStreamUtil.RTP_APP, stream);
@@ -1820,10 +1849,18 @@ public class PlayServiceImpl implements IPlayService {
             deviceChannelService.stopPlay(channel.getId());
         }
         // 释放SSRC(20261027 压测定案修复:停播路径此前不还号,池只出不进,9999 次点播后全拒)
-        if (inviteInfo.getStreamInfo() != null && inviteInfo.getSsrcInfo() != null
-                && inviteInfo.getSsrcInfo().getSsrcToRelease() != null) {
-            ssrcFactory.releaseSsrc(inviteInfo.getStreamInfo().getMediaServer().getId(),
-                    inviteInfo.getSsrcInfo().getSsrcToRelease());
+        // 20261102 P0 修复(S4c 孤儿泄漏姊妹分支): 失败点播 StreamInfo==null(从未成功),
+        // 原条件短路跳过还号——invite 仍在=超时路径未执行,此处为其唯一还号点,无双重还号。
+        if (inviteInfo.getSsrcInfo() != null && inviteInfo.getSsrcInfo().getSsrcToRelease() != null) {
+            String stopMediaServerId = inviteInfo.getStreamInfo() != null
+                    ? inviteInfo.getStreamInfo().getMediaServer().getId() : null;
+            if (stopMediaServerId == null) {
+                MediaServer stopMediaServer = getNewMediaServerItem(device);
+                stopMediaServerId = stopMediaServer != null ? stopMediaServer.getId() : null;
+            }
+            if (stopMediaServerId != null) {
+                ssrcFactory.releaseSsrc(stopMediaServerId, inviteInfo.getSsrcInfo().getSsrcToRelease());
+            }
         }
         if (inviteInfo.getStreamInfo() != null) {
             receiveRtpServerService.closeRTPServer(inviteInfo.getStreamInfo().getMediaServer(), MediaStreamUtil.RTP_APP, inviteInfo.getStream());
