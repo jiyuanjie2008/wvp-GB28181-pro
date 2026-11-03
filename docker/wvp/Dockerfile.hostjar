@@ -1,0 +1,12 @@
+# 旁路构建:宿主机 mvn package 产物直接入镜像
+# 背景:canonical Dockerfile 的 builder 阶段依赖 ringcentral/jdk:21.0.9 内置 mvn,
+# 该镜像在 Docker Hub 上并无 mvn(11-02 构建用的是本地已被清理的定制缓存镜像)。
+# 待 maven:* 镜像可拉取后,应将 canonical Dockerfile 的 builder 基镜像换为 maven 镜像并废弃本文件。
+# 用法(仓库根目录): mvn clean package -Dmaven.test.skip=true
+#                   docker build -t docker-polaris-wvp -f docker/wvp/Dockerfile.hostjar .
+FROM ringcentral/jdk:21.0.9
+RUN mkdir -p /opt/wvp
+WORKDIR /opt/wvp
+COPY target/wvp-pro-*.jar /opt/wvp/wvp.jar
+COPY ./docker/wvp/wvp /opt/wvp
+ENTRYPOINT ["java", "-Xms512m", "-Xmx1024m", "-XX:+HeapDumpOnOutOfMemoryError", "-XX:HeapDumpPath=/opt/ylcx/", "-jar", "wvp.jar", "--spring.config.location=/opt/ylcx/wvp/application.yml"]

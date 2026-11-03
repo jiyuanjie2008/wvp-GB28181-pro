@@ -123,6 +123,7 @@ user-settings:
     auto-apply-play: true
     play-timeout: 30000
     wait-track: false
+    snap-on-play: false  # 20261103 封面开关,默认关(纯界面点缀+11-02 事故史,opt-in;想要封面置 true。仅闸 snapOnPlay 自动封面,不波及按需截图/文件服务/告警截图)
     record-push-live: ${RecordPushLive:false}
     record-sip: ${RecordSip:false}
     stream-on-demand: true
