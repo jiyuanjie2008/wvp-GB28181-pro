@@ -242,6 +242,14 @@ public class UserSetting {
     private boolean alarmSnapByStream = false;
 
     /**
+     * 点播成功后是否自动生成默认封面截图(snapOnPlay→snap/设备_通道.jpg,供前端通道列表"快照"列)。
+     * 2026-11-03 用户定夺:封面纯界面点缀且有 11-02 停摆事故史,默认 false 改为显式开启(opt-in);
+     * 想要封面的部署写 user-settings.snap-on-play: true。
+     * 仅闸自动封面,不影响按需截图 API/封面文件服务/告警截图。
+     */
+    private boolean snapOnPlay = false;
+
+    /**
      * 报警订阅白名单，设置后只有在此列表中的上级平台才会接收报警订阅消息，默认不设置则不限制
      */
     private List<AlarmType> allowedAlarmType = new ArrayList<>();

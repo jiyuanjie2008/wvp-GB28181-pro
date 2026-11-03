@@ -51,6 +51,8 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <!-- 默认跳过 surefire 测试(维持既有构建行为);CLI 用 -Dwvp.skipTests=false 执行单测 -->
+        <wvp.skipTests>true</wvp.skipTests>
         <maven.build.timestamp.format>MMddHHmm</maven.build.timestamp.format>
 
         <!-- 依赖版本 -->
@@ -468,7 +470,7 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>3.2.5</version>
                 <configuration>
-                    <skipTests>true</skipTests>
+                    <skipTests>${wvp.skipTests}</skipTests>
                 </configuration>
             </plugin>
 

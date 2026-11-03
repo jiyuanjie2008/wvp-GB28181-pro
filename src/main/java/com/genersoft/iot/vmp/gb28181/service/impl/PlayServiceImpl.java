@@ -61,14 +61,44 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.Vector;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.RejectedExecutionHandler;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @SuppressWarnings(value = {"rawtypes", "unchecked"})
 @Slf4j
 @Service("playService")
 public class PlayServiceImpl implements IPlayService {
 
-    private static final int SNAP_TIMEOUT_SEC = 15;
+    // [2026-11-03 §5 最小修] 15→3:单张截图最坏钉线程时长,ZLM 侧 15s→3s、okhttp 读超时兜底 20s→8s(诊断报告 §11)
+    private static final int SNAP_TIMEOUT_SEC = 3;
     private static final int SNAP_EXPIRE_SEC = 1;
+
+    // [2026-11-03 §5 最小修] 默认封面截图专用小池。
+    // 曾经 snapOnPlay 在 @Async 事件线程上同步等 ZLM 出图(okhttp 阻塞 1~3s+,最坏 15s),100 路同秒点播时
+    // 整队占满共享 8 线程池 14~26s,媒体事件通知队尾越过 30s 点播死线即假失败
+    // (见 docs/WVP-GB28181-Pro资料/WVP异步事件管线停摆诊断-getSnap风暴_20261102.md §0/§2)。
+    // 截图是封面锦上添花:有界队列 + 丢弃最旧策略——封面可缺可晚,绝不反压回调线程。
+    private static final AtomicInteger SNAP_THREAD_SEQ = new AtomicInteger(0);
+    private static final RejectedExecutionHandler SNAP_DISCARD_OLDEST = (r, executor) -> {
+        if (!executor.isShutdown()) {
+            executor.getQueue().poll();
+            log.warn("[默认封面] 截图任务积压满载,丢弃最旧的排队截图(封面缺失不影响点播)");
+            executor.execute(r);
+        }
+    };
+    private static final ExecutorService SNAP_EXECUTOR = new ThreadPoolExecutor(
+            4, 4, 60L, TimeUnit.SECONDS,
+            new LinkedBlockingQueue<>(64),
+            r -> {
+                Thread t = new Thread(r, "snap-worker-" + SNAP_THREAD_SEQ.incrementAndGet());
+                t.setDaemon(true);
+                return t;
+            },
+            SNAP_DISCARD_OLDEST);
 
     @Autowired
     private ISIPCommander cmder;
@@ -690,6 +720,18 @@ public class PlayServiceImpl implements IPlayService {
      * @param stream               ssrc
      */
     private void snapOnPlay(MediaServer mediaServerItemInuse, String deviceId, String channelId, String stream) {
+        // [2026-11-03] user-settings.snap-on-play 开关(默认 true 保持既有行为):只闸本自动封面,
+        // 不影响按需截图 API/封面文件服务/告警截图;压测隔离变量与截图风险止血用(诊断报告 §10.2/§10.4)
+        if (!userSetting.isSnapOnPlay()) {
+            log.info("[默认封面] snap-on-play 已关闭,跳过截图: {}/{}", deviceId, channelId);
+            return;
+        }
+        // [2026-11-03 §5 最小修] 截图提交专用小池后立即返回——点播成功回调线程(共享 @Async 池)
+        // 不再为封面图同步等 ZLM 出图;满载时由 SNAP_DISCARD_OLDEST 丢弃最旧任务,不反压此处。
+        SNAP_EXECUTOR.execute(() -> doSnapOnPlay(mediaServerItemInuse, deviceId, channelId, stream));
+    }
+
+    private void doSnapOnPlay(MediaServer mediaServerItemInuse, String deviceId, String channelId, String stream) {
         // 防御检查：若上游 callback（如 getSnap 临时流借用）已主动 stop 流，跳过默认封面生成。
         // 否则 ZLM /getSnap 在流不存在时会触发 on_stream_not_found，进而被 autoApplyPlay 自动重建，
         // 形成"截图后流被重新拉起又无人观看"的泄漏链（依赖 ~20s 的 on_stream_none_reader 兜底）。
@@ -702,7 +744,12 @@ public class PlayServiceImpl implements IPlayService {
         String fileName = deviceId + "_" + channelId + ".jpg";
         // 请求截图
         log.info("[请求截图]: " + fileName);
-        mediaServerService.getSnap(mediaServerItemInuse, MediaStreamUtil.RTP_APP, stream, SNAP_TIMEOUT_SEC, SNAP_EXPIRE_SEC, path, fileName);
+        try {
+            mediaServerService.getSnap(mediaServerItemInuse, MediaStreamUtil.RTP_APP, stream, SNAP_TIMEOUT_SEC, SNAP_EXPIRE_SEC, path, fileName);
+        } catch (Throwable t) {
+            // 封面属锦上添花:任何异常只记日志,绝不影响主流程(独立池线程也不因未捕获异常死亡)
+            log.warn("[默认封面] 截图任务异常: {}/{} {}", deviceId, channelId, t.getMessage());
+        }
     }
 
     public StreamInfo onPublishHandlerForPlay(MediaServer mediaServerItem, MediaInfo mediaInfo, Device device, DeviceChannel channel) {
@@ -1785,6 +1832,21 @@ public class PlayServiceImpl implements IPlayService {
                 if (residualTransaction != null) {
                     sessionManager.removeByStream(MediaStreamUtil.RTP_APP, stream);
                     log.info("[停止点播] invite 已失,清理残留事务: {}/{} ssrc={}", device.getDeviceId(), channel.getDeviceId(), residualTransaction.getSsrc());
+                    // 20261103 补丁(fixverify 轮 4/100 泄漏定案): "不重复还号"假设仅对超时路径成立——
+                    // 流注销/重注册循环链路(none_reader 保持期关流)删 invite 但不还号,停播进本分支时号已无主,
+                    // 必须补还。护栏:该号已被其他在册会话持有(超时还号后被复用+事务重建窗口)则不还,防偷号;
+                    // releaseSsrc 为 SADD 语义,其余场景重复还号无害。
+                    String residualSsrc = residualTransaction.getSsrcToRelease();
+                    if (residualSsrc != null) {
+                        boolean reownedByLiveSession = sessionManager.getAll().stream()
+                                .anyMatch(t -> residualSsrc.equals(t.getSsrcToRelease()));
+                        if (!reownedByLiveSession) {
+                            ssrcFactory.releaseSsrc(residualTransaction.getMediaServerId(), residualSsrc);
+                            log.info("[停止点播] invite 已失,补还 SSRC: {}", residualSsrc);
+                        } else {
+                            log.warn("[停止点播] invite 已失,SSRC 已被其他在册会话持有,跳过还号: {}", residualSsrc);
+                        }
+                    }
                 }
                 return;
             }
