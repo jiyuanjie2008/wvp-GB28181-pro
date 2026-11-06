@@ -2,21 +2,14 @@ package com.genersoft.iot.vmp.gb28181.service.impl;
 
 import com.alibaba.fastjson2.JSON;
 import com.genersoft.iot.vmp.common.*;
-import com.genersoft.iot.vmp.common.enums.MediaStreamUtil;
 import com.genersoft.iot.vmp.conf.UserSetting;
-import com.genersoft.iot.vmp.gb28181.bean.Device;
-import com.genersoft.iot.vmp.gb28181.dao.DeviceChannelMapper;
-import com.genersoft.iot.vmp.gb28181.dao.DeviceMapper;
 import com.genersoft.iot.vmp.gb28181.service.IInviteStreamService;
-import com.genersoft.iot.vmp.media.event.media.MediaDepartureEvent;
 import com.genersoft.iot.vmp.service.bean.ErrorCallback;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.event.EventListener;
 import org.springframework.data.redis.core.Cursor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ScanOptions;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -38,29 +31,16 @@ public class InviteStreamServiceImpl implements IInviteStreamService {
     @Autowired
     private UserSetting userSetting;
 
-    @Autowired
-    private DeviceMapper deviceMapper;
-
-    @Autowired
-    private DeviceChannelMapper deviceChannelMapper;
-
-    /**
-     * 流离开的处理
-     */
-    @Async
-    @EventListener
-    public void onApplicationEvent(MediaDepartureEvent event) {
-        if ("rtsp".equals(event.getSchema()) && MediaStreamUtil.isGB28181(event.getApp(), event.getStream())) {
-            InviteInfo inviteInfo = getInviteInfoByStream(null, event.getStream());
-            if (inviteInfo != null && (inviteInfo.getType() == InviteSessionType.PLAY || inviteInfo.getType() == InviteSessionType.PLAYBACK)) {
-                removeInviteInfo(inviteInfo);
-                Device device = deviceMapper.getDeviceByDeviceId(inviteInfo.getDeviceId());
-                if (device != null) {
-                    deviceChannelMapper.stopPlayById(inviteInfo.getChannelId());
-                }
-            }
-        }
-    }
+    // 20261103 P0 修复(重注册循环根治): 此处原有一个 MediaDepartureEvent 的 @Async 监听器,
+    // 职责是"流注销时删除 invite 记录 + 清播放标记"——与 PlayServiceImpl 上同事件的监听器触发条件
+    // 完全重叠,且因后者需先查 sendRtpInfo(Redis/DB 往返)才轮到读 invite,本监听器几乎总是抢先
+    // 删除 invite,导致 PlayServiceImpl 读到 null 而静默跳过 BYE:摄像头不知情继续推流 → 流被重新
+    // 注册 → none_reader 再次关流,形成约 20s 一圈的重注册循环(S4c 实证:流峰 3764、ZLM 3.5GB、
+    // 云录像碎成 20s 小段)。spring.threads.virtual.enabled=true 下 @Async 为无界虚拟线程执行器,
+    // 两监听器真并行,竞速窗口全开。
+    // 本监听器的工作是 PlayServiceImpl.stop(InviteInfo) 的严格子集(后者另含发 BYE、还 SSRC、
+    // 关收流端口),故整体删除,由 PlayServiceImpl 单一 owner 承担。
+    // 约束: 后续新增 MediaDepartureEvent 监听器一律不得删除 invite 记录。
 
     @Override
     public void updateInviteInfo(InviteInfo inviteInfo) {

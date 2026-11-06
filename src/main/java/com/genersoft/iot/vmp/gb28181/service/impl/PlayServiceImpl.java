@@ -42,6 +42,8 @@ import gov.nist.javax.sip.message.SIPResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
@@ -206,10 +208,33 @@ public class PlayServiceImpl implements IPlayService {
 
     /**
      * 流离开的处理
+     *
+     * <p>本方法是 MediaDepartureEvent 上「国标点播/回放会话拆除」的唯一 owner:
+     * 发 BYE 让设备停止推流 + 清 invite + 还 SSRC + 关收流端口。
+     *
+     * <p>20261103 P0 修复(重注册循环根治): 国标分支此前位于方法末尾的 else-if,
+     * 需等前面的 sendRtpInfo 查询(Redis/DB 往返)完成才读 invite,而 InviteStreamServiceImpl
+     * 上另有一个同事件监听器会立即删除 invite——竞速中本方法几乎必输,读到 null 即静默跳过 BYE,
+     * 摄像头不知情持续推流形成约 20s 一圈的重注册循环。修复为: 冗余监听器已删除(见该类注释),
+     * 且本分支前移至方法最前、不再被任何 I/O 阻塞。
      */
     @Async
+    @Order(Ordered.HIGHEST_PRECEDENCE) // 20261103 修法A:唯一 owner 显式声明最高优先,防未来监听器乱序抢删 invite
     @EventListener
     public void onApplicationEvent(MediaDepartureEvent event) {
+        // 国标点播会话拆除必须排在最前: 该分支依赖 invite 记录存活,不得被其他查询延后
+        if (MediaStreamUtil.isGB28181(event.getApp(), event.getStream())) {
+            InviteInfo inviteInfo = inviteStreamService.getInviteInfoByStream(null, event.getStream());
+            if (inviteInfo != null) {
+                // 发送 BYE + 清会话 + 释放 SSRC + 关收流端口。
+                // 20261103: 此处原有 status==ok && streamInfo!=null && ssrcInfo!=null 三重预筛,
+                // 导致未成功/半成功会话在流注销时无人清理(旧冗余监听器曾兜底这部分)。
+                // stop(InviteInfo) 内部已自带全部护栏——BYE 仅在 status==ok 时发,
+                // SSRC 与收流端口各自 null-guard——故预筛冗余且有害,收敛为非空即拆。
+                stop(inviteInfo);
+            }
+        }
+
         List<SendRtpInfo> sendRtpInfos = sendRtpServerService.queryByStream(event.getStream());
         if (!sendRtpInfos.isEmpty()) {
             for (SendRtpInfo sendRtpInfo : sendRtpInfos) {
@@ -261,16 +286,9 @@ public class PlayServiceImpl implements IPlayService {
                     }
                 }
             }
-        }else if (MediaStreamUtil.isGB28181(event.getApp(), event.getStream())) {
-            // 释放ssrc
-            InviteInfo inviteInfo = inviteStreamService.getInviteInfoByStream(null, event.getStream());
-            if (inviteInfo != null && inviteInfo.getStatus() == InviteSessionStatus.ok
-                    && inviteInfo.getStreamInfo() != null && inviteInfo.getSsrcInfo() != null) {
-                // 发送bye
-                stop(inviteInfo);
-            }
-
         }
+        // 20261103 修法A:GB28181 分支已前移至方法最前(见上),此处原 else-if 旧分支删除——
+        // 它依赖的 invite 已被前移分支的 stop() 清除,残留只会造成重复查询/重复 stop
     }
 
     /**
@@ -1842,7 +1860,9 @@ public class PlayServiceImpl implements IPlayService {
                                 .anyMatch(t -> residualSsrc.equals(t.getSsrcToRelease()));
                         if (!reownedByLiveSession) {
                             ssrcFactory.releaseSsrc(residualTransaction.getMediaServerId(), residualSsrc);
-                            log.info("[停止点播] invite 已失,补还 SSRC: {}", residualSsrc);
+                            // 20261103 修法A(竞速根治)后本分支应为死分支:流注销时已由 stop(InviteInfo)
+                            // 完整拆除会话并还号。一旦触发即说明"注销→拆除"链路出现回归(竞速/异常路径),告警!
+                            log.warn("[停止点播] invite 已失,补还 SSRC(告警:departure 拆除链路疑似回归,请核查竞速): {}", residualSsrc);
                         } else {
                             log.warn("[停止点播] invite 已失,SSRC 已被其他在册会话持有,跳过还号: {}", residualSsrc);
                         }

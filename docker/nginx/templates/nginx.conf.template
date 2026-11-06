@@ -67,7 +67,7 @@ server {
     # 仅允许代理/rtp/开头的路径
     location ^~ /rtp/ {
         # 代理到ZLMediakit服务
-        proxy_pass http://polaris-media:80;
+        proxy_pass http://polaris-media:6080;
         
         # 基础HTTP代理配置
         proxy_set_header Host $host;
@@ -89,7 +89,7 @@ server {
     # 仅允许代理/rtp/开头的路径
     location ^~ /mp4_record/ {
         # 代理到ZLMediakit服务
-        proxy_pass http://polaris-media:80;
+        proxy_pass http://polaris-media:6080;
         
         # 基础HTTP代理配置
         proxy_set_header Host $host;
