@@ -23,9 +23,12 @@ public class SipInviteSessionManager {
 	private RedisTemplate<Object, Object> redisTemplate;
 
 	/**
-	 * 添加一个点播/回放的事务信息
+	 * 添加一个点播/回放的事务信息(20261116 收割器配套:put 为唯一咽喉,统一补 createTime 戳)
 	 */
 	public void put(SsrcTransaction ssrcTransaction){
+		if (ssrcTransaction.getCreateTime() == null) {
+			ssrcTransaction.setCreateTime(System.currentTimeMillis());
+		}
 		redisTemplate.opsForHash().put(VideoManagerConstants.SIP_INVITE_SESSION_STREAM + userSetting.getServerId()
 				, ssrcTransaction.getApp() + ssrcTransaction.getStream(), ssrcTransaction);
 

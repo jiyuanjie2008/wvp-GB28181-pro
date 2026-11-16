@@ -58,6 +58,12 @@ public class SsrcTransaction {
     private SipTransactionInfo sipTransactionInfo;
 
     /**
+     * 记录写入时间戳(ms,SipInviteSessionManager.put 统一补戳;
+     * 存量老记录反序列化为 null=陈旧,invite 收割器据此判定超龄)
+     */
+    private Long createTime;
+
+    /**
      * 类型
      */
     private InviteSessionType type;

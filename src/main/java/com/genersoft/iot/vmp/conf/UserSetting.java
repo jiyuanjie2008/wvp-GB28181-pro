@@ -259,4 +259,16 @@ public class UserSetting {
      */
     private int alarmKeepDays = 7;
 
+    /**
+     * invite 会话超龄收割器(20261116,S8 两案:终局竞速漏还号 0.16/轮 + 会话 hash 跨战役累积)。
+     * 定时扫描 SipInviteSessionManager:超龄且流已死 → 删会话记录+还号(在册同号护栏防偷号)。
+     * 默认开启;扫描周期由 user-settings.invite-reaper-interval-ms 控制(默认 300000)。
+     */
+    private boolean inviteReaperEnabled = true;
+
+    /**
+     * invite 会话超龄阈值(ms):超过且流死才收割;存量老记录(createTime=null)视为陈旧。默认 10 分钟。
+     */
+    private long inviteReaperAgeMs = 600_000;
+
 }
