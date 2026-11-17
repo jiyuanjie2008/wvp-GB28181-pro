@@ -125,7 +125,7 @@ user-settings:
     wait-track: false
     snap-on-play: false  # 20261103 封面开关,默认关(纯界面点缀+11-02 事故史,opt-in;想要封面置 true。仅闸 snapOnPlay 自动封面,不波及按需截图/文件服务/告警截图)
     record-push-live: ${RecordPushLive:false}
-    record-sip: ${RecordSip:false}
+    record-sip: ${RecordSip:false}  # 20261106 §10.8/§10.10 A/B×2 已毕还原(录制开=部署原语义;结论:关录像 500 档尾巴全消/1000 档成功率 46→77%)
     stream-on-demand: true
     interface-authentication: false
     broadcast-for-platform: TCP-PASSIVE
