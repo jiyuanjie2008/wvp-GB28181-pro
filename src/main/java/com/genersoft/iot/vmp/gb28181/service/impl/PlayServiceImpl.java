@@ -244,6 +244,23 @@ public class PlayServiceImpl implements IPlayService {
                 // stop(InviteInfo) 内部已自带全部护栏——BYE 仅在 status==ok 时发,
                 // SSRC 与收流端口各自 null-guard——故预筛冗余且有害,收敛为非空即拆。
                 stop(inviteInfo);
+            } else {
+                // 20261117 幽灵流修复④:兜底 BYE——invite 已被竞速删除时,查会话记录补发
+                // 幽灵根因=某路径抢先删 invite→停播链读到 null 静默跳过→设备不知该停→幽灵诞生
+                SsrcTransaction fallbackTxn = sessionManager.getSsrcTransactionByStream(event.getApp(), event.getStream());
+                if (fallbackTxn != null && fallbackTxn.getCallId() != null) {
+                    Device fallbackDevice = deviceService.getDeviceByDeviceId(fallbackTxn.getDeviceId());
+                    if (fallbackDevice != null) {
+                        try {
+                            String fallbackChannelId = event.getStream().substring(event.getStream().indexOf('_') + 1);
+                            cmder.streamByeCmd(fallbackDevice, fallbackChannelId, event.getApp(), event.getStream(), fallbackTxn.getCallId(), null);
+                            log.warn("[兜底BYE] invite 已被竞速删除,使用会话记录补发: stream={} callId={}",
+                                    event.getStream(), fallbackTxn.getCallId());
+                        } catch (Exception e) {
+                            log.warn("[兜底BYE] 发送失败(容忍): stream={} err={}", event.getStream(), e.getMessage());
+                        }
+                    }
+                }
             }
         }
 

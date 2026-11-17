@@ -340,8 +340,10 @@ public class RtpServerServiceImpl implements IReceiveRtpServerService {
         Hook rtpHook = Hook.getInstance(HookType.on_media_arrival, rtpServerParam.getApp(), rtpServerParam.getStreamId(), rtpServerParam.getMediaServer().getId());
         dynamicTask.startDelay(timeOutTaskKey, () -> {
             // 收流超时
-            // 关闭收流端口
-            mediaServerService.closeRTPServer(rtpServerParam.getMediaServer(), rtpServerParam.getApp(), rtpServerParam.getStreamId());
+            // 关闭收流端口+关闭流(20261117 幽灵流修复①:改调本类 wrapper,含 closeStreams,
+            // 与正常停播路径一致——原直调 mediaServerService.closeRTPServer 在单端口模式下
+            // 不做任何流清理,幽灵因此每轮续命;评审§13.5(2) 一行修法)
+            closeRTPServer(rtpServerParam.getMediaServer(), rtpServerParam.getApp(), rtpServerParam.getStreamId());
             subscribe.removeSubscribe(rtpHook);
             callback.run(InviteErrorCode.ERROR_FOR_STREAM_TIMEOUT.getCode(), InviteErrorCode.ERROR_FOR_STREAM_TIMEOUT.getMsg(), null);
         }, userSetting.getPlayTimeout());

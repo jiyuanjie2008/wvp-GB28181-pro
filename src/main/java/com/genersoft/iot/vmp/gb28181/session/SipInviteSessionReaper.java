@@ -2,6 +2,8 @@ package com.genersoft.iot.vmp.gb28181.session;
 
 import com.genersoft.iot.vmp.conf.UserSetting;
 import com.genersoft.iot.vmp.gb28181.bean.SsrcTransaction;
+import com.genersoft.iot.vmp.gb28181.service.IDeviceService;
+import com.genersoft.iot.vmp.gb28181.transmit.cmd.ISIPCommander;
 import com.genersoft.iot.vmp.media.bean.MediaServer;
 import com.genersoft.iot.vmp.media.service.IMediaServerService;
 import lombok.extern.slf4j.Slf4j;
@@ -43,6 +45,12 @@ public class SipInviteSessionReaper {
 
     @Autowired
     private SSRCFactory ssrcFactory;
+
+    @Autowired
+    private ISIPCommander cmder;
+
+    @Autowired
+    private IDeviceService deviceService;
 
     @Autowired
     private UserSetting userSetting;
@@ -116,6 +124,9 @@ public class SipInviteSessionReaper {
             } else {
                 log.info("[invite 收割] 清记录(无号可还): callId={} stream={}", txn.getCallId(), txn.getStream());
             }
+            // 20261117 幽灵流修复②:补发 BYE 给设备(给设备"第二次停推机会")
+            // 幽灵根因=竞速漏发 BYE→设备持续推流→ZLM 流名被占;收割器补发使幽灵在超龄阈值(10min)内消亡
+            sendFallbackBye(txn);
             reaped++;
         }
         if (reaped > 0) {
@@ -127,5 +138,28 @@ public class SipInviteSessionReaper {
     private String key(SsrcTransaction txn) {
         String ssrc = Objects.requireNonNullElse(txn.getSsrcToRelease(), txn.getSsrc());
         return (txn.getMediaServerId() == null ? "" : txn.getMediaServerId()) + "|" + (ssrc == null ? "" : ssrc);
+    }
+
+    /**
+     * 20261117 幽灵流修复②:向设备补发 BYE(收割超龄会话时).
+     * 幽灵根因=竞速漏发 BYE→设备不知该停→持续推流→ZLM 流名被占.
+     * 此处给设备"第二次停推机会":诚实固件收到即停,幽灵从物理层消亡.
+     * 设备离线不发送;发送失败仅告警不阻断收割流程.
+     */
+    private void sendFallbackBye(SsrcTransaction txn) {
+        if (txn.getDeviceId() == null || txn.getCallId() == null || txn.getStream() == null) {
+            return;
+        }
+        try {
+            com.genersoft.iot.vmp.gb28181.bean.Device device = deviceService.getDeviceByDeviceId(txn.getDeviceId());
+            if (device == null || !device.isOnLine()) {
+                return; // 设备离线,BYE 无意义
+            }
+            String channelId = txn.getStream().substring(txn.getStream().indexOf('_') + 1);
+            cmder.streamByeCmd(device, channelId, txn.getApp(), txn.getStream(), txn.getCallId(), null);
+            log.info("[invite 收割] 补发 BYE: device={} stream={} callId={}", txn.getDeviceId(), txn.getStream(), txn.getCallId());
+        } catch (Exception e) {
+            log.warn("[invite 收割] 补发 BYE 失败(容忍,收割继续): stream={} err={}", txn.getStream(), e.getMessage());
+        }
     }
 }

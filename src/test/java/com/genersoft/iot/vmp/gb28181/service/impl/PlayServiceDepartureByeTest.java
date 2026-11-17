@@ -13,6 +13,7 @@ import com.genersoft.iot.vmp.media.service.IMediaServerService;
 import com.genersoft.iot.vmp.gb28181.service.IDeviceChannelService;
 import com.genersoft.iot.vmp.gb28181.service.IDeviceService;
 import com.genersoft.iot.vmp.gb28181.service.IInviteStreamService;
+import com.genersoft.iot.vmp.gb28181.session.SipInviteSessionManager;
 import com.genersoft.iot.vmp.gb28181.session.SSRCFactory;
 import com.genersoft.iot.vmp.service.IReceiveRtpServerService;
 import com.genersoft.iot.vmp.service.ISendRtpServerService;
@@ -67,6 +68,8 @@ class PlayServiceDepartureByeTest {
         ReflectionTestUtils.setField(service, "sendRtpServerService", sendRtpServerService);
         ReflectionTestUtils.setField(service, "receiveRtpServerService", receiveRtpServerService);
         ReflectionTestUtils.setField(service, "mediaServerService", mock(IMediaServerService.class));
+        // 20261117 幽灵流修复④配套:兜底 BYE 查会话记录需 sessionManager
+        ReflectionTestUtils.setField(service, "sessionManager", mock(SipInviteSessionManager.class));
 
         when(sendRtpServerService.queryByStream(anyString())).thenReturn(Collections.emptyList());
 
