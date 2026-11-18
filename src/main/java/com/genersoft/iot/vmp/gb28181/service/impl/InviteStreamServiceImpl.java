@@ -299,13 +299,16 @@ public class InviteStreamServiceImpl implements IInviteStreamService {
         if (inviteInfoInDb == null) {
             return null;
         }
-        removeInviteInfo(inviteInfoInDb);
+        // 同键覆盖写,不先删除:先删后写会留出 invite 短暂缺失的窗口
         String key = VideoManagerConstants.INVITE_PREFIX;
         String objectKey = inviteInfo.getType() +
                 ":" + inviteInfo.getChannelId() +
                 ":" + inviteInfo.getStream();
         if (inviteInfoInDb.getSsrcInfo() != null) {
             inviteInfoInDb.getSsrcInfo().setSsrc(ssrc);
+            // 调用方已还号并清空 allocatedSsrc,同步到缓存,防止 stop 时按旧号重复还号
+            inviteInfoInDb.getSsrcInfo().setAllocatedSsrc(
+                    inviteInfo.getSsrcInfo() != null ? inviteInfo.getSsrcInfo().getAllocatedSsrc() : null);
         }
         redisTemplate.opsForHash().put(key, objectKey, inviteInfoInDb);
         return inviteInfoInDb;

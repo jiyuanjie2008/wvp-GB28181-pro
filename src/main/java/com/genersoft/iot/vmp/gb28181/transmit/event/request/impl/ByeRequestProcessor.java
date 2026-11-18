@@ -227,14 +227,7 @@ public class ByeRequestProcessor extends SIPRequestProcessorParent implements In
 				case PLAY:
 				case PLAYBACK:
 				case DOWNLOAD:
-					InviteInfo inviteInfo = inviteStreamService.getInviteInfoByDeviceAndChannel(InviteSessionType.PLAY, channel.getId());
-					if (inviteInfo != null) {
-						deviceChannelService.stopPlay(channel.getId());
-						inviteStreamService.removeInviteInfo(inviteInfo);
-						if (inviteInfo.getStreamInfo() != null) {
-							receiveRtpServerService.closeRTPServer(inviteInfo.getStreamInfo().getMediaServer(), inviteInfo.getStreamInfo().getApp(), inviteInfo.getStreamInfo().getStream());
-						}
-					}
+					cleanInviteForDeviceBye(ssrcTransaction, channel);
 					break;
 				case BROADCAST:
 				case TALK:
@@ -257,6 +250,21 @@ public class ByeRequestProcessor extends SIPRequestProcessorParent implements In
 				mediaServerService.releaseSsrc(mediaServerItem.getId(), ssrcTransaction.getSsrcToRelease());
 			}
 			sessionManager.removeByCallId(ssrcTransaction.getCallId());
+		}
+	}
+
+	/**
+	 * 20261118 Issue 7: 按会话实际类型清理 invite(修复原先硬编码 PLAY 导致回放/下载的 invite 被遗留).
+	 */
+	void cleanInviteForDeviceBye(SsrcTransaction ssrcTransaction, DeviceChannel channel) {
+		InviteInfo inviteInfo = inviteStreamService.getInviteInfoByDeviceAndChannel(ssrcTransaction.getType(), channel.getId());
+		if (inviteInfo != null) {
+			deviceChannelService.stopPlay(channel.getId());
+			inviteStreamService.removeInviteInfo(inviteInfo);
+			if (inviteInfo.getStreamInfo() != null) {
+				receiveRtpServerService.closeRTPServer(inviteInfo.getStreamInfo().getMediaServer(),
+						inviteInfo.getStreamInfo().getApp(), inviteInfo.getStreamInfo().getStream());
+			}
 		}
 	}
 }
