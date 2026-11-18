@@ -55,6 +55,21 @@ public class SipInviteSessionReaper {
     @Autowired
     private UserSetting userSetting;
 
+    /**
+     * 20261118 收割计数器:收割器每回收一条会话记录即累加,重启归零.
+     * 压测断言应为 0(非零=有路径漏还号被兜底,根因需追查);轮差=0 不足以判定无泄漏(收割器可能已悄悄还了).
+     * 通过 getTotalReaped() 读取,或 grep "[invite 收割]" WARN 日志计数.
+     */
+    private static final java.util.concurrent.atomic.AtomicInteger TOTAL_REAPED = new java.util.concurrent.atomic.AtomicInteger(0);
+
+    public static int getTotalReaped() {
+        return TOTAL_REAPED.get();
+    }
+
+    public static void resetReapCounter() {
+        TOTAL_REAPED.set(0);
+    }
+
     @Scheduled(fixedDelayString = "${user-settings.invite-reaper-interval-ms:300000}",
             initialDelayString = "${user-settings.invite-reaper-initial-delay-ms:60000}")
     public void scheduledSweep() {
@@ -115,22 +130,24 @@ public class SipInviteSessionReaper {
             sessionManager.removeByCallId(txn.getCallId());
             String ssrcToRelease = Objects.requireNonNullElse(txn.getSsrcToRelease(), txn.getSsrc());
             if (ssrcToRelease != null && keptSsrcKeys.contains(key(txn))) {
-                log.info("[invite 收割] 仅清记录不还号(同号在册,防偷号): callId={} stream={}",
+                log.warn("[invite 收割] 仅清记录不还号(同号在册,防偷号): callId={} stream={}",
                         txn.getCallId(), txn.getStream());
             } else if (ssrcToRelease != null) {
                 ssrcFactory.releaseSsrc(txn.getMediaServerId(), ssrcToRelease);
-                log.info("[invite 收割] 清记录+还号: callId={} stream={} ssrc={}",
+                log.warn("[invite 收割] 清记录+还号: callId={} stream={} ssrc={}",
                         txn.getCallId(), txn.getStream(), ssrcToRelease);
             } else {
-                log.info("[invite 收割] 清记录(无号可还): callId={} stream={}", txn.getCallId(), txn.getStream());
+                log.warn("[invite 收割] 清记录(无号可还): callId={} stream={}", txn.getCallId(), txn.getStream());
             }
             // 20261117 幽灵流修复②:补发 BYE 给设备(给设备"第二次停推机会")
-            // 幽灵根因=竞速漏发 BYE→设备持续推流→ZLM 流名被占;收割器补发使幽灵在超龄阈值(10min)内消亡
+            // 幽灵根因=竞态漏发 BYE→设备持续推流→ZLM 流名被占;收割器补发使幽灵在超龄阈值(10min)内消亡
             sendFallbackBye(txn);
             reaped++;
         }
         if (reaped > 0) {
-            log.info("[invite 收割] 本轮完成: 会话总数 {} → 收割 {}", all.size(), reaped);
+            TOTAL_REAPED.addAndGet(reaped);
+            log.warn("[invite 收割] 本轮完成: 会话总数 {} → 收割 {} | 累计收割 {} 次(非零=有路径漏还号被兜底,根因需追查)",
+                    all.size(), reaped, TOTAL_REAPED.get());
         }
         return reaped;
     }
