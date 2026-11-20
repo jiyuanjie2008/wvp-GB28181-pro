@@ -134,6 +134,12 @@ public class RtpServerServiceImpl implements IReceiveRtpServerService {
     @Override
     public SSRCInfo openGbRTPServerForPlay(MediaServer mediaServer, Device device, DeviceChannel channel,
                                            String presetSSRC, boolean record, ErrorCallback<OpenRTPServerResult> callback) {
+        return openGbRTPServerForPlay(mediaServer, device, channel, presetSSRC, record, callback, true);
+    }
+
+    @Override
+    public SSRCInfo openGbRTPServerForPlay(MediaServer mediaServer, Device device, DeviceChannel channel,
+                                           String presetSSRC, boolean record, ErrorCallback<OpenRTPServerResult> callback, boolean isNewStream) {
         if (callback == null) {
             log.warn("[开启国标点播RTP收流] 失败，回调为NULL");
             return null;
@@ -173,7 +179,7 @@ public class RtpServerServiceImpl implements IReceiveRtpServerService {
         if (presetSSRC == null) {
             ssrcInfo.setAllocatedSsrc(ssrc);
         }
-        openRtpServer(mediaServer, ssrcInfo, checkSsrc, !channel.isHasAudio(), false, tcpMode, callback);
+        openRtpServer(mediaServer, ssrcInfo, checkSsrc, !channel.isHasAudio(), false, tcpMode, callback, isNewStream);
         addAuthenticateInfo(streamId, streamReplace, !channel.isHasAudio(),  record, null);
         return ssrcInfo;
     }
@@ -301,8 +307,14 @@ public class RtpServerServiceImpl implements IReceiveRtpServerService {
 
     private void openRtpServer(MediaServer mediaServer, SSRCInfo ssrcInfo, Long checkSsrc, boolean disableAuto, boolean onlyAuto, int tcpMode,
                                ErrorCallback<OpenRTPServerResult> callback) {
+        openRtpServer(mediaServer, ssrcInfo, checkSsrc, disableAuto, onlyAuto, tcpMode, callback, true);
+    }
+
+    private void openRtpServer(MediaServer mediaServer, SSRCInfo ssrcInfo, Long checkSsrc, boolean disableAuto, boolean onlyAuto, int tcpMode,
+                               ErrorCallback<OpenRTPServerResult> callback, boolean isNewStream) {
 
         RTPServerParam rtpServerParam = new RTPServerParam(mediaServer, MediaStreamUtil.RTP_APP, ssrcInfo.getStream(), checkSsrc, null, onlyAuto, disableAuto, false, tcpMode);
+        rtpServerParam.setNewStream(isNewStream);
         int rtpServerPort = openCommonRTPServer(rtpServerParam, ((code, msg, data) -> {
             if (code == InviteErrorCode.SUCCESS.getCode()) {
                 OpenRTPServerResult openRTPServerResult = new OpenRTPServerResult();
@@ -359,7 +371,8 @@ public class RtpServerServiceImpl implements IReceiveRtpServerService {
         if (rtpServerParam.getMediaServer().isRtpEnable()) {
             rtpServerPort = mediaServerService.createRTPServer(rtpServerParam.getMediaServer(), rtpServerParam.getApp(), rtpServerParam.getStreamId(),
                     Objects.requireNonNullElse(rtpServerParam.getSsrc(), 0L), rtpServerParam.getPort(), rtpServerParam.isOnlyAuto(),
-                    rtpServerParam.isDisableAudio(), rtpServerParam.isReUsePort(), rtpServerParam.getTcpMode());
+                    rtpServerParam.isDisableAudio(), rtpServerParam.isReUsePort(), rtpServerParam.getTcpMode(),
+                    rtpServerParam.isNewStream());
         } else {
             rtpServerPort = rtpServerParam.getMediaServer().getRtpProxyPort();
         }

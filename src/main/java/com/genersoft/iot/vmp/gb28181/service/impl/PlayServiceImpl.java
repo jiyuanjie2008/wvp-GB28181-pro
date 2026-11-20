@@ -466,6 +466,9 @@ public class PlayServiceImpl implements IPlayService {
 
             String streamId = String.format("%s_%s", device.getDeviceId(), channel.getDeviceId());
 
+            // S6 300 档端口分配瓶颈优化(20261120):缓存未命中=全新流,传 isNewStream=true
+            // 跳过 getRtpInfo 前置 HTTP(多端口同秒齐发 HTTP 减半);缓存命中过=可能重播,走完整检查链
+            boolean isNewStream = (inviteInfoInCatch == null);
             // 20261102 P0 修复配套: 回调先于 ssrcInfo 赋值执行定义,超时还号须经此 holder 取本次分配
             final SSRCInfo[] ssrcInfoRef = new SSRCInfo[1];
             SSRCInfo ssrcInfo = receiveRtpServerService.openGbRTPServerForPlay(mediaServer, device, channel, ssrc,
@@ -523,7 +526,7 @@ public class PlayServiceImpl implements IPlayService {
                         log.info("[点播超时] 已释放SSRC: {}/{} ssrc={}", device.getDeviceId(), channel.getDeviceId(), timeoutSsrcToRelease);
                     }
                 }
-            });
+            }, isNewStream);
             ssrcInfoRef[0] = ssrcInfo;
             if (ssrcInfo == null || ssrcInfo.getPort() <= 0) {
                 log.info("[点播端口/SSRC]获取失败，设备编号：{}, 通道编号：{},ssrcInfo；{}", device.getDeviceId(), channel.getDeviceId(), ssrcInfo);

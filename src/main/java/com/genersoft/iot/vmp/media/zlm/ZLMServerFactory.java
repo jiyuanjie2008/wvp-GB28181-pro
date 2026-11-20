@@ -30,8 +30,20 @@ public class ZLMServerFactory {
      * @return
      */
     public int createRTPServer(MediaServer mediaServerItem, String app, String streamId, long ssrc, Integer port, Boolean onlyAuto, Boolean disableAudio, Boolean reUsePort, Integer tcpMode) {
+        return createRTPServer(mediaServerItem, app, streamId, ssrc, port, onlyAuto, disableAudio, reUsePort, tcpMode, true);
+    }
+
+    /**
+     * @param isNewStream true=调用方确认缓存未命中=全新流,跳过 getRtpInfo 前置 HTTP 检查
+     *                    (多端口同秒齐发 HTTP 减半,S6 300 档 51 通 code=-3 的修复,20261120);
+     *                    false=可能重播/僵尸恢复,保留完整检查链
+     */
+    public int createRTPServer(MediaServer mediaServerItem, String app, String streamId, long ssrc, Integer port, Boolean onlyAuto, Boolean disableAudio, Boolean reUsePort, Integer tcpMode, boolean isNewStream) {
         int result = -1;
-        // 查询此rtp server 是否已经存在
+        // 查询此rtp server 是否已经存在(仅当可能重播时才做此 HTTP 检查;新流必无 server=纯浪费)
+        if (isNewStream) {
+            return openNewRtpServer(mediaServerItem, app, streamId, ssrc, port, onlyAuto, disableAudio, reUsePort, tcpMode);
+        }
         ZLMResult<?> rtpInfoResult = zlmresTfulUtils.getRtpInfo(mediaServerItem, streamId);
         if(rtpInfoResult.getCode() == 0){
             if (rtpInfoResult.getExist() != null && rtpInfoResult.getExist()) {
@@ -94,6 +106,35 @@ public class ZLMServerFactory {
         }else {
             //  检查ZLM状态
             log.error("创建RTP Server 失败 {}: 请检查ZLM服务", param.get("port"));
+        }
+        return result;
+    }
+
+    /**
+     * 新流快捷路径:跳过 getRtpInfo 检查直接 openRtpServer(S6 300 档端口分配瓶颈优化)。
+     * 与完整路径的 openRtpServer 调用段完全一致,仅省去前置 HTTP 检查。
+     */
+    private int openNewRtpServer(MediaServer mediaServerItem, String app, String streamId, long ssrc, Integer port, Boolean onlyAuto, Boolean disableAudio, Boolean reUsePort, Integer tcpMode) {
+        int result = -1;
+        Map<String, Object> param = new HashMap<>();
+        if (tcpMode == null) { tcpMode = 0; }
+        param.put("tcp_mode", tcpMode);
+        param.put("app", app);
+        param.put("stream_id", streamId);
+        if (disableAudio != null) { param.put("only_track", disableAudio ? 2 : 0); }
+        if (reUsePort != null) { param.put("re_use_port", reUsePort ? "1" : "0"); }
+        param.put("port", port == null ? 0 : port);
+        if (onlyAuto != null) { param.put("only_audio", onlyAuto ? "1" : "0"); }
+        if (ssrc != 0) { param.put("ssrc", ssrc); }
+        ZLMResult<?> zlmResult = zlmresTfulUtils.openRtpServer(mediaServerItem, param);
+        if (zlmResult != null) {
+            if (zlmResult.getCode() == 0) {
+                result = zlmResult.getPort();
+            } else {
+                log.error("[新流开端口] 失败 {}: ", zlmResult.getMsg());
+            }
+        } else {
+            log.error("[新流开端口] 失败: 请检查ZLM服务");
         }
         return result;
     }

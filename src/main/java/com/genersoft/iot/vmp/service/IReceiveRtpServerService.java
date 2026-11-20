@@ -17,6 +17,13 @@ public interface IReceiveRtpServerService {
     SSRCInfo openGbRTPServerForPlay(MediaServer mediaServer, Device device, DeviceChannel channel,
                                     String presetSSRC, boolean record, ErrorCallback<OpenRTPServerResult> callback);
 
+    /**
+     * @param isNewStream true=Redis 缓存未命中(全新流,跳过 getRtpInfo 前置 HTTP 检查);
+     *                    false=可能重播(保留完整检查链),S6 300 档端口分配瓶颈优化(20261120)
+     */
+    SSRCInfo openGbRTPServerForPlay(MediaServer mediaServer, Device device, DeviceChannel channel,
+                                    String presetSSRC, boolean record, ErrorCallback<OpenRTPServerResult> callback, boolean isNewStream);
+
     SSRCInfo openGbRTPServerForPlayback(MediaServer mediaServer, Device device, DeviceChannel channel,
                                         String startTime, String endTime, ErrorCallback<OpenRTPServerResult> callback);
 

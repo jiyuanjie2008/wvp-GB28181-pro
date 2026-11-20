@@ -156,6 +156,11 @@ public interface IMediaServerService {
 
     int createRTPServer(MediaServer mediaServerItem, String app, String streamId, long ssrc, Integer port, boolean onlyAuto, boolean disableAudio, boolean reUsePort, Integer tcpMode);
 
+    /**
+     * @param isNewStream true=跳过 getRtpInfo 前置检查(调用方确认缓存未命中=全新流),多端口风暴 HTTP 减半
+     */
+    int createRTPServer(MediaServer mediaServerItem, String app, String streamId, long ssrc, Integer port, boolean onlyAuto, boolean disableAudio, boolean reUsePort, Integer tcpMode, boolean isNewStream);
+
     List<String> listRtpServer(MediaServer mediaServer);
 
     void loadMP4FileForDate(MediaServer mediaServer, String app, String stream, String datePath, String dateDir, ErrorCallback<StreamInfo> callback);

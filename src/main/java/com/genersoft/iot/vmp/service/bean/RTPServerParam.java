@@ -31,6 +31,13 @@ public class RTPServerParam {
      */
     private Integer tcpMode;
 
+    /**
+     * 是否为全新流(调用方 Redis 缓存未命中=新流):为 true 时 ZLMServerFactory 跳过
+     * getRtpInfo 前置 HTTP 检查,直接 openRtpServer——多端口模式同秒齐发 HTTP 减半
+     * (S6 300 档 51 通 code=-3 端口分配瓶颈的修复,20261120)
+     */
+    private boolean isNewStream = true;
+
     public RTPServerParam(MediaServer mediaServer, String app, String streamId, Long ssrc, Integer port,
                           boolean onlyAuto, boolean disableAudio, boolean reUsePort, Integer tcpMode) {
         this.mediaServer = mediaServer;

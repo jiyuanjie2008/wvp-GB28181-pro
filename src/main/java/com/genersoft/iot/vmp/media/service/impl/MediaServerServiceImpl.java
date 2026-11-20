@@ -165,6 +165,11 @@ public class MediaServerServiceImpl implements IMediaServerService {
 
     @Override
     public int createRTPServer(MediaServer mediaServer, String app,  String streamId, long ssrc, Integer port, boolean onlyAuto, boolean disableAudio, boolean reUsePort, Integer tcpMode) {
+        return createRTPServer(mediaServer, app, streamId, ssrc, port, onlyAuto, disableAudio, reUsePort, tcpMode, true);
+    }
+
+    @Override
+    public int createRTPServer(MediaServer mediaServer, String app,  String streamId, long ssrc, Integer port, boolean onlyAuto, boolean disableAudio, boolean reUsePort, Integer tcpMode, boolean isNewStream) {
         int rtpServerPort;
         if (mediaServer.isRtpEnable()) {
             IMediaNodeServerService mediaNodeServerService = nodeServerServiceMap.get(mediaServer.getType());
@@ -172,7 +177,7 @@ public class MediaServerServiceImpl implements IMediaServerService {
                 log.info("[openRTPServer] 失败, mediaServer的类型： {}，未找到对应的实现类", mediaServer.getType());
                 return 0;
             }
-            rtpServerPort = mediaNodeServerService.createRTPServer(mediaServer, app, streamId, ssrc, port, onlyAuto, disableAudio, reUsePort, tcpMode);
+            rtpServerPort = mediaNodeServerService.createRTPServer(mediaServer, app, streamId, ssrc, port, onlyAuto, disableAudio, reUsePort, tcpMode, isNewStream);
         } else {
             rtpServerPort = mediaServer.getRtpProxyPort();
         }
