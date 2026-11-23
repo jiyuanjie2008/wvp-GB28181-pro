@@ -44,6 +44,15 @@ public class DefaultProperties {
         // 定义应用程序打算多久审计一次 SIP 堆栈，了解其内部线程的健康状况（该属性指定连续审计之间的时间（以毫秒为单位））
         properties.setProperty("gov.nist.javax.sip.THREAD_AUDIT_INTERVAL_IN_MILLISECS", "30000");
 
+        // [S13 2026-11-22] UDP SIP 套接字接收缓冲扩容。
+        // UDPMessageProcessor 构造时无条件 sock.setReceiveBufferSize(receiveUdpBufferSize),
+        // 该属性缺省 = MAX_DATAGRAM_SIZE(远小于内核默认),且因此 rmem_default 对本套接字无效——
+        // 这是"同刻并发注册 >150 台即内核 RcvbufErrors 丢包"的根因(见 jxt-benchmark
+        // S13 执行报告 §9:净测边界 ≤140 台,150=刀锋)。
+        // 请求 8MB,内核按 SO_RCVBUF 语义钳位到 rmem_max 后翻倍生效(本机 VM 已
+        // rmem_max=8388608,见 docker-compose.yml 注释)。
+        properties.setProperty("gov.nist.javax.sip.RECEIVE_UDP_BUFFER_SIZE", "8388608");
+
         // 部分设备会在短时间内发送大量注册， 导致协议栈内存溢出， 开启此项可以防止这部分设备注册， 避免服务崩溃，但是会降低系统性能， 描述如下
         // 默认值为 true。
         // 将此设置为 false 会使 Stack 在 Server Transaction 进入 TERMINATED 状态后关闭服务器套接字。

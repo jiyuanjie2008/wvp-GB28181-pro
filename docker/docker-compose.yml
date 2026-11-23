@@ -70,6 +70,14 @@ services:
       context: ..  # 构建上下文的根路径
       dockerfile: ./docker/wvp/Dockerfile  # 相对于上下文路径的Dockerfile位置
     restart: always
+    # [S13 2026-11-22] 突发注册容量修复:WVP 单 SIP UDP 套接字 rcvbuf 原为内核默认 212992B,
+    # 同时刻并发注册 >150 台即溢出丢包(RcvbufErrors 与失败数 1:1,见 S13 报告 §9)。
+    # rmem_max/rmem_default 是内核全局 sysctl(非 netns 级),容器内 /proc 被隐藏、compose
+    # sysctls 不可用(runc 报文件不存在);正确通道 = 从 Windows 进 docker-desktop WSL 写:
+    #   wsl -d docker-desktop -u root -- sh -c 'echo 8388608 > /proc/sys/net/core/rmem_max && echo 8388608 > /proc/sys/net/core/rmem_default'
+    # 然后重启本容器(SIP 套接字按 rmem_default 新建)。注意:Docker Desktop/WSL VM 重启后
+    # 该值回落 212992,须复施上面一条命令 + 重启 wvp。应用级硬化为 SipLayer 接线
+    # gov.nist.javax.sip.RECEIVE_BUFFER_SIZE(未实施)。
     networks:
       - media-net
       - jxt-web
